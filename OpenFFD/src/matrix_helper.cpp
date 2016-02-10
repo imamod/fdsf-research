@@ -1,7 +1,7 @@
 // Implementation of matrix_helper.h
 //
-#include "stdafx.h"
 #include "matrix_helper.h"
+#include <math.h>
 #include <limits>
 #include <iomanip>
 
