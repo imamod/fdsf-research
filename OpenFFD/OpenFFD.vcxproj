@@ -126,14 +126,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\difference_scheme.cpp" />
+    <ClCompile Include="FDSFInteger.cpp" />
     <ClCompile Include="src\matrix_helper.cpp" />
-    <ClCompile Include="src\mesh_collection.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\difference_scheme.h" />
+    <ClInclude Include="FDSFInteger.h" />
     <ClInclude Include="src\matrix_helper.h" />
-    <ClInclude Include="src\mesh_collection.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

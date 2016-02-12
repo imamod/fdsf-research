@@ -8,7 +8,7 @@ void fdsfInteger::setLinTrigMesh(std::vector<double> &y0, std::vector<double> &x
     int n_additional = 11;
     double alpha = 2 / (2 + PI);
 
-    // Задается линейно-тригонометрическая сетка
+    // Задаются базовые узлы интерполяции
     for (int j = 1; j <= 2 * N_base + 1; j++) {
         y0.push_back(0.5*log(2)*(2 * alpha*j / (2 * N_base + 1) + (1 - alpha)*(1 - cos(PI*j / (2 * N_base + 1)))));
         x0.push_back(log(exp(y0.at(j - 1)) - 1));
@@ -29,19 +29,13 @@ void fdsfInteger::setLinTrigMesh(std::vector<double> &y0, std::vector<double> &x
             X.push_back(log(exp(Y.back()) - 1));
         }
     }
-
 }
-// Функция ФД
-double fdsfInteger::func_Fermi(double t, double x, double k)
+
+double fdsfInteger::FermiDirakFunction(double t, double x, double k)
 {
-    // testfunction for positive X
-    //double u = pow(t,k)/(1 + exp(t-x));
-    // Для расчета интегралом, Для схемы Горнера
-    double u = pow(t, k) / (factorial(k)*(exp(x) + exp(t)));
-    return u;
+    return pow(t, k) / (factorial(k)*(exp(x) + exp(t)));
 }
 
-// Схема Горнера
 double fdsfInteger::Gorner(double x, int N, double k)
 {
     double exp_x = exp(x);
@@ -54,7 +48,6 @@ double fdsfInteger::Gorner(double x, int N, double k)
     return sum;
 }
 
-// Вычисление Г-функции TODO: сделать для полуцелых индексов
 double fdsfInteger::factorial(double k)
 {
     if (k < 0)
@@ -65,8 +58,7 @@ double fdsfInteger::factorial(double k)
         return k*factorial(k - 1);
 }
 
-// Равномерная сетка с использованием формул Гаусса-Кристофелля (сеточно Гауссов метод) n = 5 пятиточечная схема
-double fdsfInteger::regular_mesh_with_five_points(double(*Ft)(double, double, double), double x, double T, double k, int N)
+double fdsfInteger::FDGK5(double(*Ft)(double, double, double), double x, double T, double k, int N)
 {
     double gamma_1_5 = (322.0 - 13.0*sqrt(70)) / 1800.0;
     double gamma_2_4 = (322.0 + 13.0*sqrt(70)) / 1800.0;
@@ -95,14 +87,13 @@ double fdsfInteger::Richardson_mesh_refinement(double x, double t, double k, int
     double current_accuracy;
     double I_n, I_2n, I;
 
-    I_n = regular_mesh_with_five_points(&func_Fermi, x, t, k, N);
+    I_n = FDGK5(&FermiDirakFunction, x, t, k, N);
     do {
-        I_2n = regular_mesh_with_five_points(&func_Fermi, x, t, k, 2 * N);
+        I_2n = FDGK5(&FermiDirakFunction, x, t, k, 2 * N);
         current_accuracy = (I_2n - I_n) / (pow(2.0, p) - 1);
         I = I_2n + current_accuracy;
         I_n = I_2n;
         N = 2 * N;
-
     } while (abs(current_accuracy) > epsilon); // Фактическая точность 10^-16
 
     return I;

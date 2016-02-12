@@ -10,23 +10,31 @@ namespace fdsfInteger{
     // Значение pi (Лучше брать из библиотеки mpfr)
     const double PI = 3.141592653589793238463;
 
-    // Смешанная сетка
-    void setLinTrigMesh(std::vector<double> &y0, std::vector<double> &x0, std::vector<double> &Y, std::vector<double> &X, int N_base);
+    // Задает линейно-тригонометрическое распределение 
+    void setLinTrigMesh(std::vector<double> &y0, std::vector<double> &x0, 
+                        std::vector<double> &Y, std::vector<double> &X,
+                        int N_base);
 
     // Вычисление Г-функции
     // TODO: сделать для полуцелых индексов
     // TODO: лучше подрубить boost
     double factorial(double k);
 
-    // Функция ФД
-    double func_Fermi(double t, double x, double k);
+    // Вычисляет значение функции ФД индекса k = 1, 2, 3 в точке x при заданном
+    // значении t
+    double FermiDirakFunction(double t, double x, double k);
 
-    // Схема Горнера
+    // Вычисляет значение функции ФД индекса k = 1, 2, 3 в точке x по схеме 
+    // Горнера при x <= -0.1. N - число членов в схеме Горнера для дрстижения 
+    // машинной точности
     double Gorner(double x, int N, double k);
 
-    // Равномерная сетка с использованием формул Гаусса-Кристофелля (сеточно Гауссов метод) N = 5
-    double regular_mesh_with_five_points(double(*Ft)(double, double, double), double x, double T, double k, int N);
+    // Вычисляет значение функции ФД индекса k = 1, 2, 3 в точке x по формуле 
+    // Гаусса-Кристоффеля с 5 узлами на равномерной сетке. 
+    // (сеточно Гауссов метод) N = 5
+    // TODO: std::function
+    double FDGK5(double(*Ft)(double, double, double), double x, double T, double k, int N);
 
-    // Сгущение по Ричардсону по сеточно-Гауссову методу
+    // Сгущение по Ричардсону результата работы функции FDGK5 
     double Richardson_mesh_refinement(double x, double t, double k, int N, int p);
-}; // namespace fdsfInteger
+} // namespace fdsfInteger

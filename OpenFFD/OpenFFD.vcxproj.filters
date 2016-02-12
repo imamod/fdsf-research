@@ -15,24 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\difference_scheme.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="src\matrix_helper.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="src\mesh_collection.cpp">
+    <ClCompile Include="FDSFInteger.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\difference_scheme.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="src\matrix_helper.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="src\mesh_collection.h">
+    <ClInclude Include="FDSFInteger.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
