@@ -89,6 +89,7 @@ double fdsfInteger::FDGK5(double(*Ft)(double, double, double), double x, double 
 }
 
 // Сгущение по Ричардсону по сеточно-Гауссову методу
+// TODO: пересмотреть критерий остановки
 double fdsfInteger::Richardson_mesh_refinement(double x, double t, double k, int N)
 {
     int p = 10;
@@ -105,4 +106,34 @@ double fdsfInteger::Richardson_mesh_refinement(double x, double t, double k, int
     } while (abs(current_accuracy) > epsilon); // Фактическая точность 10^-16
 
     return I;
+}
+
+double fdsfInteger::FD_I1(double x)
+{
+    double I_1_minus_x, I_1_0 = fdsfInteger::I_k_0[1];
+    int N = 16; double t = 60; int k = 1;
+
+    I_1_minus_x = Richardson_mesh_refinement(-x, t, k, N);
+
+    return x*x / 2 + 2*I_1_0 - I_1_minus_x;
+}
+
+double fdsfInteger::FD_I2(double x)
+{
+    double I_2_minus_x, I_1_0 = fdsfInteger::I_k_0[1];
+    int N = 16; double t = 75; int k = 2;
+
+    I_2_minus_x = Richardson_mesh_refinement(-x, t, k, N);
+
+    return x*x*x / 3 + 4*x*I_1_0 + I_2_minus_x;
+}
+
+double fdsfInteger::FD_I3(double x)
+{
+    double I_3_minus_x, I_1_0 = fdsfInteger::I_k_0[1], I_3_0 = fdsfInteger::I_k_0[3];
+    int N = 16; double Tmax = 100; int k = 3;
+
+    I_3_minus_x = Richardson_mesh_refinement(-x, Tmax, k, N);
+
+    return x*x*x*x / 4 + 6*x*x*I_1_0 + 2*I_3_0 - I_3_minus_x;
 }
