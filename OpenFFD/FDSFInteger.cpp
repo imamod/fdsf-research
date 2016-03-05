@@ -3,7 +3,36 @@
 #include <iomanip>
 #include <limits>
 
-void fdsfInteger::SetLinesrTrigonometricGrid(std::vector<double> &y_base, 
+double fdsf::get_T_max(double X, int k)
+{
+    double a1;
+    if (k != 0) {
+        a1 = pow(fdsf::factorial(k + 1), -1 / k);
+    }
+    int i = 1;
+    double y = log(1 + exp(X));
+    double T = X - log(epsilon), I_approximate;
+    while (true)
+    {
+        // 3-х итераций вполне достаточно для определения Tmax
+        if (i > 3) {
+            break;
+        }
+        if (k == 0) {
+            I_approximate = y;
+        }
+        else {
+            I_approximate = fdsf::factorial(k)*y*pow(1 + a1*y, k);
+        }
+        // Итерационное вычисление Tmax
+        T = X - log(epsilon) + log(pow(T + 1, k) / I_approximate);
+        i++;
+    }
+
+    return sqrt(T);
+}
+
+void fdsf::SetLinesrTrigonometricGrid(std::vector<double> &y_base, 
                                              std::vector<double> &x_base,
                                              std::vector<double> &Y, 
                                              std::vector<double> &X, int N_base)
@@ -34,12 +63,16 @@ void fdsfInteger::SetLinesrTrigonometricGrid(std::vector<double> &y_base,
     }
 }
 
-double fdsfInteger::FermiDirakFunction(double t, double x, double k)
+double fdsf::FermiDirakFunction(double t, double x, double k)
 {
+#if 0
+    // new , зачин для полуцелых
+    double u = 2 * pow(t, 2 * k + 1) / (1 + exp(t*t - x));
+#endif
     return pow(t, k) / (factorial(k)*(exp(x) + exp(t)));
 }
 
-double fdsfInteger::Gorner(double x, int N, double k)
+double fdsf::Gorner(double x, int N, double k)
 {
     double exp_x = exp(x);
     double sum = 1.0 / pow(N, k + 1);
@@ -51,7 +84,7 @@ double fdsfInteger::Gorner(double x, int N, double k)
     return sum;
 }
 
-double fdsfInteger::factorial(double k)
+double fdsf::factorial(double k)
 {
     if (k < 0)
         return 0;
@@ -61,7 +94,7 @@ double fdsfInteger::factorial(double k)
         return k*factorial(k - 1);
 }
 
-double fdsfInteger::FDGK5(double(*Ft)(double, double, double), double x, double T, double k, int N)
+double fdsf::FDGK5(double(*Ft)(double, double, double), double x, double T, double k, int N)
 {
     // Веса формул Гаусса-Кристоффеля с N=5
     const double gamma_1_5 = (322.0 - 13.0*sqrt(70)) / 1800.0;
@@ -90,7 +123,7 @@ double fdsfInteger::FDGK5(double(*Ft)(double, double, double), double x, double 
 
 // Сгущение по Ричардсону по сеточно-Гауссову методу
 // TODO: пересмотреть критерий остановки
-double fdsfInteger::Richardson_mesh_refinement(double x, double t, double k, int N)
+double fdsf::Richardson_mesh_refinement(double x, double t, double k, int N)
 {
     int p = 10;
     double current_accuracy;
@@ -108,37 +141,37 @@ double fdsfInteger::Richardson_mesh_refinement(double x, double t, double k, int
     return I;
 }
 
-double fdsfInteger::FD_I1(double x)
+double fdsf::integer::FD_I1(double x)
 {
-    const double I_1_0 = fdsfInteger::I_k_0[1];
+    const double I_1_0 = fdsf::I_k_0[1];
     const double t = 60; 
     const int k = 1;
     int N = 16;
-    double I_1_minus_x = Richardson_mesh_refinement(-x, t, k, N);
+    double I_1_minus_x = fdsf::Richardson_mesh_refinement(-x, t, k, N);
 
     return x*x / 2 + 2*I_1_0 - I_1_minus_x;
 }
 
-double fdsfInteger::FD_I2(double x)
+double fdsf::integer::FD_I2(double x)
 {
-    const double I_1_0 = fdsfInteger::I_k_0[1];
+    const double I_1_0 = fdsf::I_k_0[1];
     const double t = 75; 
     const int k = 2;
     int N = 16;
 
-    double I_2_minus_x = Richardson_mesh_refinement(-x, t, k, N);
+    double I_2_minus_x = fdsf::Richardson_mesh_refinement(-x, t, k, N);
 
     return x*x*x / 3 + 4*x*I_1_0 + I_2_minus_x;
 }
 
-double fdsfInteger::FD_I3(double x)
+double fdsf::integer::FD_I3(double x)
 {
-    const double I_1_0 = fdsfInteger::I_k_0[1], I_3_0 = fdsfInteger::I_k_0[3];
+    const double I_1_0 = fdsf::I_k_0[1], I_3_0 = fdsf::I_k_0[3];
     const double Tmax = 100; 
     const int k = 3;
 
     int N = 16;
-    double I_3_minus_x = Richardson_mesh_refinement(-x, Tmax, k, N);
+    double I_3_minus_x = fdsf::Richardson_mesh_refinement(-x, Tmax, k, N);
 
     return x*x*x*x / 4 + 6*x*x*I_1_0 + 2*I_3_0 - I_3_minus_x;
 }
