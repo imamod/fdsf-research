@@ -18,7 +18,7 @@ namespace fdsf{
 
     // Задает линейно-тригонометрическое сетку в базовых узлах, плюс 10(?)
     // дополнительных точек между каждой парой базовых узлов.
-    void SetLinesrTrigonometricGrid(std::vector<double> &y_base, 
+    void SetLinearTrigonometricGrid(std::vector<double> &y_base, 
                                     std::vector<double> &x_base, 
                                     std::vector<double> &Y, 
                                     std::vector<double> &X, int N_base);

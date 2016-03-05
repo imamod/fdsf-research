@@ -32,10 +32,26 @@ double fdsf::get_T_max(double X, int k)
     return sqrt(T);
 }
 
-void fdsf::SetLinesrTrigonometricGrid(std::vector<double> &y_base, 
-                                             std::vector<double> &x_base,
-                                             std::vector<double> &Y, 
-                                             std::vector<double> &X, int N_base)
+// Новая схема Горнера для прецизионного вычисления y
+static double GornerSchemeForPrecesionY(double N, double x)
+{
+    //double alpha = x < epsilon ? exp(x) : exp(-x);
+    const double alpha = exp(x);
+    const double z = alpha / (2 + alpha);
+    double sum = 1.0 / (2 * N + 1);
+
+    for (int i = N - 1; i >= 0; i--) {
+        sum = 1.0 / (2 * i + 1.0) + z*z*sum;
+    }
+
+    //return x < epsilon ? 2*z*sum : x + 2*z*sum;
+    return 2 * z*sum;
+}
+
+void fdsf::SetLinearTrigonometricGrid(std::vector<double> &y_base, 
+                                      std::vector<double> &x_base,
+                                      std::vector<double> &Y, 
+                                      std::vector<double> &X, int N_base)
 {
     int n_additional = 11;
     const double alpha = 2 / (2 + PI);
