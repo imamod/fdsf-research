@@ -6,7 +6,7 @@
 namespace fdsf{
 
     // Желаемая точность расчета
-    const int digits = 20;
+    const int digits = 25;
     const mpfr::mpreal epsilon = pow(10,-digits);
 
     // Значение pi (Лучше брать из библиотеки mpfr)
