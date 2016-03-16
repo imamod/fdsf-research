@@ -7,7 +7,7 @@ mpfr::mpreal fdsf::get_T_max(mpfr::mpreal X, double k)
 {
     mpfr::mpreal a1;
     if (k != 0) {
-        a1 = pow(fdsf::factorial(k + 1), -1 / k);
+        a1 = mpfr::pow(fdsf::factorial(k + 1), -1 / k);
     }
     int i = 1;
     mpfr::mpreal y = mpfr::log(1 + mpfr::exp(X));
@@ -51,15 +51,18 @@ mpfr::mpreal GornerSchemeForPrecesionY( mpfr::mpreal x, int N )
 void fdsf::SetLinearTrigonometricGrid(std::vector<mpfr::mpreal> &y_base, 
                                       std::vector<mpfr::mpreal> &x_base,
                                       std::vector<mpfr::mpreal> &Y, 
-                                      std::vector<mpfr::mpreal> &X, int N_base)
+                                      std::vector<mpfr::mpreal> &X, 
+                                      const int N_base)
 {
     int n_additional = 11;
     const mpfr::mpreal alpha = 2 / (2 + PI);
+    const int base_nodes_count = 2 * N_base + 1;
     //Y = GornerSchemeForPrecesionY(N, X);
     // Задаются базовые узлы интерполяции
-    for (int j = 1; j <= 2 * N_base + 1; j++) {
+    for (int j = 1; j <= base_nodes_count; j++) {
         //y_base.push_back((1/2)*log(2)*(2 * alpha*j / (2 * N_base + 1) + (1 - alpha)*(1 - cos(PI*j / (2 * N_base + 1)))));
-        y_base.push_back((mpfr::log(2)/2)*(2 * alpha*j / (2 * N_base + 1) + (1 - alpha)*(1 - mpfr::cos(PI*j / (2 * N_base + 1)))));
+        y_base.push_back((mpfr::log(2)/2)*(2 * alpha*j / base_nodes_count +
+                                          (1 - alpha)*(1 - mpfr::cos(PI*j / base_nodes_count))));
         x_base.push_back(mpfr::log(mpfr::exp(y_base.at(j - 1)) - 1));
     }
 
@@ -116,7 +119,11 @@ mpfr::mpreal fdsf::factorial(mpfr::mpreal k)
         return k*factorial(k - 1);
 }
 
-mpfr::mpreal fdsf::FDGK5(mpfr::mpreal(*Ft)(mpfr::mpreal, mpfr::mpreal, mpfr::mpreal), mpfr::mpreal x, mpfr::mpreal T, mpfr::mpreal k, int N)
+mpfr::mpreal fdsf::FDGK5(mpfr::mpreal(*Ft)(mpfr::mpreal, mpfr::mpreal, mpfr::mpreal), 
+                         const mpfr::mpreal x, 
+                         const mpfr::mpreal T, 
+                         const mpfr::mpreal k, 
+                         const int N)
 {
     // Веса формул Гаусса-Кристоффеля с N=5
     const mpfr::mpreal gamma_1_5 = (322.0 - 13.0*mpfr::sqrt(70)) / 1800.0;
@@ -145,17 +152,20 @@ mpfr::mpreal fdsf::FDGK5(mpfr::mpreal(*Ft)(mpfr::mpreal, mpfr::mpreal, mpfr::mpr
 }
 
 // Сгущение по Ричардсону по сеточно-Гауссову методу
-mpfr::mpreal fdsf::Richardson_mesh_refinement(mpfr::mpreal x, mpfr::mpreal t, mpfr::mpreal k, int N)
+mpfr::mpreal fdsf::Richardson_mesh_refinement(mpfr::mpreal x, mpfr::mpreal t, mpfr::mpreal k)
 {
-    const int p = 10;
+    const int p = 10; // порядок аппроксимации формул ГК с 5ю узлами
+    int N = 16; // начальное дробление сетки
     mpfr::mpreal current_accuracy, stop_criteria;
     mpfr::mpreal I_n, I_2n, I;
+    // вспомогательное значение для расчета с повышенной разрядностью
+    const mpfr::mpreal one = 1.0; 
 
     I_n = FDGK5(&FermiDirakFunction, x, t, k, N);
     do {
         I_2n = FDGK5(&FermiDirakFunction, x, t, k, 2 * N);
-        current_accuracy = (I_2n - I_n) / (pow(2.0, p) - 1);
-        stop_criteria = (I_2n / I_n - 1); // критерий останова подсчета
+        current_accuracy = (I_2n - I_n) / (mpfr::pow(2.0, p) - 1);
+        stop_criteria = (I_2n / I_n - one); // критерий останова подсчета
         I = I_2n;// +current_accuracy;
         I_n = I_2n;
         N = 2 * N;
@@ -174,8 +184,8 @@ mpfr::mpreal fdsf::integer::FD_I1(mpfr::mpreal x)
     const mpfr::mpreal I_1_0 = fdsf::I_k_0[1];
     const mpfr::mpreal t = 60; 
     const int k = 1;
-    int N = 16;
-    mpfr::mpreal I_1_minus_x = fdsf::Richardson_mesh_refinement(-x, t, k, N);
+
+    mpfr::mpreal I_1_minus_x = fdsf::Richardson_mesh_refinement(-x, t, k);
 
     return x*x / 2 + 2*I_1_0 - I_1_minus_x;
 }
@@ -185,9 +195,8 @@ mpfr::mpreal fdsf::integer::FD_I2(mpfr::mpreal x)
     const mpfr::mpreal I_1_0 = fdsf::I_k_0[1];
     const mpfr::mpreal t = 75; 
     const int k = 2;
-    int N = 16;
 
-    mpfr::mpreal I_2_minus_x = fdsf::Richardson_mesh_refinement(-x, t, k, N);
+    mpfr::mpreal I_2_minus_x = fdsf::Richardson_mesh_refinement(-x, t, k);
 
     return x*x*x / 3 + 4*x*I_1_0 + I_2_minus_x;
 }
@@ -198,8 +207,7 @@ mpfr::mpreal fdsf::integer::FD_I3(mpfr::mpreal x)
     const mpfr::mpreal Tmax = 100; 
     const int k = 3;
 
-    int N = 16;
-    mpfr::mpreal I_3_minus_x = fdsf::Richardson_mesh_refinement(-x, Tmax, k, N);
+    mpfr::mpreal I_3_minus_x = fdsf::Richardson_mesh_refinement(-x, Tmax, k);
 
     return x*x*x*x / 4 + 6*x*x*I_1_0 + 2*I_3_0 - I_3_minus_x;
 }

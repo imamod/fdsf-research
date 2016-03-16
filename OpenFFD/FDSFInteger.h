@@ -7,7 +7,7 @@ namespace fdsf{
 
     // Желаемая точность расчета
     const int digits = 25;
-    const mpfr::mpreal epsilon = pow(10,-digits);
+    const mpfr::mpreal epsilon = mpfr::pow(10,-digits);
 
     // Значение pi (Лучше брать из библиотеки mpfr)
     //const mpfr::mpreal PI = 3.141592653589793238463;
@@ -53,10 +53,13 @@ namespace fdsf{
     //           k = 3 : Tmax = 100. 
     // TODO: std::function
     mpfr::mpreal FDGK5(mpfr::mpreal(*Ft)(mpfr::mpreal, mpfr::mpreal, mpfr::mpreal), 
-                       mpfr::mpreal x, mpfr::mpreal T, mpfr::mpreal k, int N);
+                       const mpfr::mpreal x, 
+                       const mpfr::mpreal T, 
+                       const mpfr::mpreal k, 
+                       const int N);
 
     // Сгущение по Ричардсону результата работы функции FDGK5
-    mpfr::mpreal Richardson_mesh_refinement(mpfr::mpreal x, mpfr::mpreal t, mpfr::mpreal k, int N);
+    mpfr::mpreal Richardson_mesh_refinement(mpfr::mpreal x, mpfr::mpreal t, mpfr::mpreal k);
     
     namespace integer {
         // Вычисляет значение функции ФД индекса k=1 в точке x
