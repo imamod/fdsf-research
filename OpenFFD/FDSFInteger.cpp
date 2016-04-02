@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <limits>
 
-mpfr::mpreal fdsf::get_T_max(mpfr::mpreal X, double k)
+mpfr::mpreal fdsf::get_T_max(mpfr::mpreal X, mpfr::mpreal k)
 {
     mpfr::mpreal a1;
     if (k != 0) {
@@ -28,8 +28,8 @@ mpfr::mpreal fdsf::get_T_max(mpfr::mpreal X, double k)
         T = X - mpfr::log(epsilon) + mpfr::log(mpfr::pow(T + 1, k) / I_approximate);
         i++;
     }
-
-    return mpfr::sqrt(T);
+    return T;
+    //return mpfr::sqrt(T);
 }
 
 // Новая схема Горнера для прецизионного вычисления y
@@ -52,55 +52,60 @@ void fdsf::SetLinearTrigonometricGrid(std::vector<mpfr::mpreal> &y_base,
                                       std::vector<mpfr::mpreal> &x_base,
                                       std::vector<mpfr::mpreal> &Y, 
                                       std::vector<mpfr::mpreal> &X, 
-                                      const int N_base)
+                                      const mpfr::mpreal N_base)
 {
     int n_additional = 11;
-    const mpfr::mpreal alpha = 2 / (2 + PI);
-    const int base_nodes_count = 2 * N_base + 1;
+    const mpfr::mpreal one = 1.0;
+    const mpfr::mpreal alpha = 2*one / (2*one + PI);
+    const mpfr::mpreal base_nodes_count = 2 * N_base + 1;
+    const mpfr::mpreal number2 = 2;
     //Y = GornerSchemeForPrecesionY(N, X);
     // Задаются базовые узлы интерполяции
-    for (int j = 1; j <= base_nodes_count; j++) {
+    for (mpfr::mpreal j = 1; j <= base_nodes_count; j++) {
         //y_base.push_back((1/2)*log(2)*(2 * alpha*j / (2 * N_base + 1) + (1 - alpha)*(1 - cos(PI*j / (2 * N_base + 1)))));
-        y_base.push_back((mpfr::log(2)/2)*(2 * alpha*j / base_nodes_count +
-                                          (1 - alpha)*(1 - mpfr::cos(PI*j / base_nodes_count))));
-        x_base.push_back(mpfr::log(mpfr::exp(y_base.at(j - 1)) - 1));
+        y_base.push_back((mpfr::log(number2)/number2)*(number2 * alpha*j / base_nodes_count +
+                                          (one - alpha)*(one - mpfr::cos(PI*j / base_nodes_count))));
+        x_base.push_back(mpfr::log(mpfr::exp(y_base.at((int)j - 1)) - one));
     }
 
     Y.push_back(y_base.at(0) / n_additional);
-    X.push_back(mpfr::log(mpfr::exp(Y.at(0)) - 1));
+    X.push_back(mpfr::log(mpfr::exp(Y.at(0)) - one));
 
     for (int i = 1; i < n_additional; i++)
     {
         Y.push_back(Y.at(i - 1) + y_base.at(0) / n_additional);
-        X.push_back(mpfr::log(mpfr::exp(Y.at(i)) - 1));
+        X.push_back(mpfr::log(mpfr::exp(Y.at(i)) - one));
     }
 
     for (int index = 1; index < y_base.size(); index++) {
         for (int i = 0; i < n_additional; i++) {
             Y.push_back(Y.back() + (y_base.at(index) - y_base.at(index - 1)) / n_additional);
-            X.push_back(mpfr::log(mpfr::exp(Y.back()) - 1));
+            X.push_back(mpfr::log(mpfr::exp(Y.back()) - one));
         }
     }
 }
 
-mpfr::mpreal fdsf::FermiDirakFunction(mpfr::mpreal t, mpfr::mpreal x, mpfr::mpreal k)
+mpfr::mpreal fdsf::FermiDirakFunction(const mpfr::mpreal t, const mpfr::mpreal x, const mpfr::mpreal k)
 {
-//#if 0
+#if 0
     // new , зачин для полуцелых
     return 2 * mpfr::pow(t, 2 * k + 1) / (1 + mpfr::exp(t*t - x));
-//#endif
-#if 0
-    return pow(t, k) / (factorial(k)*(exp(x) + exp(t)));
 #endif
+//#if 0
+    // представление для целых
+    // TODO: разнести по namespace-ам
+    return mpfr::pow(t, k) / (factorial(k)*(mpfr::exp(x) + mpfr::exp(t)));
+//#endif
 }
 
-mpfr::mpreal fdsf::Gorner(mpfr::mpreal x, int N, mpfr::mpreal k)
+mpfr::mpreal fdsf::Gorner(const mpfr::mpreal x, const mpfr::mpreal N, const mpfr::mpreal k)
 {
-    mpfr::mpreal exp_x = mpfr::exp(x);
-    mpfr::mpreal sum = 1.0 / mpfr::pow(N, k + 1);
+    const mpfr::mpreal exp_x = mpfr::exp(x);
+    const mpfr::mpreal one = 1.0;
+    mpfr::mpreal sum = one / mpfr::pow(N, k + 1);
 
-    for (int i = N - 1; i > 0; i--) {
-        sum = 1 / mpfr::pow(i, k + 1) - exp_x*sum;
+    for (mpfr::mpreal i = N - 1; i > 0; i--) {
+        sum = one / mpfr::pow(i, k + 1) - exp_x*sum;
     }
 #ifdef _DEBUG
     std::cout << "-----DEBUG-----" << std::endl;
@@ -123,24 +128,33 @@ mpfr::mpreal fdsf::FDGK5(mpfr::mpreal(*Ft)(mpfr::mpreal, mpfr::mpreal, mpfr::mpr
                          const mpfr::mpreal x, 
                          const mpfr::mpreal T, 
                          const mpfr::mpreal k, 
-                         const int N)
+                         const mpfr::mpreal N)
 {
     // Веса формул Гаусса-Кристоффеля с N=5
-    const mpfr::mpreal gamma_1_5 = (322.0 - 13.0*mpfr::sqrt(70)) / 1800.0;
-    const mpfr::mpreal gamma_2_4 = (322.0 + 13.0*mpfr::sqrt(70)) / 1800.0;
+    const mpfr::mpreal number70 = 70;
+    const mpfr::mpreal number13 = 13;
+    const mpfr::mpreal number322 = 322;
+    const mpfr::mpreal number1800 = 1800;
+
+    const mpfr::mpreal gamma_1_5 = (number322 - number13*mpfr::sqrt(number70)) / number1800;
+    const mpfr::mpreal gamma_2_4 = (number322 + number13*mpfr::sqrt(number70)) / number1800;
     const mpfr::mpreal gamma_3 = 64.0 / 225.0;
     std::vector<mpfr::mpreal> t(5);
 
     const mpfr::mpreal half = 1.0/2.0;
     mpfr::mpreal U = 0;
 
-    for (int n = N - 1; n >= 0; n--) {
+    const mpfr::mpreal number2 = 2;
+    const mpfr::mpreal number35 = 35;
+    const mpfr::mpreal number63 = 63;
+
+    for (mpfr::mpreal n = N - 1; n >= 0; n--) {
         // Расчет дополнительных узлов
-        t.at(0) = T*(n + half - (half)*mpfr::sqrt((35 + 2 * mpfr::sqrt(70)) / 63)) / N;
-        t.at(1) = T*(n + half - (half)*mpfr::sqrt((35 - 2 * mpfr::sqrt(70)) / 63)) / N;
+        t.at(0) = T*(n + half - (half)*mpfr::sqrt((number35 + number2 * mpfr::sqrt(number70)) / number63)) / N;
+        t.at(1) = T*(n + half - (half)*mpfr::sqrt((number35 - number2 * mpfr::sqrt(number70)) / number63)) / N;
         t.at(2) = T*(n + half) / N;
-        t.at(3) = T*(n + half + (half)*mpfr::sqrt((35 - 2 * mpfr::sqrt(70)) / 63)) / N;
-        t.at(4) = T*(n + half + (half)*mpfr::sqrt((35 + 2 * mpfr::sqrt(70)) / 63)) / N;
+        t.at(3) = T*(n + half + (half)*mpfr::sqrt((number35 - number2 * mpfr::sqrt(number70)) / number63)) / N;
+        t.at(4) = T*(n + half + (half)*mpfr::sqrt((number35 + number2 * mpfr::sqrt(number70)) / number63)) / N;
         //
         U = U + T*(Ft(t.at(2), x, k)*gamma_3 + gamma_1_5*((Ft(t.at(0), x, k)) + Ft(t.at(4), x, k)) 
                                              + gamma_2_4*((Ft(t.at(1), x, k)) + Ft(t.at(3), x, k)));
@@ -155,23 +169,26 @@ mpfr::mpreal fdsf::FDGK5(mpfr::mpreal(*Ft)(mpfr::mpreal, mpfr::mpreal, mpfr::mpr
 mpfr::mpreal fdsf::Richardson_mesh_refinement(mpfr::mpreal x, mpfr::mpreal t, mpfr::mpreal k)
 {
     const int p = 10; // порядок аппроксимации формул ГК с 5ю узлами
-    int N = 16; // начальное дробление сетки
+    mpfr::mpreal N = 16; // начальное дробление сетки
     mpfr::mpreal current_accuracy, stop_criteria;
     mpfr::mpreal I_n, I_2n, I;
+#ifdef _DEBUG
     // вспомогательное значение для расчета с повышенной разрядностью
     const mpfr::mpreal one = 1.0; 
-
+#endif
     I_n = FDGK5(&FermiDirakFunction, x, t, k, N);
     do {
         I_2n = FDGK5(&FermiDirakFunction, x, t, k, 2 * N);
-        current_accuracy = (I_2n - I_n) / (mpfr::pow(2.0, p) - 1);
-        stop_criteria = (I_2n / I_n - one); // критерий останова подсчета
+        //current_accuracy = (I_2n - I_n) / (mpfr::pow(2.0, p) - one);
+        stop_criteria = (I_2n / I_n - 1); // критерий останова подсчета
         I = I_2n;// +current_accuracy;
         I_n = I_2n;
         N = 2 * N;
+#ifdef _DEBUG
         std::cout << "-----DEBUG-----" << std::endl;
         std::cout << I << std::endl;
-    } while (mpfr::abs(stop_criteria) > 1e-20);
+#endif
+    } while (mpfr::abs(stop_criteria) > 1e-25);
     //} while (abs(current_accuracy) > epsilon); // Фактическая точность 10^-16
 #ifdef _DEBUG
     std::cout << I << std::endl;
