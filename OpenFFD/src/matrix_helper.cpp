@@ -5,8 +5,9 @@
 #include <iostream>
 
 // Условие окончания
-bool converge(matrix_type::_vector &xk, matrix_type::_vector &xkp, const int n)
+static bool converge(matrix_type::_vector &xk, matrix_type::_vector &xkp, const int n)
 {
+    const mpfr::mpreal epsilon = pow(10, -digits);
     mpfr::mpreal norm = 0;
     for (int i = 0; i < n; i++)
     {
@@ -159,13 +160,15 @@ std::vector < std::vector <mpfr::mpreal> > inverse(std::vector < std::vector <mp
                 std::cout << "in condition mx" << std::endl;
             }
         }*/
-
+        std::cout << "Triangle view" << std::endl;
         for (int j = i + 1; j < n; j++){
             mpfr::mpreal e = a.at(j).at(i) / a.at(i).at(i);
             for (int k = 0; k < n; k++){
                 a.at(j).at(k) -= e*a.at(i).at(k);
                 ans.at(j).at(k) -= e*ans.at(i).at(k);
+                std::cout << ans.at(i).at(j) << " ";
             }
+            std::cout << std::endl;
         }
     }
     // backword

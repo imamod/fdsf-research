@@ -179,17 +179,15 @@ mpfr::mpreal fdsf::Richardson_mesh_refinement(mpfr::mpreal x, mpfr::mpreal t, mp
     I_n = FDGK5(&FermiDirakFunction, x, t, k, N);
     do {
         I_2n = FDGK5(&FermiDirakFunction, x, t, k, 2 * N);
-        //current_accuracy = (I_2n - I_n) / (mpfr::pow(2.0, p) - one);
         stop_criteria = (I_2n / I_n - 1); // критерий останова подсчета
-        I = I_2n;// +current_accuracy;
+        I = I_2n;
         I_n = I_2n;
         N = 2 * N;
 #ifdef _DEBUG
         std::cout << "-----DEBUG-----" << std::endl;
         std::cout << I << std::endl;
 #endif
-    } while (mpfr::abs(stop_criteria) > 1e-25);
-    //} while (abs(current_accuracy) > epsilon); // ‘актическа€ точность 10^-16
+    } while (mpfr::abs(stop_criteria) > fdsf::epsilon);
 #ifdef _DEBUG
     std::cout << I << std::endl;
 #endif

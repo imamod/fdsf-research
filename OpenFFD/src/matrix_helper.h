@@ -4,8 +4,7 @@
 #include <vector>
 
 // Желаемая точность расчета
-const int digits = 25;
-const mpfr::mpreal epsilon = pow(10, -20);
+const int digits = 30;
 
 namespace matrix_type{
     typedef std::vector<std::vector<mpfr::mpreal>> _matrix;
