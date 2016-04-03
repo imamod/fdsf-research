@@ -53,7 +53,7 @@ namespace fdsf{
                  double x, double T, double k, int N);
 
     // Сгущение по Ричардсону результата работы функции FDGK5
-    double Richardson_mesh_refinement(double x, double t, double k, int N);
+    double Richardson_mesh_refinement(double x, double t, double k);
     
     namespace integer {
         // Вычисляет значение функции ФД индекса k=1 в точке x
