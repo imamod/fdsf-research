@@ -1,14 +1,61 @@
-// Implementation of matrix_helper.h
+ï»¿// Implementation of matrix_helper.h
 //
 #include "matrix_helper.h"
 #include <math.h>
 #include <limits>
 #include <iomanip>
 
+void GetApproxomateValues(matrix_type::_vector &a,
+                          matrix_type::_vector &b,
+                          matrix_type::_vector &y0,
+                          matrix_type::_vector &Y,
+                          matrix_type::_vector &I,
+                          matrix_type::_vector &z,
+                          matrix_type::_vector &delta_base,
+                          matrix_type::_vector &delta_additional, const int N_base)
+{
+    const size_t baseSize = y0.size();
+    matrix_type::_vector F_base(baseSize, 0);
+
+    for (int j = 0; j < baseSize; j++) {
+        double S1 = 0, S2 = 0;
+
+        for (int n = 0; n < N_base + 1; n++) {
+            S1 = S1 + a.at(n)*pow(y0.at(j), n + 1);
+        }
+        for (int m = 0; m < N_base; m++) {
+                S2 = S2 + b.at(m)*pow(y0.at(j), m + 1);
+        }
+ 
+         F_base.at(j) = (1 + S1) / (1 + S2);
+         delta_base.at(j) = (F_base.at(j) / z.at(j) - 1);
+    }
+    //-------------------------------------- - 
+    //Ã„Ã®Ã¡Ã Ã¢Ã¨Ã¬ Ã¢Ã±Ã¯Ã®Ã¬Ã®Ã£Ã Ã²Ã¥Ã«Ã¼Ã­Ã³Ã¾ Ã±Ã¥Ã²ÃªÃ³ 
+    const size_t addSize = Y.size();
+    matrix_type::_vector F(addSize, 0);
+        
+
+    for (int j = 0; j < addSize; j++) {
+        double S1 = 0, S2 = 0;
+
+        for (int n = 0; n < N_base + 1; n++) {
+            S1 = S1 + a.at(n)*pow(Y.at(j), n + 1);
+            
+        }
+        for (int m = 0; m < N_base; m++) {
+            S2 = S2 + b.at(m)*pow(Y.at(j), m + 1);
+        }
+
+        F.at(j) = (1 + S1) / (1 + S2);
+        delta_additional.at(j) = (F.at(j) / I.at(j) - 1);
+    }
+}
+
 double CMatrix::gaus_det(matrix_type::_matrix mass, size_t cnt_str)
 {
     double det = 1;
-    //ïðÿìîé õîä
+    //Ð¿Ñ€ÑÐ¼Ð¾Ð¹ Ñ…Ð¾Ð´
     for (size_t i = 0; i < cnt_str; i++)
     {
         for (size_t j = i + 1; j < cnt_str; j++)
@@ -19,7 +66,7 @@ double CMatrix::gaus_det(matrix_type::_matrix mass, size_t cnt_str)
             for (size_t k = i; k < cnt_str; k++)
                 mass.at(j).at(k) = mass.at(j).at(k) - mass.at(i).at(k) * b;
         }
-        det *= mass.at(i).at(i);//âû÷èñëåíèå îïðåäåëèòåëÿ
+        det *= mass.at(i).at(i);//Ð²Ñ‹Ñ‡Ð¸ÑÐ»ÐµÐ½Ð¸Ðµ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ñ‚ÐµÐ»Ñ
     }
     return det;
 }
@@ -80,7 +127,7 @@ void CMatrix::gaus_inv(matrix_type::_matrix A, size_t size, matrix_type::_matrix
         A_inv.at(i).at(i) = 1.0;
     }
 
-    //ïðÿìîé õîä
+    //Ð¿Ñ€ÑÐ¼Ð¾Ð¹ Ñ…Ð¾Ð´
     double a, b;
     for (size_t i = 0; i < size; i++)
     {
@@ -97,7 +144,7 @@ void CMatrix::gaus_inv(matrix_type::_matrix A, size_t size, matrix_type::_matrix
         std::cout << std::endl;
     }
     std::cout << "\n\n";
-    //îáðàòíûé õîä âû÷èñëåíèÿ ýëåìåíòîâ îáðàòíîé ìàòðèöû
+    //Ð¾Ð±Ñ€Ð°Ñ‚Ð½Ñ‹Ð¹ Ñ…Ð¾Ð´ Ð²Ñ‹Ñ‡Ð¸ÑÐ»ÐµÐ½Ð¸Ñ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² Ð¾Ð±Ñ€Ð°Ñ‚Ð½Ð¾Ð¹ Ð¼Ð°Ñ‚Ñ€Ð¸Ñ†Ñ‹
     for (size_t i = 0; i < size; i++)
     {
         for (size_t j = size - 1; j > 0; j--)
