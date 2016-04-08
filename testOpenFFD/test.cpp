@@ -1,11 +1,39 @@
 #include <iostream>
 #include "FDSFInteger.h"
+#include <boost/math/constants/constants.hpp>
+// using boost::math::constants::pi;
+
+#include <boost/multiprecision/cpp_dec_float.hpp>
+// using boost::multiprecision::cpp_dec_float
+
 #include "src\matrix_helper.h"
 #include <vector>
 #include <iomanip>
 #include <limits>
 #include <fstream>
 #include <sstream>
+
+void test()
+{
+    using boost::multiprecision::cpp_dec_float_100;
+    using boost::math::constants::pi;
+    //using namespace boost::multiprecesion;
+    // Operations at fixed precision and full numeric_limits support:
+    cpp_dec_float_100 b = 2;
+    std::cout << std::numeric_limits<cpp_dec_float_100>::digits << std::endl;
+    // Note that digits10 is the same as digits, since we're base 10! :
+    std::cout << std::numeric_limits<cpp_dec_float_100>::digits10 << std::endl;
+    // We can use any C++ std lib function, lets print all the digits as well:
+    std::cout << std::setprecision(std::numeric_limits<cpp_dec_float_100>::max_digits10)
+    << log(b) << std::endl; // print log(2)
+                            // We can also use any function from Boost.Math:
+    std::cout << boost::math::tgamma(b) << std::endl;
+    // These even work when the argument is an expression template:
+    std::cout << boost::math::tgamma(b * b) << std::endl;
+    // And since we have an extended exponent range we can generate some really large 
+    // numbers here (4.0238726007709377354370243e+2564):
+    std::cout << boost::math::tgamma(cpp_dec_float_100(1000)) << std::endl;
+}
 
 // Вывод значений в файл
 void printResultToFile(matrix_type::_vector x, double k, std::string varName)
@@ -152,15 +180,13 @@ int main()
     //int N_gorner = 214, k = 2;
     //int N_gorner = 165, k = 1;
     //const double N_gorner = 461; //S = get_N_for_Gorner(x_div, k);
-    const double k = 1;
+    //const double k = 1;
     const double N_base = 4;
 
     //double S = get_N_for_Gorner(x_div, k);
     //std::cout << "N_gorner = " << S << std::endl;
     //testOnHilbertMatrix();
 //#if 0
-    //std::cout << "      I0(0) : " << log(2) << std::endl;
-    //std::cout << " mpfr I0(0) : " << log(2) << std::endl;
 
     // Расчет значения интеграла в базовых узлах
     fdsf::SetLinearTrigonometricGrid(y0, x0, Y, X, N_base);

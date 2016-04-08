@@ -1,6 +1,11 @@
 #pragma once
 
 #include <vector>
+//#include <boost\multiprecision\mp_float.hpp> 
+//#include <boost\multiprecision\mp_float_functions.hpp>
+#include <boost\multiprecision\cpp_dec_float.hpp>
+
+using namespace boost::multiprecision;
 
 namespace fdsf{
 
