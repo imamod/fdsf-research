@@ -1,17 +1,18 @@
 #include "FDSFInteger.h"
-#include <math.h>
 #include <iomanip>
 #include <limits>
 
-double fdsf::get_T_max(double X, int k)
+using namespace fdsf;
+
+cpp_dec_float_50 fdsf::get_T_max(cpp_dec_float_50 X, int k)
 {
-    double a1;
+    cpp_dec_float_50 a1;
     if (k != 0) {
         a1 = pow(fdsf::factorial(k + 1), -1 / k);
     }
     int i = 1;
-    double y = log(1 + exp(X));
-    double T = X - log(epsilon), I_approximate;
+    cpp_dec_float_50 y = log(1 + exp(X));
+    cpp_dec_float_50 T = X - log(epsilon), I_approximate;
     while (true)
     {
         // 3-х итераций вполне достаточно для определения Tmax
@@ -33,12 +34,12 @@ double fdsf::get_T_max(double X, int k)
 }
 
 // Новая схема Горнера для прецизионного вычисления y
-static double GornerSchemeForPrecesionY(double N, double x)
+static cpp_dec_float_50 GornerSchemeForPrecesionY(int N, cpp_dec_float_50 x)
 {
-    //double alpha = x < epsilon ? exp(x) : exp(-x);
-    const double alpha = exp(x);
-    const double z = alpha / (2 + alpha);
-    double sum = 1.0 / (2 * N + 1);
+    //cpp_dec_float_50 alpha = x < epsilon ? exp(x) : exp(-x);
+    const cpp_dec_float_50 alpha = exp(x);
+    const cpp_dec_float_50 z = alpha / (2 + alpha);
+    cpp_dec_float_50 sum = 1.0 / (2 * N + 1);
 
     for (int i = N - 1; i >= 0; i--) {
         sum = 1.0 / (2 * i + 1.0) + z*z*sum;
@@ -48,50 +49,54 @@ static double GornerSchemeForPrecesionY(double N, double x)
     return 2 * z*sum;
 }
 
-void fdsf::SetLinearTrigonometricGrid(std::vector<double> &y_base, 
-                                      std::vector<double> &x_base,
-                                      std::vector<double> &Y, 
-                                      std::vector<double> &X, int N_base)
+void fdsf::SetLinearTrigonometricGrid(std::vector<cpp_dec_float_50> &y_base, 
+                                      std::vector<cpp_dec_float_50> &x_base,
+                                      std::vector<cpp_dec_float_50> &Y, 
+                                      std::vector<cpp_dec_float_50> &X, int N_base)
 {
     int n_additional = 11;
-    const double alpha = 2 / (2 + PI);
+    const cpp_dec_float_50 alpha = 2 / (2 + PI);
+    const cpp_dec_float_50 one = cpp_dec_float_50(1);
+    const cpp_dec_float_50 num2 = cpp_dec_float_50(2);
+    cpp_dec_float_50 baseSize = cpp_dec_float_50(2 * N_base + 1);
 
     // Задаются базовые узлы интерполяции
-    for (int j = 1; j <= 2 * N_base + 1; j++) {
-        y_base.push_back(0.5*log(2)*(2 * alpha*j / (2 * N_base + 1) + (1 - alpha)*(1 - cos(PI*j / (2 * N_base + 1)))));
-        x_base.push_back(log(exp(y_base.at(j - 1)) - 1));
+    for (int j = 1; j <= baseSize; j++) {
+        y_base.push_back(log(num2)/num2*(num2 * alpha*j / baseSize 
+                                + (one - alpha)*(one - cos(PI*j / baseSize))));
+        x_base.push_back(log(exp(y_base.at(j - 1)) - one));
     }
 
     Y.push_back(y_base.at(0) / n_additional);
-    X.push_back(log(exp(Y.at(0)) - 1));
+    X.push_back(log(exp(Y.at(0)) - one));
 
     for (int i = 1; i < n_additional; i++)
     {
         Y.push_back(Y.at(i - 1) + y_base.at(0) / n_additional);
-        X.push_back(log(exp(Y.at(i)) - 1));
+        X.push_back(log(exp(Y.at(i)) - one));
     }
 
     for (int index = 1; index < y_base.size(); index++) {
         for (int i = 0; i < n_additional; i++) {
             Y.push_back(Y.back() + (y_base.at(index) - y_base.at(index - 1)) / n_additional);
-            X.push_back(log(exp(Y.back()) - 1));
+            X.push_back(log(exp(Y.back()) - one));
         }
     }
 }
 
-double fdsf::FermiDirakFunction(double t, double x, double k)
+cpp_dec_float_50 fdsf::FermiDirakFunction(cpp_dec_float_50 t, cpp_dec_float_50 x, cpp_dec_float_50 k)
 {
 #if 0
     // new , зачин для полуцелых
-    double u = 2 * pow(t, 2 * k + 1) / (1 + exp(t*t - x));
+    return 2 * pow(t, 2 * k + 1) / (1 + exp(t*t - x));
 #endif
     return pow(t, k) / (factorial(k)*(exp(x) + exp(t)));
 }
 
-double fdsf::Gorner(double x, int N, double k)
+cpp_dec_float_50 fdsf::Gorner(cpp_dec_float_50 x, int N, cpp_dec_float_50 k)
 {
-    double exp_x = exp(x);
-    double sum = 1.0 / pow(N, k + 1);
+    cpp_dec_float_50 exp_x = exp(x);
+    cpp_dec_float_50 sum = 1.0 / pow(N, k + 1);
 
     for (int i = N - 1; i > 0; i--) {
         sum = 1 / pow(i, k + 1) - exp_x*sum;
@@ -100,7 +105,7 @@ double fdsf::Gorner(double x, int N, double k)
     return sum;
 }
 
-double fdsf::factorial(double k)
+cpp_dec_float_50 fdsf::factorial(cpp_dec_float_50 k)
 {
     if (k < 0)
         return 0;
@@ -110,23 +115,32 @@ double fdsf::factorial(double k)
         return k*factorial(k - 1);
 }
 
-double fdsf::FDGK5(double(*Ft)(double, double, double), double x, double T, double k, int N)
+cpp_dec_float_50 fdsf::FDGK5(cpp_dec_float_50(*Ft)(cpp_dec_float_50, cpp_dec_float_50, cpp_dec_float_50), 
+                                                   cpp_dec_float_50 x, cpp_dec_float_50 T, cpp_dec_float_50 k, int N)
 {
-    // Веса формул Гаусса-Кристоффеля с N=5
-    const double gamma_1_5 = (322.0 - 13.0*sqrt(70)) / 1800.0;
-    const double gamma_2_4 = (322.0 + 13.0*sqrt(70)) / 1800.0;
-    const double gamma_3 = 64.0 / 225.0;
-    std::vector<double> t(5);
+    //Определяем вспомогательные числа, чтобы не скатится до точности 16 знаков
+    cpp_dec_float_50 half = cpp_dec_float_50(1) / 2;
+    cpp_dec_float_50 num35 = cpp_dec_float_50(35);
+    cpp_dec_float_50 num63 = cpp_dec_float_50(63);
+    cpp_dec_float_50 num70 = cpp_dec_float_50(70);
+    cpp_dec_float_50 num322 = cpp_dec_float_50(322);
+    cpp_dec_float_50 num1800 = cpp_dec_float_50(1800);
 
-    double U = 0;
+    // Веса формул Гаусса-Кристоффеля с N=5
+    const cpp_dec_float_50 gamma_1_5 = (num322 - cpp_dec_float_50(13)*sqrt(num70)) / num1800;
+    const cpp_dec_float_50 gamma_2_4 = (num322 + cpp_dec_float_50(13)*sqrt(num70)) / num1800;
+    const cpp_dec_float_50 gamma_3 = cpp_dec_float_50(64) / cpp_dec_float_50(225);
+    std::vector<cpp_dec_float_50> t(5);
+
+    cpp_dec_float_50 U = 0;
 
     for (int n = N - 1; n >= 0; n--) {
         // Расчет дополнительных узлов
-        t.at(0) = T*(n + 0.5 - 0.5*sqrt((35 + 2 * sqrt(70)) / 63)) / N;
-        t.at(1) = T*(n + 0.5 - 0.5*sqrt((35 - 2 * sqrt(70)) / 63)) / N;
-        t.at(2) = T*(n + 0.5) / N;
-        t.at(3) = T*(n + 0.5 + 0.5*sqrt((35 - 2 * sqrt(70)) / 63)) / N;
-        t.at(4) = T*(n + 0.5 + 0.5*sqrt((35 + 2 * sqrt(70)) / 63)) / N;
+        t.at(0) = T*(n + half - half*sqrt((num35 + 2 * sqrt(num70)) / num63)) / N;
+        t.at(1) = T*(n + half - half*sqrt((num35 - 2 * sqrt(num70)) / num63)) / N;
+        t.at(2) = T*(n + half) / N;
+        t.at(3) = T*(n + half + half*sqrt((num35 - 2 * sqrt(num70)) / num63)) / N;
+        t.at(4) = T*(n + half + half*sqrt((num35 + 2 * sqrt(num70)) / num63)) / N;
         //
         U = U + T*(Ft(t.at(2), x, k)*gamma_3 + gamma_1_5*((Ft(t.at(0), x, k)) + Ft(t.at(4), x, k)) 
                                              + gamma_2_4*((Ft(t.at(1), x, k)) + Ft(t.at(3), x, k)));
@@ -138,55 +152,54 @@ double fdsf::FDGK5(double(*Ft)(double, double, double), double x, double T, doub
 }
 
 // Сгущение по Ричардсону по сеточно-Гауссову методу
-// TODO: пересмотреть критерий остановки
-double fdsf::Richardson_mesh_refinement(double x, double t, double k)
+cpp_dec_float_50 fdsf::Richardson_mesh_refinement(cpp_dec_float_50 x, cpp_dec_float_50 t, cpp_dec_float_50 k)
 {
     int p = 10;
     int N = 16;
-    double current_accuracy;
-    double I_n, I_2n, I;
+    cpp_dec_float_50 stop_criteria;
+    cpp_dec_float_50 I_n, I_2n, I;
 
     I_n = FDGK5(&FermiDirakFunction, x, t, k, N);
     do {
         I_2n = FDGK5(&FermiDirakFunction, x, t, k, 2 * N);
-        current_accuracy = (I_2n - I_n) / (pow(2.0, p) - 1);
-        I = I_2n + current_accuracy;
+        stop_criteria = (I_2n / I_n - 1);
+        I = I_2n;
         I_n = I_2n;
         N = 2 * N;
-    } while (abs(current_accuracy) > epsilon); // Фактическая точность 10^-16
-
+    } while (abs(stop_criteria) > epsilon);
+    
     return I;
 }
 
-double fdsf::integer::FD_I1(double x)
+cpp_dec_float_50 fdsf::integer::FD_I1(cpp_dec_float_50 x)
 {
-    const double I_1_0 = fdsf::I_k_0[1];
-    const double t = 60; 
+    const cpp_dec_float_50 I_1_0 = fdsf::I_k_0[1];
+    const cpp_dec_float_50 t = 60; 
     const int k = 1;
   
-    double I_1_minus_x = fdsf::Richardson_mesh_refinement(-x, t, k);
+    cpp_dec_float_50 I_1_minus_x = fdsf::Richardson_mesh_refinement(-x, t, k);
 
     return x*x / 2 + 2*I_1_0 - I_1_minus_x;
 }
 
-double fdsf::integer::FD_I2(double x)
+cpp_dec_float_50 fdsf::integer::FD_I2(cpp_dec_float_50 x)
 {
-    const double I_1_0 = fdsf::I_k_0[1];
-    const double t = 75; 
+    const cpp_dec_float_50 I_1_0 = fdsf::I_k_0[1];
+    const cpp_dec_float_50 t = 75; 
     const int k = 2;
 
-    double I_2_minus_x = fdsf::Richardson_mesh_refinement(-x, t, k);
+    cpp_dec_float_50 I_2_minus_x = fdsf::Richardson_mesh_refinement(-x, t, k);
 
     return x*x*x / 3 + 4*x*I_1_0 + I_2_minus_x;
 }
 
-double fdsf::integer::FD_I3(double x)
+cpp_dec_float_50 fdsf::integer::FD_I3(cpp_dec_float_50 x)
 {
-    const double I_1_0 = fdsf::I_k_0[1], I_3_0 = fdsf::I_k_0[3];
-    const double Tmax = 100; 
+    const cpp_dec_float_50 I_1_0 = fdsf::I_k_0[1], I_3_0 = fdsf::I_k_0[3];
+    const cpp_dec_float_50 Tmax = 100; 
     const int k = 3;
 
-    double I_3_minus_x = fdsf::Richardson_mesh_refinement(-x, Tmax, k);
+    cpp_dec_float_50 I_3_minus_x = fdsf::Richardson_mesh_refinement(-x, Tmax, k);
 
     return x*x*x*x / 4 + 6*x*x*I_1_0 + 2*I_3_0 - I_3_minus_x;
 }

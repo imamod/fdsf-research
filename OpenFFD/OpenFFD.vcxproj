@@ -83,7 +83,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\boost_1_60_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BOOST_MULTIPRECISION_BACKEND_MP_FLOAT_TYPE_EFX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -110,7 +110,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\boost_1_60_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BOOST_MULTIPRECISION_BACKEND_MP_FLOAT_TYPE_EFX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -141,60 +141,6 @@
     <ClCompile Include="src\matrix_helper.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\concepts\mp_number_archetypes.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_bin_float.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_bin_float\io.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_bin_float\transcendental.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_dec_float.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_int.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_int\add.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_int\bitwise.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_int\checked.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_int\comparison.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_int\cpp_int_config.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_int\divide.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_int\import_export.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_int\limits.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_int\literals.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_int\misc.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_int\multiply.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_int\serialize.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\cpp_int\value_pack.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\debug_adaptor.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\big_lanczos.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\bitscan.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\default_ops.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\digits.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\dynamic_array.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\et_ops.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\float_string_cvt.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\functions\constants.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\functions\pow.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\functions\trig.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\generic_interconvert.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\integer_ops.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\no_et_ops.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\number_base.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\number_compare.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\rebind.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\ublas_interop.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\detail\utype_helper.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\float128.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\gmp.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\integer.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\logged_adaptor.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\miller_rabin.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\mpfi.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\mpfr.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\number.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\random.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\rational_adaptor.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\tommath.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\traits\explicit_conversion.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\traits\extract_exponent_type.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\traits\is_backend.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\traits\is_byte_container.hpp" />
-    <ClInclude Include="..\..\boost_1_60_0\boost\multiprecision\traits\is_restricted_conversion.hpp" />
     <ClInclude Include="FDSFInteger.h" />
     <ClInclude Include="src\matrix_helper.h" />
   </ItemGroup>

@@ -1,23 +1,17 @@
-#include <iostream>
 #include "FDSFInteger.h"
-#include <boost/math/constants/constants.hpp>
-// using boost::math::constants::pi;
-
-#include <boost/multiprecision/cpp_dec_float.hpp>
-// using boost::multiprecision::cpp_dec_float
+#include <boost/math/special_functions/gamma.hpp>
 
 #include "src\matrix_helper.h"
-#include <vector>
 #include <iomanip>
 #include <limits>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 void test()
 {
-    using boost::multiprecision::cpp_dec_float_100;
-    using boost::math::constants::pi;
-    //using namespace boost::multiprecesion;
+    using namespace boost::multiprecision;
+    std::setprecision(std::numeric_limits<cpp_dec_float_50>::max_digits10);
     // Operations at fixed precision and full numeric_limits support:
     cpp_dec_float_100 b = 2;
     std::cout << std::numeric_limits<cpp_dec_float_100>::digits << std::endl;
@@ -25,7 +19,7 @@ void test()
     std::cout << std::numeric_limits<cpp_dec_float_100>::digits10 << std::endl;
     // We can use any C++ std lib function, lets print all the digits as well:
     std::cout << std::setprecision(std::numeric_limits<cpp_dec_float_100>::max_digits10)
-    << log(b) << std::endl; // print log(2)
+    << log(b) << std::endl << log(cpp_dec_float_50(2)) << std::endl; // print log(2)
                             // We can also use any function from Boost.Math:
     std::cout << boost::math::tgamma(b) << std::endl;
     // These even work when the argument is an expression template:
@@ -33,10 +27,16 @@ void test()
     // And since we have an extended exponent range we can generate some really large 
     // numbers here (4.0238726007709377354370243e+2564):
     std::cout << boost::math::tgamma(cpp_dec_float_100(1000)) << std::endl;
+    std::cout << boost::math::tgamma(cpp_dec_float_100(3.0/2.0)) << std::endl;
+
+    cpp_dec_float_50 my_pi = boost::math::constants::pi<cpp_dec_float_50>();
+    std::cout << "my_pi = " << my_pi << std::endl;
+    std::cout << "4atg1 = " << 4*boost::multiprecision::atan(cpp_dec_float_50(1)) << std::endl;
+    std::cout << "I1(0) = " << my_pi*my_pi/12 << std::endl;
 }
 
 // Вывод значений в файл
-void printResultToFile(matrix_type::_vector x, double k, std::string varName)
+void printResultToFile(matrix_type::_vector x, cpp_dec_float_50 k, std::string varName)
 {
     std::string fileName = { 0 };
 
@@ -56,9 +56,10 @@ void printResultToFile(matrix_type::_vector x, double k, std::string varName)
     default:
         break;
     }
-
+    //std::setprecision(std::numeric_limits<cpp_dec_float_50>::max_digits10);
     std::ofstream fout; // создаём объект класса ofstream для записи 
     fout.open(fileName);
+    fout.precision(std::numeric_limits<cpp_dec_float_50>::max_digits10);
     for (int i = 0; i < x.size(); i++)
     {
         fout << std::fixed << x.at(i) << std::endl;
@@ -72,9 +73,9 @@ void GetValue_w(matrix_type::_vector &I_base,
                 matrix_type::_vector y0, 
                 matrix_type::_vector x0, 
                 matrix_type::_vector Y, 
-                matrix_type::_vector X, double k)
+                matrix_type::_vector X, cpp_dec_float_50 k)
 {
-    double y;
+    cpp_dec_float_50 y;
     for (int i = 0; i < I_base.size(); i++) {
         y = log(1 + exp(x0.at(i)));
         I_base.at(i) = pow((I_base.at(i)*exp(x0.at(i)) / y0.at(i)), 1 / k);
@@ -86,19 +87,20 @@ void GetValue_w(matrix_type::_vector &I_base,
     }
 }
 
-static void computeIntegral(std::vector<double> x0, 
-                            std::vector<double> X,
-                            std::vector<double>& I_base, 
-                            std::vector<double> &I_additional,
-                            double x_div, double N_gorner, double k)
+static void computeIntegral(std::vector<cpp_dec_float_50> x0, 
+                            std::vector<cpp_dec_float_50> X,
+                            std::vector<cpp_dec_float_50>& I_base, 
+                            std::vector<cpp_dec_float_50> &I_additional,
+                            cpp_dec_float_50 x_div, int N_gorner, int k)
 {
+    //std::setprecision(std::numeric_limits<cpp_dec_float_50>::max_digits10);
     for (int i = 0; i < x0.size(); i++) {
         if (x0.at(i) > x_div) {
-            double t = fdsf::get_T_max(X.at(i), k);
+            //cpp_dec_float_50 t = fdsf::get_T_max(X.at(i), k);
             //std::cout << "t = " << t << std::endl;
-            //double t = 60.0;
-            //double t = 75.0;
-            //double t = 110.0;
+            cpp_dec_float_50 t = 60.0;
+            //cpp_dec_float_50 t = 75.0;
+            //cpp_dec_float_50 t = 110.0;
             I_base.push_back(fdsf::Richardson_mesh_refinement(x0.at(i), t, k));
         }
         else {
@@ -112,25 +114,25 @@ static void computeIntegral(std::vector<double> x0,
     std::cout << "x_div = " << x_div<< std::endl;
     for (int i = 0; i < X.size(); i++) {
         if (X.at(i) > x_div) {
-            double t = fdsf::get_T_max(X.at(i), k);
-            //double t = 60.0;
-            //double t = 75.0;
-            //double t = 110.0;
+            //cpp_dec_float_50 t = fdsf::get_T_max(X.at(i), k);
+            cpp_dec_float_50 t = 60.0;
+            //cpp_dec_float_50 t = 75.0;
+            //cpp_dec_float_50 t = 110.0;
             I_additional.push_back(fdsf::Richardson_mesh_refinement(X.at(i), t, k));
         }
         else {
             I_additional.push_back(fdsf::Gorner(X.at(i), N_gorner, k));
         }
         std::cout << "X: " << X.at(i) << " I_add: " << I_additional.at(i) << std::endl;
-        //<< std::fixed << std::setprecision(std::numeric_limits<double>::max_digits10)
+        //<< std::fixed << std::setprecision(std::numeric_limits<cpp_dec_float_50>::max_digits10)
     }
 
 }
 
-double get_N_for_Gorner(double X, double k)
+cpp_dec_float_50 get_N_for_Gorner(cpp_dec_float_50 X, cpp_dec_float_50 k)
 {
     int i = 1;
-    double Sold = 0, S;
+    cpp_dec_float_50 Sold = 0, S;
   
     while (true)
     {
@@ -149,7 +151,7 @@ double get_N_for_Gorner(double X, double k)
 void testOnHilbertMatrix()
 {
     const int N = 12;
-    const double one = 1.0;
+    const cpp_dec_float_50 one = 1.0;
     matrix_type::_matrix H(N, matrix_type::_vector(N, 0));
 
     for (size_t n = 0; n < N; n++) {
@@ -172,18 +174,20 @@ void testOnHilbertMatrix()
 
 int main()
 {
-    std::vector<double> x0, X, y0, Y;
-    std::vector<double> I_base, I_additional;
-    double x_div = -0.1;
+    //std::cout << std::setprecision(std::numeric_limits<cpp_dec_float_50>::max_digits10) << std::endl;
+    std::cout.precision(std::numeric_limits<cpp_dec_float_50>::max_digits10);
+    std::vector<cpp_dec_float_50> x0, X, y0, Y;
+    std::vector<cpp_dec_float_50> I_base, I_additional;
+    cpp_dec_float_50 x_div = cpp_dec_float_50(-0.1);
     std::cout << "x_div = " << x_div << std::endl;
-    int N_gorner = 260, k = 1;
+    //int N_gorner = 260, k = 1;
     //int N_gorner = 214, k = 2;
     //int N_gorner = 165, k = 1;
-    //const double N_gorner = 461; //S = get_N_for_Gorner(x_div, k);
-    //const double k = 1;
-    const double N_base = 4;
+    const int N_gorner = 461; //S = get_N_for_Gorner(x_div, k);
+    const int k = 1;
+    const int N_base = 4;
 
-    //double S = get_N_for_Gorner(x_div, k);
+    //cpp_dec_float_50 S = get_N_for_Gorner(x_div, k);
     //std::cout << "N_gorner = " << S << std::endl;
     //testOnHilbertMatrix();
 //#if 0
@@ -230,6 +234,7 @@ int main()
     printResultToFile(delta_base, k, "delta_base"); printResultToFile(delta_add, k, "delta_add");
 //#endif
 
+    //test();
     getchar();
     return 0;
 }
