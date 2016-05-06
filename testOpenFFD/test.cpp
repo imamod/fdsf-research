@@ -93,14 +93,13 @@ static void computeIntegral(std::vector<cpp_dec_float_50> x0,
                             std::vector<cpp_dec_float_50> &I_additional,
                             cpp_dec_float_50 x_div, int N_gorner, int k)
 {
-    //std::setprecision(std::numeric_limits<cpp_dec_float_50>::max_digits10);
     for (int i = 0; i < x0.size(); i++) {
         if (x0.at(i) > x_div) {
             //cpp_dec_float_50 t = fdsf::get_T_max(X.at(i), k);
             //std::cout << "t = " << t << std::endl;
-            cpp_dec_float_50 t = 60.0;
+            //cpp_dec_float_50 t = 60.0;
             //cpp_dec_float_50 t = 75.0;
-            //cpp_dec_float_50 t = 110.0;
+            cpp_dec_float_50 t = 120.0;
             I_base.push_back(fdsf::Richardson_mesh_refinement(x0.at(i), t, k));
         }
         else {
@@ -115,9 +114,9 @@ static void computeIntegral(std::vector<cpp_dec_float_50> x0,
     for (int i = 0; i < X.size(); i++) {
         if (X.at(i) > x_div) {
             //cpp_dec_float_50 t = fdsf::get_T_max(X.at(i), k);
-            cpp_dec_float_50 t = 60.0;
+            //cpp_dec_float_50 t = 60.0;
             //cpp_dec_float_50 t = 75.0;
-            //cpp_dec_float_50 t = 110.0;
+            cpp_dec_float_50 t = 120;
             I_additional.push_back(fdsf::Richardson_mesh_refinement(X.at(i), t, k));
         }
         else {
@@ -128,7 +127,7 @@ static void computeIntegral(std::vector<cpp_dec_float_50> x0,
     }
 
 }
-
+//Получение необходимого числа членов для схемы Горнера произвольной заданной точности
 cpp_dec_float_50 get_N_for_Gorner(cpp_dec_float_50 X, cpp_dec_float_50 k)
 {
     int i = 1;
@@ -172,9 +171,39 @@ void testOnHilbertMatrix()
     fout.close();
 }
 
+void testCutCOeffs()
+{
+    matrix_type::_vector a = { 0.0560148791230902149024568,
+        0.0351117957891800867706741,
+        0.0021834386943672331415760,
+        0.0002464861525522946634693,
+        0.0000092228177886669241259 },
+        b = { -0.0611726208769112866900252,
+        0.0279968542816146833953639,
+        -0.0007512148294307540141223,
+        0.0000860680747142919882956 };
+
+    std::vector<cpp_dec_float_50> x0, X, y0, Y;
+    std::vector<cpp_dec_float_50> I_base, I_additional;
+    cpp_dec_float_50 x_div = cpp_dec_float_50(-0.1);
+    const int N_gorner = 461; //S = get_N_for_Gorner(x_div, k);
+    const int k = 4;
+    const int N_base = 4;
+    
+    // Расчет значения интеграла в базовых узлах
+    fdsf::SetLinearTrigonometricGrid(y0, x0, Y, X, N_base);
+
+    matrix_type::_vector delta_base(y0.size(), 0), delta_add(Y.size(), 0);
+    // Расчет схемы Горнера и подсчета интеграла на Гауссовой сетке
+    computeIntegral(x0, X, I_base, I_additional, x_div, N_gorner, k);
+    GetValue_w(I_base, I_additional, y0, x0, Y, X, k);
+
+    GetApproxomateValues(a, b, y0, Y, I_additional, I_base, delta_base, delta_add, N_base);
+    printResultToFile(delta_base, k, "delta_base"); printResultToFile(delta_add, k, "delta_add");
+}
+
 int main()
 {
-    //std::cout << std::setprecision(std::numeric_limits<cpp_dec_float_50>::max_digits10) << std::endl;
     std::cout.precision(std::numeric_limits<cpp_dec_float_50>::max_digits10);
     std::vector<cpp_dec_float_50> x0, X, y0, Y;
     std::vector<cpp_dec_float_50> I_base, I_additional;
@@ -184,7 +213,7 @@ int main()
     //int N_gorner = 214, k = 2;
     //int N_gorner = 165, k = 1;
     const int N_gorner = 461; //S = get_N_for_Gorner(x_div, k);
-    const int k = 1;
+    const int k = 4;
     const int N_base = 4;
 
     //cpp_dec_float_50 S = get_N_for_Gorner(x_div, k);
@@ -197,7 +226,7 @@ int main()
 
     // Расчет схемы Горнера и подсчета интеграла на Гауссовой сетке
     computeIntegral(x0, X, I_base, I_additional, x_div, N_gorner, k);
-    std::cout << "      I1(0)_teor : " << fdsf::PI*fdsf::PI / 12 << std::endl;
+    //std::cout << "      I1(0)_teor : " << fdsf::PI*fdsf::PI / 12 << std::endl;
     GetValue_w(I_base, I_additional, y0, x0, Y, X, k);
 
     printResultToFile(I_base, k, "I_base");
@@ -225,16 +254,16 @@ int main()
                                0.0000687107172921 };
 #endif
     matrix_type::_vector a, b;
-    object.fill_matrix(N_base, I_base, y0, B, A);
+    //object.fill_matrix(N_base, I_base, y0, B, A);
 
-    A_inv = inverse(A);
-    object.find_coefficients(A_inv, B, a, b, N_base);
-    printResultToFile(a, k, "a"); printResultToFile(b, k, "b");
-    GetApproxomateValues(a, b, y0, Y, I_additional, I_base, delta_base, delta_add, N_base);
-    printResultToFile(delta_base, k, "delta_base"); printResultToFile(delta_add, k, "delta_add");
+    //A_inv = inverse(A);
+    //object.find_coefficients(A_inv, B, a, b, N_base);
+    //printResultToFile(a, k, "a"); printResultToFile(b, k, "b");
+
+    //GetApproxomateValues(a, b, y0, Y, I_additional, I_base, delta_base, delta_add, N_base);
+    //printResultToFile(delta_base, k, "delta_base"); printResultToFile(delta_add, k, "delta_add");
 //#endif
-
-    //test();
+    testCutCOeffs();
     getchar();
     return 0;
 }

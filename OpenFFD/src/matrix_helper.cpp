@@ -52,25 +52,6 @@ void GetApproxomateValues(matrix_type::_vector &a,
     }
 }
 
-cpp_dec_float_50 CMatrix::gaus_det(matrix_type::_matrix mass, size_t cnt_str)
-{
-    cpp_dec_float_50 det = 1;
-    //прямой ход
-    for (size_t i = 0; i < cnt_str; i++)
-    {
-        for (size_t j = i + 1; j < cnt_str; j++)
-        {
-            if (mass.at(i).at(i) == 0)
-                return 0;
-            cpp_dec_float_50 b = mass.at(j).at(i) / mass.at(i).at(i);
-            for (size_t k = i; k < cnt_str; k++)
-                mass.at(j).at(k) = mass.at(j).at(k) - mass.at(i).at(k) * b;
-        }
-        det *= mass.at(i).at(i);//вычисление определителя
-    }
-    return det;
-}
-
 std::vector < std::vector <cpp_dec_float_50> > inverse(std::vector < std::vector <cpp_dec_float_50> > a) {
     int n = a.size();
     std::vector < std::vector <cpp_dec_float_50> > ans(n, std::vector <cpp_dec_float_50>(n, 0));
@@ -86,10 +67,7 @@ std::vector < std::vector <cpp_dec_float_50> > inverse(std::vector < std::vector
                 mx = abs(a.at(k).at(i));
             }
         }
-        //if (row != i) {
-        //    swap(a[row], a[i]);
-        //    swap(ans[row], ans[i]);
-        //}
+
         for (int j = i + 1; j < n; j++){
             cpp_dec_float_50 e = a.at(j).at(i) / a.at(i).at(i);
             for (int k = 0; k < n; k++){
@@ -108,57 +86,11 @@ std::vector < std::vector <cpp_dec_float_50> > inverse(std::vector < std::vector
         }
         for (int j = 0; j < n; j++) {
             ans.at(i).at(j) /= a.at(i).at(i);
-            std::cout << std::setprecision(std::numeric_limits<cpp_dec_float_50>::digits10 + 2) << ans.at(i).at(i) << " ";
+            //std::cout << std::setprecision(std::numeric_limits<cpp_dec_float_50>::digits10 + 2) << ans.at(i).at(i) << " ";
         }
-        std::cout << std::endl;
+        //std::cout << std::endl;
     }
     return ans;
-}
-
-void CMatrix::gaus_inv(matrix_type::_matrix A, size_t size, matrix_type::_matrix &A_inv)
-{
-    for (size_t i = 0; i < size; i++) {
-        matrix_type::_vector ivec;
-        for (size_t j = 0; j < size; j++) {
-            ivec.push_back(0);
-        }
-        A_inv.push_back(ivec);
-        ivec.clear();
-        A_inv.at(i).at(i) = 1.0;
-    }
-
-    //прямой ход
-    cpp_dec_float_50 a, b;
-    for (size_t i = 0; i < size; i++)
-    {
-        a = A.at(i).at(i);
-        for (size_t j = i + 1; j < size; j++)
-        {
-            b = A.at(j).at(i);
-            for (size_t k = 0; k < size; k++) {
-                A.at(j).at(k) = A.at(j).at(k)*b - A.at(i).at(k) * a;
-                A_inv.at(j).at(k) = A_inv.at(j).at(k)*b - A_inv.at(i).at(k) * a;
-            }
-            std::cout << std::setprecision(std::numeric_limits<cpp_dec_float_50>::digits10 + 2) << A_inv.at(i).at(j) << " ";
-        }
-        std::cout << std::endl;
-    }
-    std::cout << "\n\n";
-    //обратный ход вычисления элементов обратной матрицы
-    for (size_t i = 0; i < size; i++)
-    {
-        for (size_t j = size - 1; j > 0; j--)
-        {
-            cpp_dec_float_50 sum = 0;
-            for (size_t k = size - 1; k > j; k--) {
-                sum += A.at(j).at(k)*A_inv.at(k).at(i);
-            }
-            A_inv.at(j).at(i) = (A_inv.at(j).at(i) - sum) / A.at(j).at(j);
-            std::cout << std::setprecision(std::numeric_limits<cpp_dec_float_50>::digits10 + 2) << A_inv.at(i).at(j) << " ";
-        }
-        std::cout << std::endl;
-    }
-
 }
 
 void CMatrix::fill_matrix(const int N_base, matrix_type::_vector z, matrix_type::_vector y0,
