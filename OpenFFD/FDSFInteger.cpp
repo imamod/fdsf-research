@@ -100,16 +100,25 @@ namespace fdsf {
         return 2 * pow(t, 2 * k + 1) / (1 + exp(t*t - x));
     }
 #endif
-    bmp_real Gorner(bmp_real x, int N, bmp_real k)
+
+    // Получение необходимого числа членов для схемы Горнера произвольной 
+    // заданной точности
+    static bmp_real get_N_for_Gorner(bmp_real x, bmp_real k)
     {
+        return log(fdsf::epsilon) / x;
+    }
+
+    bmp_real Gorner(bmp_real x, bmp_real k)
+    {
+        size_t N = ceil(get_N_for_Gorner(x, k));
         bmp_real exp_x = exp(x);
         bmp_real sum = 1.0 / pow(N, k + 1);
 
-        for (int i = N - 1; i > 0; i--) {
+        for (size_t i = N - 1; i > 0; i--) {
             sum = 1 / pow(i, k + 1) - exp_x*sum;
         }
 
-        return sum;
+        return sum*factorial(k)*exp(x);
     }
 
     bmp_real factorial(bmp_real k)
@@ -118,6 +127,14 @@ namespace fdsf {
             return 0;
         if (k == 0)
             return 1;
+        if (k == 0.5)
+            return sqrt(PI) / 2;
+        if (k == 1.5)
+            return 3*sqrt(PI) / 4;
+        if (k == 2.5)
+            return 15*sqrt(PI) / 8;
+        if (k == 3.5)
+            return 105*sqrt(PI) / 16;
         else
             return k*factorial(k - 1);
     }
@@ -167,10 +184,9 @@ namespace fdsf {
                                         bmp_real t,
                                         bmp_real k)
     {
-        //int p = 10;
         int N = 16;
         bmp_real stop_criteria;
-        bmp_real I_n, I_2n, I;
+        bmp_real I_n, I_2n;
 
         bool isHalfInteger = hasFractionalPart(k);
         if (isHalfInteger) {
@@ -192,14 +208,13 @@ namespace fdsf {
             fout << (abs(I_2n - I_n)) << std::fixed <<
                 std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
             stop_criteria = (I_2n / I_n - 1);
-            I = I_2n;
             I_n = I_2n;
             N = 2 * N;
             std::cout << "N = " << N << ": I = "<< I_n << std::endl;
-        } while (abs(stop_criteria) > epsilon);
+        } while (abs(stop_criteria) > epsilon*100);
 
         fout.close();
-        return I;
+        return I_n;
     }
 
 }

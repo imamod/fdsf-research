@@ -36,11 +36,19 @@ void test()
     std::cout << "I1(0) = " << my_pi*my_pi/12 << std::endl;
 }
 #endif
+
 void check()
 {
+    std::cout.precision(std::numeric_limits<bmp_real>::max_digits10);
     bmp_real k = 1.0 / 2;
     bmp_real t = 0;
-    bmp_real I_base = fdsf::Richardson_mesh_refinement(0, t, k);
+    bmp_real x0 = -1.0;
+    bmp_real I_base = fdsf::Richardson_mesh_refinement(x0, t, k);
+    std::cout << "I_base: " << I_base << std::endl;
+//#if 0
+    bmp_real I_prec = fdsf::Gorner(x0, k);
+    std::cout << "I_prec: " << I_prec << std::endl;
+//#endif
 }
 
 // Вывод значений в файл
@@ -113,7 +121,7 @@ static void computeIntegral(std::vector<bmp_real> x0,
             I_base.push_back(fdsf::Richardson_mesh_refinement(x0.at(i), t, k));
         }
         else {
-            I_base.push_back(fdsf::Gorner(x0.at(i), N_gorner, k));
+            I_base.push_back(fdsf::Gorner(x0.at(i), k));
             //I_base.push_back(GornerSchemeForPrecesionY( x0.at(i), N));
         }
         std::cout << "x0: " << x0.at(i) << " I_base: " << I_base.at(i) << std::endl;
@@ -130,31 +138,12 @@ static void computeIntegral(std::vector<bmp_real> x0,
             I_additional.push_back(fdsf::Richardson_mesh_refinement(X.at(i), t, k));
         }
         else {
-            I_additional.push_back(fdsf::Gorner(X.at(i), N_gorner, k));
+            I_additional.push_back(fdsf::Gorner(X.at(i), k));
         }
         std::cout << "X: " << X.at(i) << " I_add: " << I_additional.at(i) << std::endl;
         //<< std::fixed << std::setprecision(std::numeric_limits<bmp_real>::max_digits10)
     }
 
-}
-//Получение необходимого числа членов для схемы Горнера произвольной заданной точности
-bmp_real get_N_for_Gorner(bmp_real X, bmp_real k)
-{
-    int i = 1;
-    bmp_real Sold = 0, S;
-  
-    while (true)
-    {
-        // Итерационное вычисление S
-        S = -log(fdsf::epsilon*pow(Sold + 1, k + 1))/abs(X);
-        Sold = S;
-        i++;
-        if (abs(Sold - S) < 0.1) {
-            break;
-        }
-    }
-    std::cout << "Iteration count = " << i << std::endl;
-    return S;
 }
 
 int main()

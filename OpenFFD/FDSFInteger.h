@@ -46,7 +46,7 @@ namespace fdsf{
     // Вычисляет значение функции ФД индекса k = 1, 2, 3 в точке x по схеме 
     // Горнера при x <= -0.1. N - число членов в схеме Горнера для достижения 
     // машинной точности
-    bmp_real Gorner(bmp_real x, int N, bmp_real k);
+    bmp_real Gorner(bmp_real x, bmp_real k);
 
     // Алгоритм выбора T_max длякаждого x (а не фиксированные для всех)
     // NB: для новой формы записи подынтегральной функции
@@ -65,16 +65,5 @@ namespace fdsf{
 
     // Сгущение по Ричардсону результата работы функции FDGK5
     bmp_real Richardson_mesh_refinement(bmp_real x, bmp_real t, bmp_real k);
-    
-    namespace integer {
-        // Вычисляет значение функции ФД индекса k=1 в точке x
-        bmp_real FD_I1(bmp_real x);
-
-        // Вычисляет значение функции ФД индекса k=2 в точке x
-        bmp_real FD_I2(bmp_real x);
-
-        // Вычисляет значение функции ФД индекса k=3 в точке x
-        bmp_real FD_I3(bmp_real x);
-    } // namespace integer
 
 } // namespace fdsf
