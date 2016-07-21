@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../FDSFInteger.h"
+#include "FDSFInteger.h"
 #include <boost\multiprecision\cpp_dec_float.hpp>
 #include <iostream>
 #include <vector>

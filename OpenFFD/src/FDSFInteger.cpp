@@ -184,7 +184,7 @@ namespace fdsf {
                                         bmp_real t,
                                         bmp_real k)
     {
-        int N = 16;
+        int N = 2;
         bmp_real stop_criteria;
         bmp_real I_n, I_2n;
 
@@ -197,6 +197,8 @@ namespace fdsf {
         }
         std::ofstream fout;
         fout.open("check.txt");
+        fout << (I_n) << std::fixed <<
+            std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
         std::cout << "N = " << N << ": I = " << I_n << std::endl;
         do {
             if (isHalfInteger) {
@@ -205,8 +207,9 @@ namespace fdsf {
             else {
                 I_2n = FDGK5(&FermiDirakFunction, x, t, k, 2 * N);
             }
-            fout << (abs(I_2n - I_n)) << std::fixed <<
+            fout << I_2n << std::fixed <<
                 std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
+            I_2n += I_n/2; // для трапеции
             stop_criteria = (I_2n / I_n - 1);
             I_n = I_2n;
             N = 2 * N;

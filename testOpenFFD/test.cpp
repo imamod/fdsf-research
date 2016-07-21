@@ -1,7 +1,7 @@
 #include "FDSFInteger.h"
 #include <boost/math/special_functions/gamma.hpp>
 
-#include "src\matrix_helper.h"
+#include "matrix_helper.h"
 #include <iomanip>
 #include <limits>
 #include <fstream>
@@ -94,14 +94,10 @@ static void computeIntegral(std::vector<bmp_real> x0,
                             std::vector<bmp_real> X,
                             std::vector<bmp_real>& I_base, 
                             std::vector<bmp_real> &I_additional,
-                            bmp_real x_div, int N_gorner, bmp_real k)
+                            bmp_real x_div, bmp_real k)
 {
     for (int i = 0; i < x0.size(); i++) {
         if (x0.at(i) > x_div) {
-            //bmp_real t = fdsf::get_T_max(X.at(i), k);
-            //std::cout << "t = " << t << std::endl;
-            //bmp_real t = 60.0;
-            //bmp_real t = 75.0;
             bmp_real t;
             switch ((int)k) {
                 case 1:
@@ -156,19 +152,16 @@ int main()
     //int N_gorner = 260, k = 1;
     //int N_gorner = 214, k = 2;
     //int N_gorner = 165, k = 3;
-    const int N_gorner = 461; //S = get_N_for_Gorner(x_div, k);
     const bmp_real k = bmp_real(1.0/2.0);
     const int N_base = 4;
 
-    //bmp_real S = get_N_for_Gorner(x_div, k);
-    //std::cout << "N_gorner = " << S << std::endl;
 #if 0
 
     // Расчет значения интеграла в базовых узлах
     fdsf::SetLinearTrigonometricGrid(y0, x0, Y, X, N_base);
 
     // Расчет схемы Горнера и подсчета интеграла на Гауссовой сетке
-    computeIntegral(x0, X, I_base, I_additional, x_div, N_gorner, k);
+    computeIntegral(x0, X, I_base, I_additional, x_div, k);
     //GetValue_w(I_base, I_additional, y0, x0, Y, X, k);
 
     printResultToFile(I_base, k, "I_base");
