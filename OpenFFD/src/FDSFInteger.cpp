@@ -110,7 +110,8 @@ namespace fdsf {
 
     bmp_real Gorner(bmp_real x, bmp_real k)
     {
-        size_t N = ceil(get_N_for_Gorner(x, k));
+        //size_t N = ceil(get_N_for_Gorner(x, k));
+        size_t N = (size_t)(get_N_for_Gorner(x, k)) + 1;
         bmp_real exp_x = exp(x);
         bmp_real sum = 1.0 / pow(N, k + 1);
 
@@ -123,8 +124,10 @@ namespace fdsf {
 
     bmp_real factorial(bmp_real k)
     {
-        if (k < 0)
-            return 0;
+        if (k == -1.5)
+            return -2.0*sqrt(PI);
+        if (k == -0.5)
+            return sqrt(PI);
         if (k == 0)
             return 1;
         if (k == 0.5)
@@ -182,7 +185,8 @@ namespace fdsf {
     // Сгущение по Ричардсону по сеточно-Гауссову методу
     bmp_real Richardson_mesh_refinement(bmp_real x,
                                         bmp_real t,
-                                        bmp_real k)
+                                        bmp_real k,
+                                        bmp_real& a)
     {
         int N = 2;
         bmp_real stop_criteria;
@@ -190,33 +194,41 @@ namespace fdsf {
 
         bool isHalfInteger = hasFractionalPart(k);
         if (isHalfInteger) {
-            I_n = EM_Simpson(x, k, N);
+            I_n = EM_Simpson(x, k, N, a);
         }
         else {
             I_n = FDGK5(&FermiDirakFunction, x, t, k, N);
         }
-        std::ofstream fout;
-        fout.open("check.txt");
-        fout << (I_n) << std::fixed <<
-            std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
+        //std::ofstream fout;
+        //fout.open("check_a_x.txt");
+        std::cout << "x = " << x << std::endl;
+//        fout << (I_n) << std::fixed <<
+//            std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
         std::cout << "N = " << N << ": I = " << I_n << std::endl;
         do {
             if (isHalfInteger) {
-                I_2n = EM_Simpson(x, k, 2 * N);
+                I_2n = EM_Simpson(x, k, 2 * N, a);
+                I_2n += I_n / 2; // для трапеции
             }
             else {
                 I_2n = FDGK5(&FermiDirakFunction, x, t, k, 2 * N);
             }
-            fout << I_2n << std::fixed <<
-                std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
-            I_2n += I_n/2; // для трапеции
-            stop_criteria = (I_2n / I_n - 1);
+            //fout << I_2n << std::fixed <<
+            //    std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
+
+            stop_criteria = (I_n / I_2n - 1); 
+            //stop_criteria = (I_n / 0.52115038310799122 - 1); //k=-0.5
             I_n = I_2n;
             N = 2 * N;
-            std::cout << "N = " << N << ": I = "<< I_n << std::endl;
-        } while (abs(stop_criteria) > epsilon*100);
+            std::cout << "N = " << N << ": d = "<< abs(stop_criteria) << std::endl; 
+            //std::cout << "N = " << N << ": I = " << I_n << std::endl;
+        } while (abs(stop_criteria) > 1e-11);
+        //while (abs(stop_criteria) > epsilon*100);
+        //std::cout << "N = " << N << ": I = ";
+        //std::cout << I_2n << std::fixed <<
+        //    std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
 
-        fout.close();
+        //fout.close();
         return I_n;
     }
 

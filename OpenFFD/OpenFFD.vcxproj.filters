@@ -27,6 +27,9 @@
     <ClCompile Include="src\Newton.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="src\excess_power_convergence.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\FDSFHalf.h">
@@ -39,6 +42,9 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="include\matrix_helper.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="include\excess_power_convergence.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>

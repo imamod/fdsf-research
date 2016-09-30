@@ -1,4 +1,5 @@
 #include "FDSFInteger.h"
+#include "FDSFHalf.h"
 #include <boost/math/special_functions/gamma.hpp>
 
 #include "matrix_helper.h"
@@ -7,6 +8,8 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+
+#include "excess_power_convergence.h"
 
 #if 0
 void test()
@@ -36,7 +39,7 @@ void test()
     std::cout << "I1(0) = " << my_pi*my_pi/12 << std::endl;
 }
 #endif
-
+#if 0
 void check()
 {
     std::cout.precision(std::numeric_limits<bmp_real>::max_digits10);
@@ -50,7 +53,129 @@ void check()
     std::cout << "I_prec: " << I_prec << std::endl;
 //#endif
 }
+#endif
+// Сравнение схемы Горнера и метода трапеций
+void compare()
+{
+    std::cout.precision(std::numeric_limits<bmp_real>::max_digits10);
+    bmp_real k = 1.0 / 2;
+    bmp_real x = -1;
+    bmp_real a;
+    bmp_real I_base = fdsf::Richardson_mesh_refinement(x, 0, k, a);
+    bmp_real I_prec = fdsf::Gorner(x, k);
+    std::cout << I_base << std::endl;
+    std::cout << I_prec << std::endl;
+}
 
+static bmp_real getN(bmp_real x, bmp_real k)
+{
+    bmp_real N0 = 1;
+    bmp_real N = 1 + (log(epsilon) + (k+1)*log(N0))/x;
+
+    while (true) {
+        if (abs(N - N0) < 0.1) {
+            break;
+        }
+        N0 = N;
+        N = 1 + (log(epsilon) + (k + 1)*log(N0)) / x;
+    }
+    std::cout << N << std::endl;
+    return N;
+}
+
+static bmp_real controlGorner(bmp_real x, bmp_real k)
+{
+    // size_t N = ceil(getN(x, k));
+    size_t N = (size_t)(getN(x, k)) + 1;
+    std::cout << N << std::endl;
+    bmp_real exp_x = exp(x);
+    bmp_real sum = 1.0 / pow(N, k + 1);
+
+    for (size_t i = N - 1; i > 0; i--) {
+        sum = 1 / pow(i, k + 1) - exp_x*sum;
+    }
+
+    return sum*factorial(k)*exp(x);
+}
+
+void control_point()
+{
+    std::cout.precision(std::numeric_limits<bmp_real>::max_digits10);
+    bmp_real k = -1.0 / 2;
+    bmp_real x = -1;
+
+    std::cout << controlGorner( x, k) << std::endl; 
+}
+
+
+void check_func_on_x()
+{
+    std::cout.precision(std::numeric_limits<bmp_real>::max_digits10);
+    bmp_real k = -1 / 2.0;
+    bmp_real x = -10.0;
+    std::ofstream fout;
+    //fout.open("check_a_x.txt");
+    fout.open("I_k_m05.txt");
+    fout.precision(std::numeric_limits<bmp_real>::max_digits10);
+    while (true)
+    {
+        if (x > 50.01) {
+            break;
+        }
+
+        bmp_real a;
+        bmp_real I_base = fdsf::Richardson_mesh_refinement(x, 0, k, a);
+        std::cout << "I_base: " << I_base << std::endl;
+        //fout << "x = " << x << " a = " << a << std::endl;
+        fout << I_base << std::endl;
+        x += 0.01;
+    }
+    fout.close();
+}
+
+void probe_dots()
+{
+    std::cout.precision(std::numeric_limits<bmp_real>::max_digits10);
+    bmp_real k = 7.0 / 2;
+    bmp_real t = 0;
+    std::vector<bmp_real> x = { -2, 2 };
+    for (int i = 0; i < x.size(); i++) {
+        bmp_real a;
+        bmp_real I_base = fdsf::Richardson_mesh_refinement(x[i], t, k, a);
+        std::cout << I_base << std::endl;
+    }
+}
+
+#if 0
+void forPlot()
+{
+        int N = 2;
+        bmp_real k = 1.0 / 2;
+        bmp_real x = -1.0;
+        bmp_real stop_criteria;
+        bmp_real I_n, I_2n;
+
+        I_n = EM_Simpson(x, k, N);
+
+        std::ofstream fout;
+        fout.open("forPlot.txt");
+        fout << (I_n) << std::fixed <<
+            std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
+        std::cout << "N = " << N << ": I = " << I_n << std::endl;
+        do {
+            I_2n = EM_Simpson(x, k, N++);
+            fout << I_2n << std::fixed <<
+                std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
+
+            stop_criteria = (I_2n / I_n - 1);
+            I_n = I_2n;
+            std::cout << "N = " << N << ": I = " << I_n << std::endl;
+        } while (N < 65);
+        //while (abs(stop_criteria) > epsilon * 100);
+
+        fout.close();
+}
+#endif
 // Вывод значений в файл
 void printResultToFile(matrix_type::_vector x, bmp_real k, std::string varName)
 {
@@ -60,15 +185,15 @@ void printResultToFile(matrix_type::_vector x, bmp_real k, std::string varName)
     convertor >> fileName;
     fileName = varName + "_k" + fileName + ".txt";
 
-    std::ofstream fout; // создаём объект класса ofstream для записи 
-    fout.open(fileName);
-    fout.precision(std::numeric_limits<bmp_real>::max_digits10);
+    std::ofstream f_out; // создаём объект класса ofstream для записи 
+    f_out.open(fileName);
+    f_out.precision(std::numeric_limits<bmp_real>::max_digits10);
     for (int i = 0; i < x.size(); i++)
     {
-        fout << std::fixed << x.at(i) << std::endl;
+        f_out << std::fixed << x.at(i) << std::endl;
     }
 
-    fout.close();
+    f_out.close();
 }
 
 void GetValue_w(matrix_type::_vector &I_base, 
@@ -89,7 +214,7 @@ void GetValue_w(matrix_type::_vector &I_base,
         I_additional.at(i) = pow((I_additional.at(i)*exp(X.at(i)) / Y.at(i)), 1 / k);
     }
 }
-
+#if 0
 static void computeIntegral(std::vector<bmp_real> x0, 
                             std::vector<bmp_real> X,
                             std::vector<bmp_real>& I_base, 
@@ -141,6 +266,8 @@ static void computeIntegral(std::vector<bmp_real> x0,
     }
 
 }
+#endif
+
 
 int main()
 {
@@ -170,8 +297,13 @@ int main()
     printResultToFile(Y, k, "Y");
 #endif
 
-    check();
-
+    //epc::checkTrapz(0, PI); // Для статьи о сверхстепенной сходимости
+    //check();
+    //control_point();
+    check_func_on_x();
+    //compare();
+    //probe_dots();
+    //forPlot();
 #if 0
     std::cout << "Begining with matrixes" << std::endl;
     CMatrix object;

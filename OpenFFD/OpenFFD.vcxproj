@@ -137,12 +137,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\excess_power_convergence.cpp" />
     <ClCompile Include="src\FDSFHalf.cpp" />
     <ClCompile Include="src\FDSFInteger.cpp" />
     <ClCompile Include="src\matrix_helper.cpp" />
     <ClCompile Include="src\Newton.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\excess_power_convergence.h" />
     <ClInclude Include="include\FDSFHalf.h" />
     <ClInclude Include="include\FDSFInteger.h" />
     <ClInclude Include="include\matrix_helper.h" />

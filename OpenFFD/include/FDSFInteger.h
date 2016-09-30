@@ -13,6 +13,7 @@ namespace fdsf{
     typedef double bmp_real;
 
     // Желаемая точность расчета
+    // const bmp_real epsilon = 1e-45;
     const bmp_real epsilon = 1e-17;
     
     // Значение pi
@@ -64,6 +65,6 @@ namespace fdsf{
                  bmp_real x, bmp_real T, bmp_real k, int N);
 
     // Сгущение по Ричардсону результата работы функции FDGK5
-    bmp_real Richardson_mesh_refinement(bmp_real x, bmp_real t, bmp_real k);
+    bmp_real Richardson_mesh_refinement(bmp_real x, bmp_real t, bmp_real k, bmp_real& a);
 
 } // namespace fdsf

@@ -15,6 +15,6 @@ namespace fdsf {
     bmp_real FFD_half(bmp_real ksi, bmp_real x, bmp_real k, bmp_real a);
 
     // Formula Euler-Macloren for Simpson
-    bmp_real EM_Simpson(bmp_real x, const bmp_real k, int N);
+    bmp_real EM_Simpson(bmp_real x, const bmp_real k, int N, bmp_real& a);
 
 } // fdsf
