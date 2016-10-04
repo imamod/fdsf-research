@@ -9,8 +9,8 @@
 namespace fdsf {
     using namespace boost::multiprecision;
 
-    //typedef cpp_dec_float_50 bmp_real;
-    typedef double bmp_real;
+    typedef cpp_dec_float_50 bmp_real;
+    //typedef double bmp_real;
 
     bmp_real FFD_half(bmp_real ksi, bmp_real x, bmp_real k, bmp_real a);
 
