@@ -6,14 +6,9 @@ namespace fdsf {
 
     typedef bmp_real(*function)(bmp_real ksi, bmp_real x, bmp_real k, bmp_real a);
 
-    bmp_real FFD_half(bmp_real ksi, bmp_real x, bmp_real k, bmp_real a)
+    bmp_real fermi_dirak_half_integer(bmp_real ksi, bmp_real x, bmp_real k, bmp_real a)
     {
-        // для полуцелых
-        // return 2 * pow(t, 2 * k + 1) / (1 + exp(t*t - x));
-
         bmp_real exp_ksi = exp(-a*ksi*ksi / (1 - ksi*ksi));
-
-        bmp_real temp = 2 * k + 1;
 
         return (2*pow(a, k+1)*pow(ksi, 2*k + 1)*exp_ksi) /
                (pow(1 - ksi*ksi, k + 2)*(exp_ksi + exp(-x)));
@@ -71,14 +66,12 @@ namespace fdsf {
         return I;
     }
 
-    bmp_real EM_Simpson(bmp_real x, const bmp_real k, int N, bmp_real& a)
+    bmp_real euler_maclaurin_method(bmp_real x, const bmp_real k, int N, bmp_real& a)
     {
         //bmp_real a = newton::NewtonsMethod(x, k);
         a = newton::NewtonsMethod(x, k);
         //std::cout << "a = " << a << std::endl;
-        //return (2*quad(FFD_half, x, k, N, a) + trapz(FFD_half, x, k, N, a))/3;
-        return trapz(FFD_half, x, k, N, a);
-        //return quad(FFD_half, x, k, N, a);
+        return trapz(fermi_dirak_half_integer, x, k, N, a);
     }
 
 }; //fdsf

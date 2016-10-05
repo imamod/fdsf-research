@@ -12,9 +12,9 @@ namespace fdsf {
     typedef cpp_dec_float_50 bmp_real;
     //typedef double bmp_real;
 
-    bmp_real FFD_half(bmp_real ksi, bmp_real x, bmp_real k, bmp_real a);
+    bmp_real fermi_dirak_half_integer(bmp_real ksi, bmp_real x, bmp_real k, bmp_real a);
 
-    // Formula Euler-Macloren for Simpson
-    bmp_real EM_Simpson(bmp_real x, const bmp_real k, int N, bmp_real& a);
+    // Formula Euler-Maclaurin 
+    bmp_real euler_maclaurin_method(bmp_real x, const bmp_real k, int N, bmp_real& a);
 
 } // fdsf

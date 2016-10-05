@@ -46,7 +46,7 @@ void check()
     bmp_real k = 1.0 / 2;
     bmp_real t = 0;
     bmp_real x0 = -1.0;
-    bmp_real I_base = fdsf::Richardson_mesh_refinement(x0, t, k);
+    bmp_real I_base = fdsf::richardson_method(x0, t, k);
     std::cout << "I_base: " << I_base << std::endl;
 //#if 0
     bmp_real I_prec = fdsf::Gorner(x0, k);
@@ -61,7 +61,7 @@ void compare()
     bmp_real k = 1.0 / 2;
     bmp_real x = -1;
     bmp_real a;
-    bmp_real I_base = fdsf::Richardson_mesh_refinement(x, 0, k, a);
+    bmp_real I_base = fdsf::richardson_method(x, 0, k, a);
     bmp_real I_prec = fdsf::Gorner(x, k);
     std::cout << I_base << std::endl;
     std::cout << I_prec << std::endl;
@@ -124,7 +124,7 @@ void check_func_on_x()
         }
 
         bmp_real a;
-        bmp_real I_base = fdsf::Richardson_mesh_refinement(x, 0, k, a);
+        bmp_real I_base = fdsf::richardson_method(x, 0, k, a);
         std::cout << "I_base: " << I_base << std::endl;
         //fout << "x = " << x << " a = " << a << std::endl;
         fout << I_base << std::endl;
@@ -141,7 +141,7 @@ void probe_dots()
     std::vector<bmp_real> x = { -2, 2 };
     for (int i = 0; i < x.size(); i++) {
         bmp_real a;
-        bmp_real I_base = fdsf::Richardson_mesh_refinement(x[i], t, k, a);
+        bmp_real I_base = fdsf::richardson_method(x[i], t, k, a);
         std::cout << I_base << std::endl;
     }
 }
@@ -155,7 +155,7 @@ void forPlot()
         bmp_real stop_criteria;
         bmp_real I_n, I_2n;
 
-        I_n = EM_Simpson(x, k, N);
+        I_n = euler_maclaurin_method(x, k, N);
 
         std::ofstream fout;
         fout.open("forPlot.txt");
@@ -163,7 +163,7 @@ void forPlot()
             std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
         std::cout << "N = " << N << ": I = " << I_n << std::endl;
         do {
-            I_2n = EM_Simpson(x, k, N++);
+            I_2n = euler_maclaurin_method(x, k, N++);
             fout << I_2n << std::fixed <<
                 std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
 
@@ -239,7 +239,7 @@ static void computeIntegral(std::vector<bmp_real> x0,
                     break;
                 default: break;
             }
-            I_base.push_back(fdsf::Richardson_mesh_refinement(x0.at(i), t, k));
+            I_base.push_back(fdsf::richardson_method(x0.at(i), t, k));
         }
         else {
             I_base.push_back(fdsf::Gorner(x0.at(i), k));
@@ -256,7 +256,7 @@ static void computeIntegral(std::vector<bmp_real> x0,
             //bmp_real t = 60.0;
             //bmp_real t = 75.0;
             bmp_real t = 120;
-            I_additional.push_back(fdsf::Richardson_mesh_refinement(X.at(i), t, k));
+            I_additional.push_back(fdsf::richardson_method(X.at(i), t, k));
         }
         else {
             I_additional.push_back(fdsf::Gorner(X.at(i), k));
