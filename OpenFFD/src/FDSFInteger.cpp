@@ -88,8 +88,8 @@ namespace fdsf {
     }
 
     bmp_real fermi_dirak_integer(bmp_real t, 
-                                bmp_real x, 
-                                bmp_real k)
+                                 bmp_real x, 
+                                 bmp_real k)
     {
         return pow(t, k) / (boost::math::tgamma(bmp_real(k))*(exp(x) + exp(t)));
     }
@@ -121,6 +121,7 @@ namespace fdsf {
 
         return sum*factorial(k)*exp(x);
     }
+
     // TODO: rename as gamma
     bmp_real factorial(bmp_real k)
     {
@@ -184,9 +185,9 @@ namespace fdsf {
 
     // Сгущение по Ричардсону по сеточно-Гауссову методу
     bmp_real richardson_method(bmp_real x,
-                                        bmp_real t,
-                                        bmp_real k,
-                                        bmp_real& a)
+                               bmp_real t,
+                               bmp_real k,
+                               bmp_real& a)
     {
         int N = 2;
         bmp_real stop_criteria;

@@ -23,17 +23,17 @@ namespace epc {
         return h*I;
     }
 
-	static bmp_real func_fd_half(bmp_real ksi)
-	{
-		bmp_real x = -10.0;
-		bmp_real k = -1.0 / 2;
-		bmp_real a = newton::NewtonsMethod(x, k);
+    static bmp_real func_fermi_dirak_half_integer(bmp_real ksi)
+    {
+        bmp_real x = -10.0;
+        bmp_real k = -1.0 / 2;
+        bmp_real a = newton::NewtonsMethod(x, k);
         //std::cout << "a = " << a << std::endl;
-		bmp_real exp_ksi = exp(-a*ksi*ksi / (1 - ksi*ksi));
+        bmp_real exp_ksi = exp(-a*ksi*ksi / (1 - ksi*ksi));
 
-		return (2 * pow(a, k + 1)*pow(ksi, 2 * k + 1)*exp_ksi) /
-			(pow(1 - ksi*ksi, k + 2)*(exp_ksi + exp(-x)));
-	}
+        return (2 * pow(a, k + 1)*pow(ksi, 2 * k + 1)*exp_ksi) /
+            (pow(1 - ksi*ksi, k + 2)*(exp_ksi + exp(-x)));
+    }
 
     static bmp_real func_cos(bmp_real x)
     {
@@ -59,13 +59,13 @@ namespace epc {
         return exp(cos(x));
     }
 
-    static bmp_real Richardson(function f, bmp_real a, bmp_real b)
+    static bmp_real Richardson(function f, bmp_real a, bmp_real b, bool countEvery)
     {
         size_t N = 1;
         bmp_real stop_criteria;
         bmp_real I = trapz(f, a, b, N);
-        bmp_real a_ = 1.75;
-        size_t n = 0;
+        //bmp_real a_ = 1.75;
+        //size_t n = 0;
         //bmp_real I_prec = pow(a_, n)*fdsf::PI / (1 - a_*a_ );
         //bmp_real I_prec = fdsf::PI / ((a_*a_ - 1)*pow(a_, n));
         //bmp_real I_prec = fdsf::PI;
@@ -74,12 +74,21 @@ namespace epc {
         fout.open("demo.txt");
         fout.precision(std::numeric_limits<bmp_real>::max_digits10);
         do {
-            bmp_real I_2n = trapz(f, a, b, N + 1);
-            //bmp_real I_2n = trapz(f, a, b, 2*N);
+            bmp_real I_2n;
+
+            if (countEvery) {
+                I_2n = trapz(f, a, b, N + 1);
+                N = N + 1;
+            }
+            else {
+                I_2n = trapz(f, a, b, 2 * N);
+                N = 2 * N;
+            }
+
             stop_criteria = (I / I_2n) - 1;
             //stop_criteria = (I_2n / I_prec) - 1;
             I = I_2n;
-            N = N + 1;
+            
             // std::cout << "N = " << N << ": I = " << I << std::endl;
             std::cout << "N = " << N << ": d = " << abs(stop_criteria) << std::endl;
             fout << abs(stop_criteria) << std::endl;
@@ -92,7 +101,7 @@ namespace epc {
     void checkTrapz(bmp_real a, bmp_real b)
     {
         //Richardson(func_demo, a, b);
-        Richardson(func_fd_half, a, b);
+        Richardson(func_fermi_dirak_half_integer, a, b, false);
         //Richardson(func_cos, a, b);
         //Richardson(func_exp_cos, a, b);
     }
