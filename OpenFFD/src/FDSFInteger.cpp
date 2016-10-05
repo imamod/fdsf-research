@@ -87,14 +87,14 @@ namespace fdsf {
         }
     }
 
-    bmp_real FermiDirakFunction(bmp_real t, 
-                                bmp_real x, 
-                                bmp_real k)
+    bmp_real fermi_dirak_integer(bmp_real t, 
+                                 bmp_real x, 
+                                 bmp_real k)
     {
         return pow(t, k) / (boost::math::tgamma(bmp_real(k))*(exp(x) + exp(t)));
     }
 #if 0
-    bmp_real FFD_half(bmp_real t, bmp_real x, bmp_real k)
+    bmp_real fermi_dirak_half_integer(bmp_real t, bmp_real x, bmp_real k)
     {
         // для полуцелых
         return 2 * pow(t, 2 * k + 1) / (1 + exp(t*t - x));
@@ -122,6 +122,7 @@ namespace fdsf {
         return sum*factorial(k)*exp(x);
     }
 
+    // TODO: rename as gamma
     bmp_real factorial(bmp_real k)
     {
         if (k == -1.5)
@@ -142,11 +143,11 @@ namespace fdsf {
             return k*factorial(k - 1);
     }
 
-    bmp_real FDGK5(bmp_real(*Ft)(bmp_real, bmp_real, bmp_real),
+    bmp_real gauss_christoffel_method(bmp_real(*f)(bmp_real, bmp_real, bmp_real),
                                  bmp_real x, bmp_real T, bmp_real k, int N)
     {
-        //Определяем вспомогательные числа, чтобы не скатится до точности 16 знаков
-        bmp_real half = bmp_real(1) / 2;
+        // Определяем вспомогательные числа, чтобы не скатится до точности 16 знаков
+        bmp_real half = bmp_real(1.0) / 2;
         bmp_real num35 = bmp_real(35);
         bmp_real num63 = bmp_real(63);
         bmp_real num70 = bmp_real(70);
@@ -169,8 +170,8 @@ namespace fdsf {
             t.at(3) = T*(n + half + half*sqrt((num35 - 2 * sqrt(num70)) / num63)) / N;
             t.at(4) = T*(n + half + half*sqrt((num35 + 2 * sqrt(num70)) / num63)) / N;
             //
-            U = U + T*(Ft(t.at(2), x, k)*gamma_3 + gamma_1_5*((Ft(t.at(0), x, k)) + Ft(t.at(4), x, k))
-                + gamma_2_4*((Ft(t.at(1), x, k)) + Ft(t.at(3), x, k)));
+            U = U + T*(f(t.at(2), x, k)*gamma_3 + gamma_1_5*((f(t.at(0), x, k)) + f(t.at(4), x, k))
+                + gamma_2_4*((f(t.at(1), x, k)) + f(t.at(3), x, k)));
         }
 
         U = U / N;
@@ -183,10 +184,10 @@ namespace fdsf {
     }
 
     // Сгущение по Ричардсону по сеточно-Гауссову методу
-    bmp_real Richardson_mesh_refinement(bmp_real x,
-                                        bmp_real t,
-                                        bmp_real k,
-                                        bmp_real& a)
+    bmp_real richardson_method(bmp_real x,
+                               bmp_real t,
+                               bmp_real k,
+                               bmp_real& a)
     {
         int N = 2;
         bmp_real stop_criteria;
@@ -194,10 +195,10 @@ namespace fdsf {
 
         bool isHalfInteger = hasFractionalPart(k);
         if (isHalfInteger) {
-            I_n = EM_Simpson(x, k, N, a);
+            I_n = euler_maclaurin_method(x, k, N, a);
         }
         else {
-            I_n = FDGK5(&FermiDirakFunction, x, t, k, N);
+            I_n = gauss_christoffel_method(&fermi_dirak_integer, x, t, k, N);
         }
         //std::ofstream fout;
         //fout.open("check_a_x.txt");
@@ -207,11 +208,11 @@ namespace fdsf {
         std::cout << "N = " << N << ": I = " << I_n << std::endl;
         do {
             if (isHalfInteger) {
-                I_2n = EM_Simpson(x, k, 2 * N, a);
+                I_2n = euler_maclaurin_method(x, k, 2 * N, a);
                 I_2n += I_n / 2; // для трапеции
             }
             else {
-                I_2n = FDGK5(&FermiDirakFunction, x, t, k, 2 * N);
+                I_2n = gauss_christoffel_method(&fermi_dirak_integer, x, t, k, 2 * N);
             }
             //fout << I_2n << std::fixed <<
             //    std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;

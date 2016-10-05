@@ -39,9 +39,9 @@ namespace fdsf{
 
     // Вычисляет значение функции ФД индекса k = 1, 2, 3 в точке x при заданном
     // значении t. Функция представлена в виде t^k /(exp(x)+exp(t))
-    bmp_real FermiDirakFunction(bmp_real t, bmp_real x, bmp_real k);
+    bmp_real fermi_dirak_integer(bmp_real t, bmp_real x, bmp_real k);
 #if 0
-    bmp_real FFD_half(bmp_real ksi, bmp_real x, bmp_real k);
+    bmp_real fermi_dirak_half_integer(bmp_real ksi, bmp_real x, bmp_real k);
 #endif
 
     // Вычисляет значение функции ФД индекса k = 1, 2, 3 в точке x по схеме 
@@ -61,10 +61,10 @@ namespace fdsf{
     //           k = 2 : Tmax = 75, 
     //           k = 3 : Tmax = 100. 
     // TODO: std::function
-    bmp_real FDGK5(bmp_real(*Ft)(bmp_real, bmp_real, bmp_real), 
+    bmp_real gauss_christoffel_method(bmp_real(*f)(bmp_real, bmp_real, bmp_real), 
                  bmp_real x, bmp_real T, bmp_real k, int N);
 
-    // Сгущение по Ричардсону результата работы функции FDGK5
-    bmp_real Richardson_mesh_refinement(bmp_real x, bmp_real t, bmp_real k, bmp_real& a);
+    // Сгущение по Ричардсону результата работы функции gauss_christoffel_method
+    bmp_real richardson_method(bmp_real x, bmp_real t, bmp_real k, bmp_real& a);
 
 } // namespace fdsf
