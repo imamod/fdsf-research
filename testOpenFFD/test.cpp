@@ -111,7 +111,7 @@ void control_point()
 void check_func_on_x()
 {
     std::cout.precision(std::numeric_limits<bmp_real>::max_digits10);
-    bmp_real k = 1 / 2.0;
+    bmp_real k = bmp_real(-1.0 / 2);
     bmp_real x = -10.0;
     std::ofstream fout;
     //fout.open("check_a_x.txt");
@@ -119,7 +119,7 @@ void check_func_on_x()
     fout.precision(std::numeric_limits<bmp_real>::max_digits10);
     while (true)
     {
-        if (x > 50.01) {
+        if (x > 50.1) {
             break;
         }
 
@@ -128,7 +128,7 @@ void check_func_on_x()
         std::cout << "I_base: " << I_base << std::endl;
         //fout << "x = " << x << " a = " << a << std::endl;
         fout << I_base << std::endl;
-        x += 0.01;
+        x += 0.1;
     }
     fout.close();
 }
@@ -190,7 +190,7 @@ void printResultToFile(matrix_type::_vector x, bmp_real k, std::string varName)
     f_out.precision(std::numeric_limits<bmp_real>::max_digits10);
     for (int i = 0; i < x.size(); i++)
     {
-        f_out << std::fixed << x.at(i) << std::endl;
+        f_out << std::fixed << x[i] << std::endl;
     }
 
     f_out.close();
@@ -298,10 +298,10 @@ int main()
 #endif
 
     //epc::checkTrapz(0, PI); // Для статьи о сверхстепенной сходимости
-    epc::checkTrapz(0, bmp_real(1.0));
+    //epc::checkTrapz(0, bmp_real(1.0));
     //check();
     //control_point();
-    //check_func_on_x();
+    check_func_on_x();
     //compare();
     //probe_dots();
     //forPlot();

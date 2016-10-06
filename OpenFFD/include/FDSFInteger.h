@@ -1,23 +1,9 @@
 #pragma once
 
+#include "definitions.h"
 #include <vector>
-#include <boost/multiprecision/cpp_dec_float.hpp>
-#include <boost/multiprecision/detail/default_ops.hpp>
-#include <boost/multiprecision/number.hpp>
-#include <boost/math/special_functions/gamma.hpp>
 
 namespace fdsf{
-    using namespace boost::multiprecision;
-
-    typedef cpp_dec_float_50 bmp_real;
-    //typedef double bmp_real;
-
-    // Желаемая точность расчета
-    const bmp_real epsilon = 1e-45;
-    // const bmp_real epsilon = 1e-17;
-    
-    // Значение pi
-    const bmp_real PI = boost::math::constants::pi<bmp_real>();
 
     // Значение Ik(0) для индекса k = 0,1,2,3
     const static bmp_real I_k_0[] = { log(bmp_real(2)),

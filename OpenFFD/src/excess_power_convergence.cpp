@@ -7,6 +7,7 @@
 #include <fstream>
 
 namespace epc {
+    using namespace fdsf;
     typedef bmp_real(*function)(bmp_real x);
 
     // Euler-Macloren Formulas

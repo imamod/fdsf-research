@@ -91,7 +91,7 @@ namespace fdsf {
                                  bmp_real x, 
                                  bmp_real k)
     {
-        return pow(t, k) / (boost::math::tgamma(bmp_real(k))*(exp(x) + exp(t)));
+        return pow(t, k) / (boost::math::tgamma(bmp_real(k)) * (exp(x) + exp(t)));
     }
 #if 0
     bmp_real fermi_dirak_half_integer(bmp_real t, bmp_real x, bmp_real k)
@@ -116,17 +116,17 @@ namespace fdsf {
         bmp_real sum = 1.0 / pow(N, k + 1);
 
         for (size_t i = N - 1; i > 0; i--) {
-            sum = 1 / pow(i, k + 1) - exp_x*sum;
+            sum = 1 / pow(i, k + 1) - exp_x * sum;
         }
 
-        return sum*factorial(k)*exp(x);
+        return sum * factorial(k) * exp(x);
     }
 
     // TODO: rename as gamma
     bmp_real factorial(bmp_real k)
     {
         if (k == -1.5)
-            return -2.0*sqrt(PI);
+            return -2.0 * sqrt(PI);
         if (k == -0.5)
             return sqrt(PI);
         if (k == 0)
@@ -164,19 +164,17 @@ namespace fdsf {
 
         for (int n = N - 1; n >= 0; n--) {
             // Расчет дополнительных узлов
-            t.at(0) = T*(n + half - half*sqrt((num35 + 2 * sqrt(num70)) / num63)) / N;
-            t.at(1) = T*(n + half - half*sqrt((num35 - 2 * sqrt(num70)) / num63)) / N;
-            t.at(2) = T*(n + half) / N;
-            t.at(3) = T*(n + half + half*sqrt((num35 - 2 * sqrt(num70)) / num63)) / N;
-            t.at(4) = T*(n + half + half*sqrt((num35 + 2 * sqrt(num70)) / num63)) / N;
+            t.at(0) = T * (n + half - half * sqrt((num35 + 2 * sqrt(num70)) / num63)) / N;
+            t.at(1) = T * (n + half - half * sqrt((num35 - 2 * sqrt(num70)) / num63)) / N;
+            t.at(2) = T * (n + half) / N;
+            t.at(3) = T * (n + half + half * sqrt((num35 - 2 * sqrt(num70)) / num63)) / N;
+            t.at(4) = T * (n + half + half * sqrt((num35 + 2 * sqrt(num70)) / num63)) / N;
             //
-            U = U + T*(f(t.at(2), x, k)*gamma_3 + gamma_1_5*((f(t.at(0), x, k)) + f(t.at(4), x, k))
-                + gamma_2_4*((f(t.at(1), x, k)) + f(t.at(3), x, k)));
+            U = U + T * (f(t[2], x, k) * gamma_3 + gamma_1_5 * ((f(t[0], x, k)) + f(t[4], x, k))
+                + gamma_2_4 * ((f(t[1], x, k)) + f(t[3], x, k)));
         }
 
-        U = U / N;
-
-        return U;
+        return U / N;
     }
 
     bool hasFractionalPart(bmp_real value) {
@@ -209,7 +207,7 @@ namespace fdsf {
         do {
             if (isHalfInteger) {
                 I_2n = euler_maclaurin_method(x, k, 2 * N, a);
-                I_2n += I_n / 2; // для трапеции
+                //I_2n += I_n / 2; // для трапеции
             }
             else {
                 I_2n = gauss_christoffel_method(&fermi_dirak_integer, x, t, k, 2 * N);

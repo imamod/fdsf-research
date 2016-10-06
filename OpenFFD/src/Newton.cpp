@@ -1,5 +1,4 @@
 #include "Newton.h"
-//#include <cmath.h>
 
 namespace newton {
 

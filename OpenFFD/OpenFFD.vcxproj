@@ -144,6 +144,7 @@
     <ClCompile Include="src\Newton.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\definitions.h" />
     <ClInclude Include="include\excess_power_convergence.h" />
     <ClInclude Include="include\FDSFHalf.h" />
     <ClInclude Include="include\FDSFInteger.h" />
