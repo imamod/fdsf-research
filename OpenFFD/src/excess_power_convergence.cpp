@@ -27,7 +27,7 @@ namespace epc {
     static bmp_real func_fermi_dirak_half_integer(bmp_real ksi)
     {
         bmp_real x = -10.0;
-        bmp_real k = -1.0 / 2;
+        bmp_real k = 3.0 / 2;
         bmp_real a = newton::NewtonsMethod(x, k);
         //std::cout << "a = " << a << std::endl;
         bmp_real exp_ksi = exp(-a*ksi*ksi / (1 - ksi*ksi));
@@ -102,7 +102,7 @@ namespace epc {
     void checkTrapz(bmp_real a, bmp_real b)
     {
         //Richardson(func_demo, a, b);
-        Richardson(func_fermi_dirak_half_integer, a, b, false);
+        Richardson(func_fermi_dirak_half_integer, a, b, true);
         //Richardson(func_cos, a, b);
         //Richardson(func_exp_cos, a, b);
     }
