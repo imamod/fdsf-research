@@ -164,11 +164,11 @@ namespace fdsf {
 
         for (int n = N - 1; n >= 0; n--) {
             // Расчет дополнительных узлов
-            t.at(0) = T * (n + half - half * sqrt((num35 + 2 * sqrt(num70)) / num63)) / N;
-            t.at(1) = T * (n + half - half * sqrt((num35 - 2 * sqrt(num70)) / num63)) / N;
-            t.at(2) = T * (n + half) / N;
-            t.at(3) = T * (n + half + half * sqrt((num35 - 2 * sqrt(num70)) / num63)) / N;
-            t.at(4) = T * (n + half + half * sqrt((num35 + 2 * sqrt(num70)) / num63)) / N;
+            t[0] = T * (n + half - half * sqrt((num35 + 2 * sqrt(num70)) / num63)) / N;
+            t[1] = T * (n + half - half * sqrt((num35 - 2 * sqrt(num70)) / num63)) / N;
+            t[2] = T * (n + half) / N;
+            t[3] = T * (n + half + half * sqrt((num35 - 2 * sqrt(num70)) / num63)) / N;
+            t[4] = T * (n + half + half * sqrt((num35 + 2 * sqrt(num70)) / num63)) / N;
             //
             U = U + T * (f(t[2], x, k) * gamma_3 + gamma_1_5 * ((f(t[0], x, k)) + f(t[4], x, k))
                 + gamma_2_4 * ((f(t[1], x, k)) + f(t[3], x, k)));

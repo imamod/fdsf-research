@@ -14,6 +14,16 @@ namespace fdsf {
                (pow(1 - ksi * ksi, k + 2) * (exp_ksi + exp(-x)));
     }
 
+    bmp_real fermi_dirak_m3half(bmp_real ksi, bmp_real x, bmp_real k, bmp_real a)
+    {
+        bmp_real exp_ksi = exp(-a * ksi * ksi / (1 - ksi * ksi));
+        bmp_real sum_exp = exp_ksi + exp(-x);
+        bmp_real exp_diff = exp( -a * ksi * ksi / (1 - ksi * ksi) - x);
+
+        return (-4 * exp_diff * sqrt(a) * exp_ksi) /
+            (pow(1 - ksi * ksi, bmp_real( 3.0 / 2 )) * sum_exp * sum_exp);
+    }
+
     // Euler-Macloren Formulas
     static bmp_real trapz(function f, bmp_real x, const bmp_real k, 
                           int N, bmp_real a)
@@ -71,7 +81,12 @@ namespace fdsf {
         //bmp_real a = newton::NewtonsMethod(x, k);
         a = newton::NewtonsMethod(x, k);
         std::cout << "a = " << a << std::endl;
-        return trapz(fermi_dirak_half_integer, x, k, N, a);
+        if (k == -3.0 / 2) {
+            return trapz(fermi_dirak_m3half, x, k, N, a);
+        } 
+        else {
+            return trapz(fermi_dirak_half_integer, x, k, N, a);
+        }
     }
 
 }; //fdsf

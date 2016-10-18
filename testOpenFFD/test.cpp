@@ -111,11 +111,11 @@ void control_point()
 void check_func_on_x()
 {
     std::cout.precision(std::numeric_limits<bmp_real>::max_digits10);
-    bmp_real k = bmp_real(1.0 / 2);
+    bmp_real k = bmp_real(-3.0 / 2);
     bmp_real x = -10.0;
     std::ofstream fout;
     //fout.open("check_a_x.txt");
-    fout.open("I_k_05.txt");
+    fout.open("I_k_m15.txt");
     fout.precision(std::numeric_limits<bmp_real>::max_digits10);
     while (true)
     {
@@ -298,10 +298,10 @@ int main()
 #endif
 
     //epc::checkTrapz(0, PI); // Для статьи о сверхстепенной сходимости
-    epc::checkTrapz(0, bmp_real(1.0));
+    //epc::checkTrapz(0, bmp_real(1.0));
     //check();
     //control_point();
-    //check_func_on_x();
+    check_func_on_x();
     //compare();
     //probe_dots();
     //forPlot();
