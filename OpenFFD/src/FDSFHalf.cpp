@@ -4,14 +4,20 @@
 
 namespace fdsf {
 
-    typedef bmp_real(*function)(bmp_real ksi, bmp_real x, bmp_real k, bmp_real a);
+    typedef bmp_real(*function)(bmp_real ksi, bmp_real x, 
+                                bmp_real k, bmp_real a, integration_segment_values isv);
 
-    bmp_real fermi_dirak_half_integer(bmp_real ksi, bmp_real x, bmp_real k, bmp_real a)
+
+    bmp_real fermi_dirak_half_integer(bmp_real ksi, bmp_real x, 
+                                      bmp_real k, bmp_real a, 
+                                      integration_segment_values isv)
     {
-        bmp_real exp_ksi = exp(-a * ksi * ksi / (1 - ksi * ksi));
+        bmp_real denom = (1 + ksi) * (bmp_real(isv.N - isv.n) / bmp_real(isv.N));
+        //bmp_real denom = (1 - ksi * ksi);
+        bmp_real exp_ksi = exp(-a * ksi * ksi / denom);
 
         return (2*pow(a, k + 1) * pow(ksi, 2 * k + 1) * exp_ksi) /
-               (pow(1 - ksi * ksi, k + 2) * (exp_ksi + exp(-x)));
+               (pow(denom, k + 2) * (exp_ksi + exp(-x)));
     }
 
     bmp_real fermi_dirak_m3half(bmp_real ksi, bmp_real x, bmp_real k, bmp_real a)
@@ -29,13 +35,15 @@ namespace fdsf {
                           int N, bmp_real a)
     {
         bmp_real h = bmp_real(1.0 / N);
-        bmp_real u0 = f(0, x, k, a);
+        integration_segment_values isv = {0, N};
+        bmp_real u0 = f(0, x, k, a, isv);
         // uN принудительно задаем нулем, чтобы не было переполнения
         bmp_real I = u0 / 2; 
 //#if 0
         // true work
         for (size_t i = 1; i < N; i++) {
-            I += f(i * h, x, k, a);
+            isv.n = i;
+            I += f(i * h, x, k, a, isv);
         }
 //#endif
 #if 0
@@ -57,7 +65,7 @@ namespace fdsf {
         bmp_real I = 0;
         bmp_real h = bmp_real(1.0 / N);
         for (size_t i = 0; i < N; i++) {
-            I += f((i + 1.0/2)*h, x, k, a);
+            //I += f((i + 1.0/2)*h, x, k, a);
         }
         I *= h;
         return I;
@@ -69,7 +77,7 @@ namespace fdsf {
         bmp_real I = 0;
         bmp_real h = bmp_real(1.0 / N);
         for (size_t i = 0; i < N; i++) {
-            I += f((i + 1.0 / 2)*h, x, k, a);
+            //I += f((i + 1.0 / 2)*h, x, k, a);
         }
         I *= h;
 
@@ -80,9 +88,9 @@ namespace fdsf {
     {
         //bmp_real a = newton::NewtonsMethod(x, k);
         a = newton::NewtonsMethod(x, k);
-        std::cout << "a = " << a << std::endl;
+        //std::cout << "a = " << a << std::endl;
         if (k == -3.0 / 2) {
-            return trapz(fermi_dirak_m3half, x, k, N, a);
+            //return trapz(fermi_dirak_m3half, x, k, N, a);
         } 
         else {
             return trapz(fermi_dirak_half_integer, x, k, N, a);

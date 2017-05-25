@@ -60,12 +60,15 @@ namespace fdsf {
         int n_additional = 11;
         const bmp_real alpha = 2 / (2 + PI);
         const bmp_real one = bmp_real(1);
-        const bmp_real num2 = bmp_real(2);
-        bmp_real baseSize = bmp_real(2 * N_base + 1);
+        const bmp_real num2 = bmp_real(2); //if integer
+        const bmp_real x_star = bmp_real(3);
+        const bmp_real y_star = bmp_real(log(1 + exp(x_star))); // if half-integer
+        bmp_real baseSize = bmp_real(2 * N_base + 1); // if integer || half-integer & !fixed a(N+1)
+        //bmp_real baseSize = bmp_real(2 * N_base ); // if half-integer & fixed a(N+1)
 
         // Задаются базовые узлы интерполяции
         for (int j = 1; j <= baseSize; j++) {
-            y_base.push_back(log(num2) / num2*(num2 * alpha*j / baseSize
+            y_base.push_back(y_star / num2*(num2 * alpha*j / baseSize
                 + (one - alpha)*(one - cos(PI*j / baseSize))));
             x_base.push_back(log(exp(y_base.at(j - 1)) - one));
         }
@@ -200,14 +203,14 @@ namespace fdsf {
         }
         //std::ofstream fout;
         //fout.open("check_a_x.txt");
-        std::cout << "x = " << x << std::endl;
-//        fout << (I_n) << std::fixed <<
-//            std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
-        std::cout << "N = " << N << ": I = " << I_n << std::endl;
+        //std::cout << "x = " << x << std::endl;
+        //fout << (I_n) << std::fixed <<
+        //    std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
+        //std::cout << "N = " << N << ": I = " << I_n << std::endl;
         do {
             if (isHalfInteger) {
                 I_2n = euler_maclaurin_method(x, k, 2 * N, a);
-                //I_2n += I_n / 2; // для трапеции
+                //I_2n += I_n / 2; // для трапеции если сетки по удвоенной
             }
             else {
                 I_2n = gauss_christoffel_method(&fermi_dirak_integer, x, t, k, 2 * N);
@@ -219,7 +222,7 @@ namespace fdsf {
             //stop_criteria = (I_n / 0.52115038310799122 - 1); //k=-0.5
             I_n = I_2n;
             N = 2 * N;
-            std::cout << "N = " << N << ": d = "<< abs(stop_criteria) << std::endl; 
+            //std::cout << "N = " << N << ": d = "<< abs(stop_criteria) << std::endl; 
             //std::cout << "N = " << N << ": I = " << I_n << std::endl;
         } while (abs(stop_criteria) > 1e-11);
         //while (abs(stop_criteria) > epsilon*100);

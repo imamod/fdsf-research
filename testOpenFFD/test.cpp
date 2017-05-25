@@ -10,6 +10,7 @@
 #include <iostream>
 
 #include "excess_power_convergence.h"
+#include "../tefis/src/fdi/fdsf/fdsf.h"
 
 #if 0
 void test()
@@ -205,13 +206,13 @@ void GetValue_w(matrix_type::_vector &I_base,
 {
     bmp_real y;
     for (int i = 0; i < I_base.size(); i++) {
-        y = log(1 + exp(x0.at(i)));
-        I_base.at(i) = pow((I_base.at(i)*exp(x0.at(i)) / y0.at(i)), 1 / k);
+        y = log(1 + exp(x0[i]));
+        I_base[i] = pow((I_base[i]*exp(x0[i]) / y0[i]), 1.0 / k);
     }
 
     for (int i = 0; i < I_additional.size(); i++) {
-        y = log(1 + exp(X.at(i)));
-        I_additional.at(i) = pow((I_additional.at(i)*exp(X.at(i)) / Y.at(i)), 1 / k);
+        y = log(1 + exp(X[i]));
+        I_additional[i] = pow((I_additional[i]*exp(X[i]) / Y[i]), 1 / k);
     }
 }
 #if 0
@@ -267,7 +268,287 @@ static void computeIntegral(std::vector<bmp_real> x0,
 
 }
 #endif
+// *****************************************************************************
+// Функции работы с прецизионными аппроксимациями
+// *****************************************************************************
+static void computeIntegral(std::vector<bmp_real> x0,
+                            std::vector<bmp_real> X,
+                            std::vector<bmp_real>& I_base,
+                            std::vector<bmp_real> &I_additional,
+                            bmp_real k)
+{
+    bmp_real t = 0, a = 0;
+    for (int i = 0; i < x0.size(); i++) {
+        I_base.push_back(fdsf::richardson_method(x0.at(i), t, k, a));
+        std::cout << "x0: " << x0.at(i) << " I_base: " << I_base.at(i) << std::endl;
+    }
 
+    for (int i = 0; i < X.size(); i++) {
+        I_additional.push_back(fdsf::richardson_method(X.at(i), t, k, a));
+        std::cout << "X: " << X.at(i) << " I_add: " << I_additional.at(i) << std::endl;
+        //<< std::fixed << std::setprecision(std::numeric_limits<bmp_real>::max_digits10)
+    }
+
+}
+
+void SetLinearTrigonometricGridRight(std::vector<bmp_real> &y_base,
+                                     std::vector<bmp_real> &x_base,
+                                     std::vector<bmp_real> &Y,
+                                     std::vector<bmp_real> &X, int N_base)
+{
+    int n_additional = 11;
+    const bmp_real alpha = 2 / (2 + PI);
+    const bmp_real one = bmp_real(1);
+    const bmp_real num2 = bmp_real(2); //if integer
+    const bmp_real x_star = bmp_real(10);
+    const bmp_real y_star = bmp_real(log(1 + exp(x_star))); // if half-integer
+    //bmp_real baseSize = bmp_real(2 * N_base + 1); // if integer || half-integer & !fixed a(N+1)
+    //bmp_real baseSize = bmp_real(2 * N_base ); // if half-integer & fixed a(N+1)
+    bmp_real baseSize = bmp_real( N_base); // if poly approximation
+
+    const bmp_real y_star_inv = 1 / (y_star * y_star);
+    //const bmp_real y_star_inv = 1 / y_star;
+    //const bmp_real y_star_inv = 1 / pow(y_star, 0.5);
+    //const bmp_real y_star_inv = 1 / pow(y_star, 0.25 );
+    //const bmp_real y_star_inv = 1 / pow(y_star, 3.0 / 2);
+
+    // Задаются базовые узлы интерполяции
+    for (int j = 1; j <= baseSize; j++) {
+        y_base.push_back(y_star_inv / num2*(num2 * alpha*j / baseSize
+            + (one - alpha)*(one - cos(PI*j / baseSize))));
+    }
+
+    // Задаются дополнительные точки
+    Y.push_back(y_base[0] / n_additional);
+
+    for (int i = 1; i < n_additional; i++)
+    {
+        Y.push_back(Y[i - 1] + y_base[0] / n_additional);
+    }
+
+    for (int index = 1; index < y_base.size(); index++) {
+        for (int i = 0; i < n_additional; i++) {
+            Y.push_back(Y.back() + (y_base[index] - y_base[index - 1]) / n_additional);
+        }
+    }
+
+    // Разворачиваем y
+    std::reverse(y_base.begin(), y_base.end());
+    for (int j = 0; j < baseSize; j++) {
+        y_base[j] = 1.0 / pow(y_base[j], 0.5);
+        //y_base[j] = 1.0 / y_base[j];
+        //y_base[j] = 1.0 / (y_base[j] * y_base[j]);
+        //y_base[j] = 1.0 / (pow(y_base[j], 4));
+        //y_base[j] = 1.0 / (pow(y_base[j], 2.0 / 3));
+        x_base.push_back(log(exp(y_base[j]) - one));
+    }
+
+    std::reverse(Y.begin(), Y.end());
+    //std::cout << Y.size() << std::endl;
+    for (int j = 0; j < Y.size(); j++) {
+        Y[j] = 1.0 / pow(Y[j], 0.5);
+        //Y[j] = 1.0 / Y[j]; 
+        //Y[j] = 1.0 / (Y[j] * Y[j]);
+        //Y[j] = 1.0 / pow(Y[j], 4);
+        //Y[j] = 1.0 / pow(Y[j], 2.0 / 3);
+        X.push_back(log(exp(Y[j]) - one));
+    }
+}
+
+
+std::vector<bmp_real> calculate_series_part(const bmp_real& k,
+                                            std::vector<bmp_real>& X)
+{
+    std::vector<bmp_real> coeff_A = { pow(PI, 2) / 6.0,
+                                      pow(PI, 4) / 90.0,
+                                      pow(PI, 6) / 945.0,
+                                      pow(PI, 8) / 9450.0,
+                                      pow(PI, 10) / 93555.0,
+                                      691.0 * pow(PI, 12) / 638512875.0
+                                     };
+
+    std::vector<bmp_real> series_value;
+
+    for (int i = 0; i < X.size(); i++) {
+        bmp_real coeff_C = 1;
+        bmp_real nom = k + 1;
+        bmp_real series_sum = bmp_real(1.0);
+        for (int j = 0; j < coeff_A.size(); j++) {
+            coeff_C *= nom*(nom-1); // По асимптотической формуле парное добавление множителей, поэтому далее отнимаем 2
+            series_sum += 2.0 * (1.0 - pow(2.0, 1.0 - 2*(j+1))) * pow(X[i], (-2.0)*(j + 1))*coeff_A[j]*coeff_C;
+            //std::cout << "A(j) = " << coeff_A[j] << ": series_sum = " << series_sum << std::endl;
+            std::cout << "C(" << j+1 << ") = " << 2.0 * (1.0 - pow(2.0, 1.0 - 2 * (j + 1))) * coeff_A[j] * coeff_C << std::endl;
+            nom -= 2;
+        }
+        series_sum *= pow(X[i], k + 1) / (k + 1);
+        series_value.push_back(series_sum);
+    }
+
+    std::cout << PI*PI*PI*PI*PI*PI / 945.0 << std::endl;
+
+    return series_value;
+
+}
+
+static bmp_real get_assympt_value(bmp_real x, bmp_real k)
+{
+    std::vector<bmp_real> I_minus, I, series_part, X = {x};
+    bmp_real t = 0, a = 0;
+    series_part = calculate_series_part(k, X);
+    I_minus.push_back(fdsf::richardson_method(-x, t, k, a));
+    I.push_back(I_minus[0] + series_part[0]);
+    //return I[0];
+    return series_part[0];
+}
+
+static bmp_real get_series_value(bmp_real x, bmp_real k)
+{
+    bmp_real series_value = 0;
+    size_t N = log(fdsf::epsilon) / (x);
+
+    for (size_t n = 1; n < N; ++n) {
+        series_value += pow(-1.0, n - 1) * exp(n*x) / pow(n, k + 1);
+        //std::cout << series_value << std::endl;
+    }
+
+    return factorial(k)*series_value;
+}
+
+void comp_kostya_and_precise()
+{
+    const bmp_real k = bmp_real(1.0 / 2.0);
+    bmp_real x = bmp_real(-0.1), I, I_kostya, I_precise;
+    bmp_real t = 0, a = 0;
+#if 0
+    I = fdsf::richardson_method(x, t, k, a);
+    I_kostya = fdsf::fd_half(x);
+    I_precise = get_series_value(x, k);
+    std::cout << "x = -0.1" << std::endl;
+    std::cout << "I_quadrature: " << I << std::endl;
+    std::cout << "I_kostya: " << I_kostya << std::endl;
+    std::cout << "I_precise: " << I_precise << std::endl;
+    std::cout << "delta = " << I / I_precise - 1 << std::endl;
+#endif
+
+    x = 30.0;// +10E-8;
+    std::cout << "x = " << x << std::endl;
+    I = fdsf::richardson_method(x, t, k, a);
+    I_kostya = fdsf::fd_half(x);
+    I_precise = get_assympt_value(x, k);
+    std::cout << "I_quadrature: " << I << std::endl;
+    std::cout << "I_kostya: " << I_kostya << std::endl;
+    std::cout << "I_precise: " << I_precise << std::endl;
+    std::cout << "delta = " << I / I_precise - 1 << std::endl;
+}
+
+void check_negative_quadrature_values()
+{
+    const bmp_real k = bmp_real(1.0 / 2.0);
+    bmp_real x = bmp_real(-0.1), I, I_precise;
+    bmp_real t = 0, a = 0;
+    I = fdsf::richardson_method(x, t, k, a);
+    I_precise = get_series_value(x, k);
+    std::cout << "I_quadrature: " << I << std::endl;
+    std::cout << "I_precise: " << I_precise << std::endl;
+}
+
+void check_quadrature()
+{
+    const bmp_real k = bmp_real(1.0 / 2.0);
+    bmp_real x = 30.0, I;
+    bmp_real t = 0, a = 0;
+    I = fdsf::richardson_method(x, t, k, a);
+    std::cout << I << std::endl;
+}
+
+void calculate_asimpt_value()
+{
+    std::vector<bmp_real> X, Y;
+    const bmp_real k = bmp_real(1.0 / 2.0);
+    bmp_real t = 0, a = 0, h = 0.1;
+    std::vector<bmp_real> I, I_minus, series_part;
+
+    //проверка на идиота при х = 30
+    X.push_back(30.0);
+    //X.push_back(log(exp(Y[0]) - 1));
+    series_part = calculate_series_part(k, X);
+    I_minus.push_back(fdsf::richardson_method(-X[0], t, k, a));
+    I.push_back(I_minus[0] + series_part[0]);
+    I.push_back(series_part[0]);
+#if 0
+    Y.push_back(3.0);
+    X.push_back(log(exp(Y[0]) - 1));
+    size_t i = 1;
+    while (true)
+    {
+        Y.push_back(Y[0] + i*h);
+        X.push_back(log(exp(Y[i]) - 1));
+
+        if (Y[i] > 30.0) {
+            break;
+        }
+
+        i++;
+    }
+
+    series_part = calculate_series_part(k, X);
+    for (int i = 0; i < X.size(); i++) {
+        I_minus.push_back(fdsf::richardson_method(-X[i], t, k, a));
+        I.push_back( I_minus[i] + series_part[i]);
+    }
+#endif
+    printResultToFile(I, k, "Asimpt_check");
+}
+
+void calculate_k_half_integer()
+{
+    std::vector<bmp_real> x0, X, y0, Y;
+    std::vector<bmp_real> I_base, I_additional;
+    const bmp_real k = bmp_real(1.0 / 2.0);
+    const int N_base = 20;
+    // Расчет значения интеграла в базовых узлах
+    //fdsf::SetLinearTrigonometricGrid(y0, x0, Y, X, N_base);
+    SetLinearTrigonometricGridRight(y0, x0, Y, X, N_base);
+    // Расчет схемы Горнера и подсчета интеграла на Гауссовой сетке
+    computeIntegral(x0, X, I_base, I_additional, k);
+
+    printResultToFile(I_base, k, "I_base");
+    printResultToFile(I_additional, k, "I_add");
+    printResultToFile(y0, k, "y0");
+    printResultToFile(Y, k, "Y");
+}
+
+void check_z_value()
+{
+    std::vector<bmp_real> X, Y;
+    const bmp_real k = bmp_real(1.0 / 2.0);
+    bmp_real t = 0, a = 0, h = 0.1;
+    std::vector<bmp_real> I;
+
+    Y.push_back(3.0);
+    X.push_back(log(exp(Y[0]) - 1));
+    size_t i = 1;
+    while (true)
+    {
+        Y.push_back(Y[0] + i*h);
+        X.push_back(log(exp(Y[i]) - 1));
+
+        if (Y[i] > 50.0) {
+            break;
+        }
+
+        i++;
+    }
+
+    for (int i = 0; i < X.size(); i++) {
+        I.push_back(fdsf::richardson_method(X[i], t, k, a));
+    }
+
+    printResultToFile(I, k, "z_check");
+}
+
+// *****************************************************************************
+// *****************************************************************************
 
 int main()
 {
@@ -280,7 +561,7 @@ int main()
     //int N_gorner = 214, k = 2;
     //int N_gorner = 165, k = 3;
     const bmp_real k = bmp_real(1.0/2.0);
-    const int N_base = 4;
+    const int N_base = 2;
 
 #if 0
 
@@ -296,12 +577,22 @@ int main()
     printResultToFile(y0, k, "y0");
     printResultToFile(Y, k, "Y");
 #endif
-
+    // *************************************************************************
+    // Работа с прецизионными аппроксимациями полуцелых индексов
+    // *************************************************************************
+    calculate_k_half_integer();
+    //check_z_value();
+    //calculate_asimpt_value();
+    //check_quadrature();
+    //check_negative_quadrature_values();
+    //comp_kostya_and_precise();
+    // *************************************************************************
+    // *************************************************************************
     //epc::checkTrapz(0, PI); // Для статьи о сверхстепенной сходимости
     //epc::checkTrapz(0, bmp_real(1.0));
     //check();
     //control_point();
-    check_func_on_x();
+    //check_func_on_x();
     //compare();
     //probe_dots();
     //forPlot();
@@ -312,7 +603,7 @@ int main()
     matrix_type::_matrix A, A_inv;
     matrix_type::_vector B, x, delta_base(y0.size(), 0), delta_add(Y.size(), 0);
     matrix_type::_vector a, b;
-    //object.fill_matrix(N_base, I_base, y0, B, A);
+    object.fill_matrix(N_base, I_base, y0, B, A);
 
     //A_inv = inverse(A);
     //object.find_coefficients(A_inv, B, a, b, N_base);
