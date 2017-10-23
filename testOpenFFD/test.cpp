@@ -186,7 +186,7 @@ void printResultToFile(matrix_type::_vector x, bmp_real k, std::string varName)
     convertor >> fileName;
     fileName = varName + "_k" + fileName + ".txt";
 
-    std::ofstream f_out; // создаём объект класса ofstream для записи 
+    std::ofstream f_out;
     f_out.open(fileName);
     f_out.precision(std::numeric_limits<bmp_real>::max_digits10);
     for (int i = 0; i < x.size(); i++)
@@ -216,6 +216,7 @@ void GetValue_w(matrix_type::_vector &I_base,
     }
 }
 #if 0
+// Для целых
 static void computeIntegral(std::vector<bmp_real> x0, 
                             std::vector<bmp_real> X,
                             std::vector<bmp_real>& I_base, 
@@ -280,12 +281,12 @@ static void computeIntegral(std::vector<bmp_real> x0,
     bmp_real t = 0, a = 0;
     for (int i = 0; i < x0.size(); i++) {
         I_base.push_back(fdsf::richardson_method(x0.at(i), t, k, a));
-        std::cout << "x0: " << x0.at(i) << " I_base: " << I_base.at(i) << std::endl;
+        //std::cout << "x0: " << x0.at(i) << " I_base: " << I_base.at(i) << std::endl;
     }
 
     for (int i = 0; i < X.size(); i++) {
         I_additional.push_back(fdsf::richardson_method(X.at(i), t, k, a));
-        std::cout << "X: " << X.at(i) << " I_add: " << I_additional.at(i) << std::endl;
+        //std::cout << "X: " << X.at(i) << " I_add: " << I_additional.at(i) << std::endl;
         //<< std::fixed << std::setprecision(std::numeric_limits<bmp_real>::max_digits10)
     }
 
@@ -404,7 +405,7 @@ static bmp_real get_assympt_value(bmp_real x, bmp_real k)
 static bmp_real get_series_value(bmp_real x, bmp_real k)
 {
     bmp_real series_value = 0;
-    size_t N = log(fdsf::epsilon) / (x);
+    auto N = log(fdsf::epsilon) / (x);
 
     for (size_t n = 1; n < N; ++n) {
         series_value += pow(-1.0, n - 1) * exp(n*x) / pow(n, k + 1);
@@ -433,10 +434,10 @@ void comp_kostya_and_precise()
     x = 30.0;// +10E-8;
     std::cout << "x = " << x << std::endl;
     I = fdsf::richardson_method(x, t, k, a);
-    I_kostya = fdsf::fd_half(x);
+    //I_kostya = fdsf::fd_half(x);
     I_precise = get_assympt_value(x, k);
     std::cout << "I_quadrature: " << I << std::endl;
-    std::cout << "I_kostya: " << I_kostya << std::endl;
+    //std::cout << "I_kostya: " << I_kostya << std::endl;
     std::cout << "I_precise: " << I_precise << std::endl;
     std::cout << "delta = " << I / I_precise - 1 << std::endl;
 }
@@ -504,12 +505,12 @@ void calculate_k_half_integer()
 {
     std::vector<bmp_real> x0, X, y0, Y;
     std::vector<bmp_real> I_base, I_additional;
-    const bmp_real k = bmp_real(1.0 / 2.0);
-    const int N_base = 20;
+    const bmp_real k = bmp_real(7.0 / 2.0);
+    const int N_base = 5;
     // Расчет значения интеграла в базовых узлах
-    //fdsf::SetLinearTrigonometricGrid(y0, x0, Y, X, N_base);
-    SetLinearTrigonometricGridRight(y0, x0, Y, X, N_base);
-    // Расчет схемы Горнера и подсчета интеграла на Гауссовой сетке
+    fdsf::SetLinearTrigonometricGrid(y0, x0, Y, X, N_base);
+    //SetLinearTrigonometricGridRight(y0, x0, Y, X, N_base);
+    // Расчет интеграла
     computeIntegral(x0, X, I_base, I_additional, k);
 
     printResultToFile(I_base, k, "I_base");
@@ -547,6 +548,168 @@ void check_z_value()
     printResultToFile(I, k, "z_check");
 }
 
+
+std::vector<bmp_real> kuzmina_calculate_int(const bmp_real k) {
+    std::vector<bmp_real> x0, X, y0, Y;
+    std::vector<bmp_real> I_base, I_additional;
+    const int N_base = 5;
+    // Расчет значения интеграла в базовых узлах
+    //fdsf::SetLinearTrigonometricGrid(y0, x0, Y, X, N_base);
+    SetLinearTrigonometricGridRight(y0, x0, Y, X, N_base);
+    // Расчет интеграла
+    computeIntegral(x0, X, I_base, I_additional, k);
+    return I_additional;
+}
+
+void kuzminaCheck() {
+    double k_index = 3.0 / 2;
+    std::vector<bmp_real> I_12_prec = kuzmina_calculate_int(bmp_real(1.0 / 2.0));
+    std::vector<bmp_real> I_32_prec = kuzmina_calculate_int(bmp_real(3.0 / 2.0));
+    std::vector<bmp_real> y;
+    std::cout << "got I_32" << std::endl;
+    std::cout << I_12_prec.size() << std::endl;
+    std::cout << I_32_prec.size() << std::endl;
+    for (auto i = 0; i < I_12_prec.size(); ++i) {
+        y.push_back(sqrt(3.0 * I_12_prec[i] / 2));
+        //std::cout << "y = " << y[i] << std::endl;
+    }
+    std::cout << y.size() << std::endl;
+    //double y_star = 3.75;
+    double alpha0 = 2.0 / 5;
+    std::vector<bmp_real> alpha = { 58432.930, 21851.397, 1891.7921, 57.806497 };
+    std::vector<bmp_real> betta = { 0.10730909, 0.0033951152 };
+    std::vector<bmp_real> approximation;
+    std::vector<bmp_real> delta;
+
+    ///TODO: correct calculation of I32
+    auto k = 2; // from formula
+    for (auto i = 0; i < I_12_prec.size(); i++) {
+        std::cout << "in cycle" << std::endl;
+        bmp_real num;
+        bmp_real denom;
+        for (auto p = 0; p < alpha.size(); p++ ) {
+            num = alpha[p] * pow(y[i], 8.0*p / 3);
+            if (p < betta.size()) {
+                denom = betta[p] * pow(y[i], 8.0*p / 3);
+            }
+        }
+        auto drob = num / denom;
+        approximation.push_back(alpha0 * pow(y[i], k) * pow(drob, 1.0/4));
+        delta.push_back(approximation[i]/I_32_prec[i]);
+    }
+
+    for (auto i : delta) {
+        std::cout << "approx for k = 3/2: " << i-1 << std::endl;
+    }
+}
+
+void calculate_all_k() {
+    std::vector<bmp_real> k = { -0.5, 0.5, 1.5, 2.5, 3.5 };
+    bmp_real left_start = -5.0, right_start = 3;
+    bmp_real left_end = 5.0, right_end = 30;
+    bmp_real span = 0.1;
+    std::vector<bmp_real> x_left, x_right;
+    for (auto i = left_start; i < left_end; i += span) {
+        x_left.push_back(i);
+    }
+    for (auto i = right_start; i < right_end; i += span) {
+        x_right.push_back(i);
+    }
+    //std::cout << x_left.size() << std::endl;
+    for (auto index : k) {
+        std::vector<bmp_real> I_left;
+        for (auto item : x_left) {
+            bmp_real t=0, a;
+            I_left.push_back(fdsf::richardson_method(item, t, index, a));
+            printResultToFile(I_left, index, "I");
+        }
+        std::vector<bmp_real> I_right;
+        for (auto item : x_right) {
+            bmp_real t = 0, a;
+            I_right.push_back(fdsf::richardson_method(item, t, index, a));
+            printResultToFile(I_right, index, "I_right");
+        }
+        //std::cout << I.size() << std::endl;
+    }
+
+    std::vector<bmp_real> I_m32;
+    for (auto item : x_left) {
+        //I_m32.push_back(fdsf::fd_3mhalf(item));
+    }
+    printResultToFile(I_m32, -1.5, "I");
+
+    std::vector<bmp_real> I_m32_right;
+    for (auto item : x_right) {
+        //I_m32_right.push_back(fdsf::fd_3mhalf(item));
+    }
+    printResultToFile(I_m32_right, -1.5, "I_right");
+}
+
+void chebyshevBaseNodes(std::vector<bmp_real> &y_base,
+                        std::vector<bmp_real> &x_base,
+                        std::vector<bmp_real> &Y,
+                        std::vector<bmp_real> &X, int N_base) {
+    int n_additional = 11;
+    const bmp_real one = bmp_real(1);
+    const bmp_real num2 = bmp_real(2); //if integer
+    const bmp_real x_star = bmp_real(3);
+    const bmp_real y_star = bmp_real(log(1 + exp(x_star))); // if half-integer
+    bmp_real baseSize = bmp_real(N_base); // if poly approximation
+
+    const bmp_real y_star_inv = 1 / (y_star * y_star);
+
+    // Задаются базовые узлы интерполяции
+    for (size_t j = 1; j <= baseSize; j++) {
+        y_base.push_back( y_star_inv*pow(sin(PI*j/(2*baseSize)), 2) );
+        std::cout << y_base[j - 1] << " ";
+    }
+
+    // Задаются дополнительные точки
+    Y.push_back(y_base[0] / n_additional);
+
+    for (size_t i = 1; i < n_additional; i++) {
+        Y.push_back(Y[i - 1] + y_base[0] / n_additional);
+    }
+
+    for (size_t index = 1; index < y_base.size(); index++) {
+        for (size_t i = 0; i < n_additional; i++) {
+            Y.push_back(Y.back() + (y_base[index] - y_base[index - 1]) / n_additional);
+        }
+    }
+
+    // Разворачиваем y
+    std::reverse(y_base.begin(), y_base.end());
+    for (size_t j = 0; j < baseSize; j++) {
+        y_base[j] = 1.0 / pow(y_base[j], 0.5);
+        x_base.push_back(log(exp(y_base[j]) - one));
+    }
+
+    std::reverse(Y.begin(), Y.end());
+    //std::cout << Y.size() << std::endl;
+    for (size_t j = 0; j < Y.size(); j++) {
+        Y[j] = 1.0 / pow(Y[j], 0.5);
+        X.push_back(log(exp(Y[j]) - one));
+    }
+}
+
+
+void test_chebyshev_base_nodes() {
+    bmp_real k = 0.5;
+    std::vector<bmp_real> x0, X, y0, Y;
+    std::vector<bmp_real> I_base, I_additional;
+    const int N_base = 1;
+    // Расчет значения интеграла в базовых узлах
+    chebyshevBaseNodes(y0, x0, Y, X, N_base);
+    // Расчет интеграла
+    computeIntegral(x0, X, I_base, I_additional, k);
+
+    printResultToFile(I_base, k, "I_base");
+    printResultToFile(I_additional, k, "I_add");
+    printResultToFile(y0, k, "y0");
+    printResultToFile(Y, k, "Y");
+
+}
+
 // *****************************************************************************
 // *****************************************************************************
 
@@ -580,12 +743,25 @@ int main()
     // *************************************************************************
     // Работа с прецизионными аппроксимациями полуцелых индексов
     // *************************************************************************
-    calculate_k_half_integer();
+    //calculate_k_half_integer();
     //check_z_value();
     //calculate_asimpt_value();
     //check_quadrature();
     //check_negative_quadrature_values();
     //comp_kostya_and_precise();
+
+    //calculate_all_k();
+    /**********************************
+     * Проверка чебышевской сетки
+     **********************************/
+    test_chebyshev_base_nodes();
+
+    //*****************************
+
+    // Кузьмина
+    //*******************************************
+    //kuzminaCheck();
+    //*******************************************
     // *************************************************************************
     // *************************************************************************
     //epc::checkTrapz(0, PI); // Для статьи о сверхстепенной сходимости

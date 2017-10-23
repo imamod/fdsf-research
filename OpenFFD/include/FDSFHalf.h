@@ -11,7 +11,8 @@ namespace fdsf {
     };
 
     // for k = -3/2
-    bmp_real fermi_dirak_m3half(bmp_real ksi, bmp_real x, bmp_real k, bmp_real a);
+    bmp_real fermi_dirak_m3half(bmp_real ksi, bmp_real x,
+                                bmp_real k, bmp_real a, integration_segment_values isv);
     
     // for others half-integer k
     bmp_real fermi_dirak_half_integer(bmp_real ksi, bmp_real x,

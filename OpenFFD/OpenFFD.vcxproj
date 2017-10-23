@@ -144,6 +144,9 @@
     <ClCompile Include="src\Newton.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BasicService.h" />
+    <ClInclude Include="BasicTypes.h" />
+    <ClInclude Include="include\ChebyshevApp.h" />
     <ClInclude Include="include\definitions.h" />
     <ClInclude Include="include\excess_power_convergence.h" />
     <ClInclude Include="include\FDSFHalf.h" />

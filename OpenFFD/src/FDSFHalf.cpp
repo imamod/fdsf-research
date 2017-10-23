@@ -20,13 +20,15 @@ namespace fdsf {
                (pow(denom, k + 2) * (exp_ksi + exp(-x)));
     }
 
-    bmp_real fermi_dirak_m3half(bmp_real ksi, bmp_real x, bmp_real k, bmp_real a)
+    bmp_real fermi_dirak_m3half(bmp_real ksi, bmp_real x,
+                                bmp_real k, bmp_real a,
+                                integration_segment_values isv)
     {
         bmp_real exp_ksi = exp(-a * ksi * ksi / (1 - ksi * ksi));
         bmp_real sum_exp = exp_ksi + exp(-x);
         bmp_real exp_diff = exp( -a * ksi * ksi / (1 - ksi * ksi) - x);
 
-        return (-4 * exp_diff * sqrt(a) * exp_ksi) /
+        return (-4 * exp_diff * sqrt(abs(a)) * exp_ksi) /
             (pow(1 - ksi * ksi, bmp_real( 3.0 / 2 )) * sum_exp * sum_exp);
     }
 
@@ -90,7 +92,7 @@ namespace fdsf {
         a = newton::NewtonsMethod(x, k);
         //std::cout << "a = " << a << std::endl;
         if (k == -3.0 / 2) {
-            //return trapz(fermi_dirak_m3half, x, k, N, a);
+            return trapz(fermi_dirak_m3half, x, k, N, a);
         } 
         else {
             return trapz(fermi_dirak_half_integer, x, k, N, a);
