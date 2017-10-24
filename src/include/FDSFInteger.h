@@ -20,8 +20,6 @@ namespace fdsf{
                                     std::vector<bmp_real> &X, int N_base);
 
     // Вычисление Г-функции
-    // TODO: сделать для полуцелых индексов
-    // TODO: лучше подрубить boost
     bmp_real factorial(bmp_real k);
 
     // Вычисляет значение функции ФД индекса k = 1, 2, 3 в точке x при заданном

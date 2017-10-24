@@ -4,6 +4,7 @@
 #include <limits>
 #include <iostream>
 #include <fstream>
+#include <unordered_map>
 
 namespace fdsf {
 
@@ -128,22 +129,23 @@ namespace fdsf {
     // TODO: rename as gamma
     bmp_real factorial(bmp_real k)
     {
-        if (k == -1.5)
-            return -2.0 * sqrt(PI);
-        if (k == -0.5)
-            return sqrt(PI);
-        if (k == 0)
+        std::unordered_map<bmp_real, bmp_real> SUPPORTED_HALFINTEGER_INDICES = {
+            { -1.5, -2 * sqrt(PI) },
+            { -0.5, sqrt(PI) },
+            { 0.5, sqrt(PI) / 2 },
+            { 1.5, 3 * sqrt(PI) / 4 },
+            { 2.5, 15 * sqrt(PI) / 8 },
+            { 3.5, 105 * sqrt(PI) / 16 }
+        };
+
+        auto it = SUPPORTED_HALFINTEGER_INDICES.find(k);
+        if (it != SUPPORTED_HALFINTEGER_INDICES.end()) {
+            return SUPPORTED_HALFINTEGER_INDICES[k];
+        }
+        if (!k) {
             return 1;
-        if (k == 0.5)
-            return sqrt(PI) / 2;
-        if (k == 1.5)
-            return 3*sqrt(PI) / 4;
-        if (k == 2.5)
-            return 15*sqrt(PI) / 8;
-        if (k == 3.5)
-            return 105*sqrt(PI) / 16;
-        else
-            return k*factorial(k - 1);
+        }
+        return k*factorial(k - 1);
     }
 
     bmp_real gauss_christoffel_method(bmp_real(*f)(bmp_real, bmp_real, bmp_real),
