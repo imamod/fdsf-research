@@ -4,6 +4,7 @@
 #include <limits>
 #include <iostream>
 #include <fstream>
+#include <unordered_map>
 
 namespace fdsf {
 
@@ -60,12 +61,15 @@ namespace fdsf {
         int n_additional = 11;
         const bmp_real alpha = 2 / (2 + PI);
         const bmp_real one = bmp_real(1);
-        const bmp_real num2 = bmp_real(2);
-        bmp_real baseSize = bmp_real(2 * N_base + 1);
+        const bmp_real num2 = bmp_real(2); //if integer
+        const bmp_real x_star = bmp_real(3);
+        const bmp_real y_star = bmp_real(log(1 + exp(x_star))); // if half-integer
+        bmp_real baseSize = bmp_real(2 * N_base + 1); // if integer || half-integer & !fixed a(N+1)
+        //bmp_real baseSize = bmp_real(2 * N_base ); // if half-integer & fixed a(N+1)
 
         // «адаютс€ базовые узлы интерпол€ции
         for (int j = 1; j <= baseSize; j++) {
-            y_base.push_back(log(num2) / num2*(num2 * alpha*j / baseSize
+            y_base.push_back(y_star / num2*(num2 * alpha*j / baseSize
                 + (one - alpha)*(one - cos(PI*j / baseSize))));
             x_base.push_back(log(exp(y_base.at(j - 1)) - one));
         }
@@ -125,22 +129,23 @@ namespace fdsf {
     // TODO: rename as gamma
     bmp_real factorial(bmp_real k)
     {
-        if (k == -1.5)
-            return -2.0 * sqrt(PI);
-        if (k == -0.5)
-            return sqrt(PI);
-        if (k == 0)
+        std::unordered_map<bmp_real, bmp_real> SUPPORTED_HALFINTEGER_INDICES = {
+            { -1.5, -2 * sqrt(PI) },
+            { -0.5, sqrt(PI) },
+            { 0.5, sqrt(PI) / 2 },
+            { 1.5, 3 * sqrt(PI) / 4 },
+            { 2.5, 15 * sqrt(PI) / 8 },
+            { 3.5, 105 * sqrt(PI) / 16 }
+        };
+
+        auto it = SUPPORTED_HALFINTEGER_INDICES.find(k);
+        if (it != SUPPORTED_HALFINTEGER_INDICES.end()) {
+            return SUPPORTED_HALFINTEGER_INDICES[k];
+        }
+        if (!k) {
             return 1;
-        if (k == 0.5)
-            return sqrt(PI) / 2;
-        if (k == 1.5)
-            return 3*sqrt(PI) / 4;
-        if (k == 2.5)
-            return 15*sqrt(PI) / 8;
-        if (k == 3.5)
-            return 105*sqrt(PI) / 16;
-        else
-            return k*factorial(k - 1);
+        }
+        return k*factorial(k - 1);
     }
 
     bmp_real gauss_christoffel_method(bmp_real(*f)(bmp_real, bmp_real, bmp_real),
@@ -164,11 +169,11 @@ namespace fdsf {
 
         for (int n = N - 1; n >= 0; n--) {
             // –асчет дополнительных узлов
-            t.at(0) = T * (n + half - half * sqrt((num35 + 2 * sqrt(num70)) / num63)) / N;
-            t.at(1) = T * (n + half - half * sqrt((num35 - 2 * sqrt(num70)) / num63)) / N;
-            t.at(2) = T * (n + half) / N;
-            t.at(3) = T * (n + half + half * sqrt((num35 - 2 * sqrt(num70)) / num63)) / N;
-            t.at(4) = T * (n + half + half * sqrt((num35 + 2 * sqrt(num70)) / num63)) / N;
+            t[0] = T * (n + half - half * sqrt((num35 + 2 * sqrt(num70)) / num63)) / N;
+            t[1] = T * (n + half - half * sqrt((num35 - 2 * sqrt(num70)) / num63)) / N;
+            t[2] = T * (n + half) / N;
+            t[3] = T * (n + half + half * sqrt((num35 - 2 * sqrt(num70)) / num63)) / N;
+            t[4] = T * (n + half + half * sqrt((num35 + 2 * sqrt(num70)) / num63)) / N;
             //
             U = U + T * (f(t[2], x, k) * gamma_3 + gamma_1_5 * ((f(t[0], x, k)) + f(t[4], x, k))
                 + gamma_2_4 * ((f(t[1], x, k)) + f(t[3], x, k)));
@@ -200,14 +205,14 @@ namespace fdsf {
         }
         //std::ofstream fout;
         //fout.open("check_a_x.txt");
-        std::cout << "x = " << x << std::endl;
-//        fout << (I_n) << std::fixed <<
-//            std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
-        std::cout << "N = " << N << ": I = " << I_n << std::endl;
+        //std::cout << "x = " << x << std::endl;
+        //fout << (I_n) << std::fixed <<
+        //    std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
+        //std::cout << "N = " << N << ": I = " << I_n << std::endl;
         do {
             if (isHalfInteger) {
                 I_2n = euler_maclaurin_method(x, k, 2 * N, a);
-                //I_2n += I_n / 2; // дл€ трапеции
+                //I_2n += I_n / 2; // дл€ трапеции если сетки по удвоенной
             }
             else {
                 I_2n = gauss_christoffel_method(&fermi_dirak_integer, x, t, k, 2 * N);
@@ -219,7 +224,7 @@ namespace fdsf {
             //stop_criteria = (I_n / 0.52115038310799122 - 1); //k=-0.5
             I_n = I_2n;
             N = 2 * N;
-            std::cout << "N = " << N << ": d = "<< abs(stop_criteria) << std::endl; 
+            //std::cout << "N = " << N << ": d = "<< abs(stop_criteria) << std::endl; 
             //std::cout << "N = " << N << ": I = " << I_n << std::endl;
         } while (abs(stop_criteria) > 1e-11);
         //while (abs(stop_criteria) > epsilon*100);
