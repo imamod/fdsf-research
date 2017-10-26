@@ -179,20 +179,20 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\excess_power_convergence.cpp" />
+    <ClCompile Include="..\src\ExponentialConvergence.cpp" />
     <ClCompile Include="..\src\FDSFHalf.cpp" />
     <ClCompile Include="..\src\FDSFInteger.cpp" />
-    <ClCompile Include="..\src\matrix_helper.cpp" />
+    <ClCompile Include="..\src\MatrixUtils.cpp" />
     <ClCompile Include="..\src\Newton.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\BasicService.h" />
     <ClInclude Include="..\include\BasicTypes.h" />
     <ClInclude Include="..\src\include\ChebyshevApp.h" />
-    <ClInclude Include="..\src\include\excess_power_convergence.h" />
+    <ClInclude Include="..\src\include\ExponentialConvergence.h" />
     <ClInclude Include="..\src\include\FDSFHalf.h" />
     <ClInclude Include="..\src\include\FDSFInteger.h" />
-    <ClInclude Include="..\src\include\matrix_helper.h" />
+    <ClInclude Include="..\src\include\MatrixUtils.h" />
     <ClInclude Include="..\src\include\Newton.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

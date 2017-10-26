@@ -2,14 +2,14 @@
 #include "FDSFHalf.h"
 #include <boost/math/special_functions/gamma.hpp>
 
-#include "matrix_helper.h"
+#include "MatrixUtils.h"
 #include <iomanip>
 #include <limits>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 
-#include "excess_power_convergence.h"
+#include "ExponentialConvergence.h"
 #include "../tefis/src/fdi/fdsf/fdsf.h"
 
 #if 0

@@ -1,6 +1,4 @@
-﻿// Implementation of matrix_helper.h
-//
-#include "matrix_helper.h"
+﻿#include "MatrixUtils.h"
 #include <math.h>
 #include <limits>
 #include <iomanip>

@@ -1,7 +1,7 @@
 #include "FDSFInteger.h"
 //#include "FDSFHalf.h"
 #include "Newton.h"
-#include "excess_power_convergence.h"
+#include "ExponentialConvergence.h"
 
 #include <iostream>
 #include <fstream>
