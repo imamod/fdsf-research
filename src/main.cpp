@@ -140,7 +140,7 @@ void probe_dots()
     bmp_real k = 7.0 / 2;
     bmp_real t = 0;
     std::vector<bmp_real> x = { -2, 2 };
-    for (int i = 0; i < x.size(); i++) {
+    for (size_t i = 0; i < x.size(); i++) {
         bmp_real a;
         bmp_real I_base = fdsf::richardson_method(x[i], t, k, a);
         std::cout << I_base << std::endl;
@@ -189,8 +189,7 @@ void printResultToFile(matrix_type::_vector x, bmp_real k, std::string varName)
     std::ofstream f_out;
     f_out.open(fileName);
     f_out.precision(std::numeric_limits<bmp_real>::max_digits10);
-    for (int i = 0; i < x.size(); i++)
-    {
+    for (size_t i = 0; i < x.size(); i++) {
         f_out << std::fixed << x[i] << std::endl;
     }
 
@@ -205,12 +204,12 @@ void GetValue_w(matrix_type::_vector &I_base,
                 matrix_type::_vector X, bmp_real k)
 {
     bmp_real y;
-    for (int i = 0; i < I_base.size(); i++) {
+    for (size_t i = 0; i < I_base.size(); i++) {
         y = log(1 + exp(x0[i]));
         I_base[i] = pow((I_base[i]*exp(x0[i]) / y0[i]), 1.0 / k);
     }
 
-    for (int i = 0; i < I_additional.size(); i++) {
+    for (size_t i = 0; i < I_additional.size(); i++) {
         y = log(1 + exp(X[i]));
         I_additional[i] = pow((I_additional[i]*exp(X[i]) / Y[i]), 1 / k);
     }
@@ -279,12 +278,12 @@ static void computeIntegral(std::vector<bmp_real> x0,
                             bmp_real k)
 {
     bmp_real t = 0, a = 0;
-    for (int i = 0; i < x0.size(); i++) {
+    for (size_t i = 0; i < x0.size(); i++) {
         I_base.push_back(fdsf::richardson_method(x0.at(i), t, k, a));
         //std::cout << "x0: " << x0.at(i) << " I_base: " << I_base.at(i) << std::endl;
     }
 
-    for (int i = 0; i < X.size(); i++) {
+    for (size_t i = 0; i < X.size(); i++) {
         I_additional.push_back(fdsf::richardson_method(X.at(i), t, k, a));
         //std::cout << "X: " << X.at(i) << " I_add: " << I_additional.at(i) << std::endl;
         //<< std::fixed << std::setprecision(std::numeric_limits<bmp_real>::max_digits10)
@@ -295,9 +294,9 @@ static void computeIntegral(std::vector<bmp_real> x0,
 void SetLinearTrigonometricGridRight(std::vector<bmp_real> &y_base,
                                      std::vector<bmp_real> &x_base,
                                      std::vector<bmp_real> &Y,
-                                     std::vector<bmp_real> &X, int N_base)
+                                     std::vector<bmp_real> &X, size_t N_base)
 {
-    int n_additional = 11;
+    size_t n_additional = 11;
     const bmp_real alpha = 2 / (2 + PI);
     const bmp_real one = bmp_real(1);
     const bmp_real num2 = bmp_real(2); //if integer
@@ -314,7 +313,7 @@ void SetLinearTrigonometricGridRight(std::vector<bmp_real> &y_base,
     //const bmp_real y_star_inv = 1 / pow(y_star, 3.0 / 2);
 
     // Задаются базовые узлы интерполяции
-    for (int j = 1; j <= baseSize; j++) {
+    for (size_t j = 1; j <= baseSize; j++) {
         y_base.push_back(y_star_inv / num2*(num2 * alpha*j / baseSize
             + (one - alpha)*(one - cos(PI*j / baseSize))));
     }
@@ -322,20 +321,20 @@ void SetLinearTrigonometricGridRight(std::vector<bmp_real> &y_base,
     // Задаются дополнительные точки
     Y.push_back(y_base[0] / n_additional);
 
-    for (int i = 1; i < n_additional; i++)
+    for (size_t i = 1; i < n_additional; i++)
     {
         Y.push_back(Y[i - 1] + y_base[0] / n_additional);
     }
 
-    for (int index = 1; index < y_base.size(); index++) {
-        for (int i = 0; i < n_additional; i++) {
+    for (size_t index = 1; index < y_base.size(); index++) {
+        for (size_t i = 0; i < n_additional; i++) {
             Y.push_back(Y.back() + (y_base[index] - y_base[index - 1]) / n_additional);
         }
     }
 
     // Разворачиваем y
     std::reverse(y_base.begin(), y_base.end());
-    for (int j = 0; j < baseSize; j++) {
+    for (size_t j = 0; j < baseSize; j++) {
         y_base[j] = 1.0 / pow(y_base[j], 0.5);
         //y_base[j] = 1.0 / y_base[j];
         //y_base[j] = 1.0 / (y_base[j] * y_base[j]);
@@ -346,7 +345,7 @@ void SetLinearTrigonometricGridRight(std::vector<bmp_real> &y_base,
 
     std::reverse(Y.begin(), Y.end());
     //std::cout << Y.size() << std::endl;
-    for (int j = 0; j < Y.size(); j++) {
+    for (size_t j = 0; j < Y.size(); j++) {
         Y[j] = 1.0 / pow(Y[j], 0.5);
         //Y[j] = 1.0 / Y[j]; 
         //Y[j] = 1.0 / (Y[j] * Y[j]);
@@ -370,11 +369,11 @@ std::vector<bmp_real> calculate_series_part(const bmp_real& k,
 
     std::vector<bmp_real> series_value;
 
-    for (int i = 0; i < X.size(); i++) {
+    for (size_t i = 0; i < X.size(); i++) {
         bmp_real coeff_C = 1;
         bmp_real nom = k + 1;
         bmp_real series_sum = bmp_real(1.0);
-        for (int j = 0; j < coeff_A.size(); j++) {
+        for (size_t j = 0; j < coeff_A.size(); j++) {
             coeff_C *= nom*(nom-1); // По асимптотической формуле парное добавление множителей, поэтому далее отнимаем 2
             series_sum += 2.0 * (1.0 - pow(2.0, 1.0 - 2*(j+1))) * pow(X[i], (-2.0)*(j + 1))*coeff_A[j]*coeff_C;
             //std::cout << "A(j) = " << coeff_A[j] << ": series_sum = " << series_sum << std::endl;
@@ -493,7 +492,7 @@ void calculate_asimpt_value()
     }
 
     series_part = calculate_series_part(k, X);
-    for (int i = 0; i < X.size(); i++) {
+    for (size_t i = 0; i < X.size(); i++) {
         I_minus.push_back(fdsf::richardson_method(-X[i], t, k, a));
         I.push_back( I_minus[i] + series_part[i]);
     }
@@ -506,7 +505,7 @@ void calculate_k_half_integer()
     std::vector<bmp_real> x0, X, y0, Y;
     std::vector<bmp_real> I_base, I_additional;
     const bmp_real k = bmp_real(7.0 / 2.0);
-    const int N_base = 5;
+    const size_t N_base = 5;
     // Расчет значения интеграла в базовых узлах
     fdsf::SetLinearTrigonometricGrid(y0, x0, Y, X, N_base);
     //SetLinearTrigonometricGridRight(y0, x0, Y, X, N_base);
@@ -541,7 +540,7 @@ void check_z_value()
         i++;
     }
 
-    for (int i = 0; i < X.size(); i++) {
+    for (size_t i = 0; i < X.size(); i++) {
         I.push_back(fdsf::richardson_method(X[i], t, k, a));
     }
 
@@ -569,7 +568,7 @@ void kuzminaCheck() {
     std::cout << "got I_32" << std::endl;
     std::cout << I_12_prec.size() << std::endl;
     std::cout << I_32_prec.size() << std::endl;
-    for (auto i = 0; i < I_12_prec.size(); ++i) {
+    for (size_t i = 0; i < I_12_prec.size(); ++i) {
         y.push_back(sqrt(3.0 * I_12_prec[i] / 2));
         //std::cout << "y = " << y[i] << std::endl;
     }
@@ -583,11 +582,11 @@ void kuzminaCheck() {
 
     ///TODO: correct calculation of I32
     auto k = 2; // from formula
-    for (auto i = 0; i < I_12_prec.size(); i++) {
+    for (size_t i = 0; i < I_12_prec.size(); i++) {
         std::cout << "in cycle" << std::endl;
         bmp_real num;
         bmp_real denom;
-        for (auto p = 0; p < alpha.size(); p++ ) {
+        for (size_t p = 0; p < alpha.size(); p++ ) {
             num = alpha[p] * pow(y[i], 8.0*p / 3);
             if (p < betta.size()) {
                 denom = betta[p] * pow(y[i], 8.0*p / 3);
@@ -649,7 +648,7 @@ void chebyshevBaseNodes(std::vector<bmp_real> &y_base,
                         std::vector<bmp_real> &x_base,
                         std::vector<bmp_real> &Y,
                         std::vector<bmp_real> &X, int N_base) {
-    int n_additional = 11;
+    const size_t n_additional = 11;
     const bmp_real one = bmp_real(1);
     const bmp_real num2 = bmp_real(2); //if integer
     const bmp_real x_star = bmp_real(3);
@@ -697,7 +696,7 @@ void test_chebyshev_base_nodes() {
     bmp_real k = 0.5;
     std::vector<bmp_real> x0, X, y0, Y;
     std::vector<bmp_real> I_base, I_additional;
-    const int N_base = 1;
+    const size_t N_base = 1;
     // Расчет значения интеграла в базовых узлах
     chebyshevBaseNodes(y0, x0, Y, X, N_base);
     // Расчет интеграла
@@ -724,7 +723,7 @@ int main()
     //int N_gorner = 214, k = 2;
     //int N_gorner = 165, k = 3;
     const bmp_real k = bmp_real(1.0/2.0);
-    const int N_base = 2;
+    const size_t N_base = 2;
 
 #if 0
 

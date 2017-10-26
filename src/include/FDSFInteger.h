@@ -1,7 +1,6 @@
 #pragma once
 
-#include "definitions.h"
-#include <vector>
+#include "BasicTypes.h"
 
 namespace fdsf{
 
@@ -14,10 +13,10 @@ namespace fdsf{
 
     // Задает линейно-тригонометрическое сетку в базовых узлах, плюс 10(?)
     // дополнительных точек между каждой парой базовых узлов.
-    void SetLinearTrigonometricGrid(std::vector<bmp_real> &y_base, 
-                                    std::vector<bmp_real> &x_base, 
-                                    std::vector<bmp_real> &Y, 
-                                    std::vector<bmp_real> &X, int N_base);
+    void SetLinearTrigonometricGrid(std::vector<bmp_real> &y_base,
+                                    std::vector<bmp_real> &x_base,
+                                    std::vector<bmp_real> &Y,
+                                    std::vector<bmp_real> &X, size_t N_base);
 
     // Вычисление Г-функции
     bmp_real factorial(bmp_real k);

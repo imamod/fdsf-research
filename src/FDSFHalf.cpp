@@ -34,7 +34,7 @@ namespace fdsf {
 
     // Euler-Macloren Formulas
     static bmp_real trapz(function f, bmp_real x, const bmp_real k, 
-                          int N, bmp_real a)
+                          size_t N, bmp_real a)
     {
         bmp_real h = bmp_real(1.0 / N);
         integration_segment_values isv = {0, N};
@@ -62,7 +62,7 @@ namespace fdsf {
     }
 
     static bmp_real quad(function f, bmp_real x, const bmp_real k, 
-                         int N, bmp_real a)
+                         size_t N, bmp_real a)
     {
         bmp_real I = 0;
         bmp_real h = bmp_real(1.0 / N);
@@ -74,7 +74,7 @@ namespace fdsf {
     }
 
     static bmp_real simpson(function f, bmp_real x, 
-                            const bmp_real k, int N, bmp_real a)
+                            const bmp_real k, size_t N, bmp_real a)
     {
         bmp_real I = 0;
         bmp_real h = bmp_real(1.0 / N);

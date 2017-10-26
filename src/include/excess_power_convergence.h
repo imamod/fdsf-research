@@ -1,7 +1,8 @@
 #pragma once
 
-#include "definitions.h"
+#include "BasicTypes.h"
 
+// TODO: remove this file
 namespace epc{
     using namespace fdsf;
 

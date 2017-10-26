@@ -56,9 +56,9 @@ namespace fdsf {
     void SetLinearTrigonometricGrid(std::vector<bmp_real> &y_base,
                                     std::vector<bmp_real> &x_base,
                                     std::vector<bmp_real> &Y,
-                                    std::vector<bmp_real> &X, int N_base)
+                                    std::vector<bmp_real> &X, size_t N_base)
     {
-        int n_additional = 11;
+        size_t n_additional = 11;
         const bmp_real alpha = 2 / (2 + PI);
         const bmp_real one = bmp_real(1);
         const bmp_real num2 = bmp_real(2); //if integer
@@ -68,7 +68,7 @@ namespace fdsf {
         //bmp_real baseSize = bmp_real(2 * N_base ); // if half-integer & fixed a(N+1)
 
         // Задаются базовые узлы интерполяции
-        for (int j = 1; j <= baseSize; j++) {
+        for (size_t j = 1; j <= baseSize; j++) {
             y_base.push_back(y_star / num2*(num2 * alpha*j / baseSize
                 + (one - alpha)*(one - cos(PI*j / baseSize))));
             x_base.push_back(log(exp(y_base.at(j - 1)) - one));
@@ -77,14 +77,14 @@ namespace fdsf {
         Y.push_back(y_base.at(0) / n_additional);
         X.push_back(log(exp(Y.at(0)) - one));
 
-        for (int i = 1; i < n_additional; i++)
+        for (size_t i = 1; i < n_additional; i++)
         {
             Y.push_back(Y.at(i - 1) + y_base.at(0) / n_additional);
             X.push_back(log(exp(Y.at(i)) - one));
         }
 
-        for (int index = 1; index < y_base.size(); index++) {
-            for (int i = 0; i < n_additional; i++) {
+        for (size_t index = 1; index < y_base.size(); index++) {
+            for (size_t i = 0; i < n_additional; i++) {
                 Y.push_back(Y.back() + (y_base.at(index) - y_base.at(index - 1)) / n_additional);
                 X.push_back(log(exp(Y.back()) - one));
             }
@@ -127,9 +127,9 @@ namespace fdsf {
     }
 
     // TODO: rename as gamma
-    bmp_real factorial(bmp_real k)
-    {
-        std::unordered_map<bmp_real, bmp_real> SUPPORTED_HALFINTEGER_INDICES = {
+    bmp_real factorial(bmp_real _k) {
+        auto k = static_cast<double>(_k);
+        std::unordered_map<double, bmp_real> SUPPORTED_HALFINTEGER_INDICES = {
             { -1.5, -2 * sqrt(PI) },
             { -0.5, sqrt(PI) },
             { 0.5, sqrt(PI) / 2 },

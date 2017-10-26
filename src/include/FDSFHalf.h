@@ -1,7 +1,6 @@
 #pragma once
 
-#include "definitions.h"
-#include <vector>
+#include "BasicTypes.h"
 
 namespace fdsf {
 

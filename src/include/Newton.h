@@ -1,6 +1,6 @@
 #pragma once
 
-#include "definitions.h"
+#include "BasicTypes.h"
 
 namespace fdsf {
     namespace newton {
