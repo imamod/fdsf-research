@@ -117,6 +117,7 @@ ClientBin/
 *.[Pp]ublish.xml
 *.pfx
 *.publishsettings
+*.VC.*
 
 # RIA/Silverlight projects
 Generated_Code/
@@ -154,3 +155,6 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+
+# Text files
+*.txt
