@@ -191,9 +191,8 @@
   <ItemGroup>
     <ClInclude Include="..\include\BasicService.h" />
     <ClInclude Include="..\include\BasicTypes.h" />
-    <ClInclude Include="..\src\include\ChebyshevApp.h" />
     <ClInclude Include="..\src\include\ExponentialConvergence.h" />
-    <ClInclude Include="..\src\include\FDSFInteger.h" />
+    <ClInclude Include="..\src\include\Fdsf.h" />
     <ClInclude Include="..\src\include\MatrixUtils.h" />
     <ClInclude Include="..\src\include\Newton.h" />
   </ItemGroup>

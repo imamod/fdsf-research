@@ -9,13 +9,11 @@
 #include <string>
 #include <vector>
 
-using BinaryData = std::vector<uint8_t>;
-using StringsVector = std::vector<std::string>;
-using StringsMap = std::map<std::string, std::string>;
-
 //using BmpReal = boost::multiprecision::cpp_dec_float_50;
 using bmp_real = boost::multiprecision::cpp_dec_float_50;
 using Real = double;
+
+using BmpVector = std::vector<bmp_real>;
 
 namespace fdsf {
     // Желаемая точность расчета

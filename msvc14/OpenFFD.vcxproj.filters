@@ -32,12 +32,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\include\ChebyshevApp.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\include\FDSFInteger.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\include\Newton.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -51,6 +45,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\include\MatrixUtils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Fdsf.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
