@@ -180,7 +180,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\ExponentialConvergence.cpp" />
-    <ClCompile Include="..\src\FDSFHalf.cpp" />
+    <ClCompile Include="..\src\FDSFHalf.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\src\FDSFInteger.cpp" />
     <ClCompile Include="..\src\MatrixUtils.cpp" />
     <ClCompile Include="..\src\Newton.cpp" />
@@ -190,7 +193,6 @@
     <ClInclude Include="..\include\BasicTypes.h" />
     <ClInclude Include="..\src\include\ChebyshevApp.h" />
     <ClInclude Include="..\src\include\ExponentialConvergence.h" />
-    <ClInclude Include="..\src\include\FDSFHalf.h" />
     <ClInclude Include="..\src\include\FDSFInteger.h" />
     <ClInclude Include="..\src\include\MatrixUtils.h" />
     <ClInclude Include="..\src\include\Newton.h" />

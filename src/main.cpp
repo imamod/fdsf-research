@@ -1,5 +1,4 @@
-#include "FDSFInteger.h"
-#include "FDSFHalf.h"
+#include "Fdsf.h"
 #include <boost/math/special_functions/gamma.hpp>
 
 #include "MatrixUtils.h"

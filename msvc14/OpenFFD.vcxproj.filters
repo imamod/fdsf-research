@@ -35,9 +35,6 @@
     <ClInclude Include="..\src\include\ChebyshevApp.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\include\FDSFHalf.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\include\FDSFInteger.h">
       <Filter>include</Filter>
     </ClInclude>
