@@ -54,6 +54,82 @@ static bmp_real get_series_value(bmp_real x, bmp_real k) {
 
     return fdsf::factorial(k)*series_value;
 }
+// TODO: split this function
+void SetLinearTrigonometricGridRight(BmpVector &y_base,
+                                     BmpVector &x_base,
+                                     BmpVector &Y,
+                                     BmpVector &X, size_t N_base) {
+    using namespace fdsf;
+    size_t n_additional = 11;
+    const bmp_real alpha = 2 / (2 + PI);
+    const bmp_real one = bmp_real(1);
+    const bmp_real num2 = bmp_real(2); //if integer
+    const bmp_real x_star = bmp_real(10);
+    const bmp_real y_star = bmp_real(log(1 + exp(x_star))); // if half-integer
+    //bmp_real baseSize = bmp_real(2 * N_base + 1); // if integer || half-integer & !fixed a(N+1)
+    //bmp_real baseSize = bmp_real(2 * N_base ); // if half-integer & fixed a(N+1)
+    bmp_real baseSize = bmp_real(N_base); // if poly approximation
+
+    const bmp_real y_star_inv = 1 / (y_star * y_star);
+    //const bmp_real y_star_inv = 1 / y_star;
+    //const bmp_real y_star_inv = 1 / pow(y_star, 0.5);
+    //const bmp_real y_star_inv = 1 / pow(y_star, 0.25 );
+    //const bmp_real y_star_inv = 1 / pow(y_star, 3.0 / 2);
+
+    // Задаются базовые узлы интерполяции
+    for (size_t j = 1; j <= baseSize; j++) {
+        y_base.push_back(y_star_inv / num2*(num2 * alpha*j / baseSize
+            + (one - alpha)*(one - cos(PI*j / baseSize))));
+    }
+
+    // Задаются дополнительные точки
+    Y.push_back(y_base[0] / n_additional);
+
+    for (size_t i = 1; i < n_additional; i++) {
+        Y.push_back(Y[i - 1] + y_base[0] / n_additional);
+    }
+
+    for (size_t index = 1; index < y_base.size(); index++) {
+        for (size_t i = 0; i < n_additional; i++) {
+            Y.push_back(Y.back() + (y_base[index] - y_base[index - 1]) / n_additional);
+        }
+    }
+
+    // Разворачиваем y
+    std::reverse(y_base.begin(), y_base.end());
+    for (size_t j = 0; j < baseSize; j++) {
+        y_base[j] = 1.0 / pow(y_base[j], 0.5);
+        //y_base[j] = 1.0 / y_base[j];
+        //y_base[j] = 1.0 / (y_base[j] * y_base[j]);
+        //y_base[j] = 1.0 / (pow(y_base[j], 4));
+        //y_base[j] = 1.0 / (pow(y_base[j], 2.0 / 3));
+        x_base.push_back(log(exp(y_base[j]) - one));
+    }
+
+    std::reverse(Y.begin(), Y.end());
+    //std::cout << Y.size() << std::endl;
+    for (size_t j = 0; j < Y.size(); j++) {
+        Y[j] = 1.0 / pow(Y[j], 0.5);
+        //Y[j] = 1.0 / Y[j]; 
+        //Y[j] = 1.0 / (Y[j] * Y[j]);
+        //Y[j] = 1.0 / pow(Y[j], 4);
+        //Y[j] = 1.0 / pow(Y[j], 2.0 / 3);
+        X.push_back(log(exp(Y[j]) - one));
+    }
+}
+
+// *****************************************************************************
+// Функции работы с прецизионными аппроксимациями
+// *****************************************************************************
+BmpVector computeIntegral(BmpVector x, bmp_real k) {
+    bmp_real t = 0, a = 0;
+    BmpVector I;
+    for (size_t i = 0; i < x.size(); ++i) {
+        I.push_back(fdsf::richardson_method(x.at(i), t, k, a));
+        //std::cout << "x0: " << x0.at(i) << " I_base: " << I_base.at(i) << std::endl;
+    }
+    return I;
+}
 
 TEST_CASE("comp_kostya_and_precise") {
     const bmp_real k = bmp_real(1.0 / 2.0);
@@ -129,4 +205,86 @@ TEST_CASE("calculate_asimpt_value") {
     }
 #endif
     //printResultToFile(I, k, "Asimpt_check");
+}
+
+TEST_CASE("calculate_k_half_integer") {
+    BmpVector x0, X, y0, Y;
+    const bmp_real k = bmp_real(7.0 / 2.0);
+    const size_t N_base = 5;
+    // Расчет значения интеграла в базовых узлах
+    fdsf::SetLinearTrigonometricGrid(y0, x0, Y, X, N_base);
+    //SetLinearTrigonometricGridRight(y0, x0, Y, X, N_base);
+    // Расчет интеграла
+    BmpVector I_base = computeIntegral(x0, k);
+    BmpVector I_additional = computeIntegral(X, k);
+
+    //printResultToFile(I_base, k, "I_base");
+    //printResultToFile(I_additional, k, "I_add");
+    //printResultToFile(y0, k, "y0");
+    //printResultToFile(Y, k, "Y");
+}
+
+void chebyshevBaseNodes(BmpVector &y_base,
+                        BmpVector &x_base,
+                        BmpVector &Y,
+                        BmpVector &X, int N_base) {
+    using namespace fdsf;
+    const size_t n_additional = 11;
+    const bmp_real one = bmp_real(1);
+    const bmp_real num2 = bmp_real(2); //if integer
+    const bmp_real x_star = bmp_real(3);
+    const bmp_real y_star = bmp_real(log(1 + exp(x_star))); // if half-integer
+    bmp_real baseSize = bmp_real(N_base); // if poly approximation
+
+    const bmp_real y_star_inv = 1 / (y_star * y_star);
+
+    // Задаются базовые узлы интерполяции
+    for (size_t j = 1; j <= baseSize; j++) {
+        y_base.push_back(y_star_inv*pow(sin(PI*j / (2 * baseSize)), 2));
+        std::cout << y_base[j - 1] << " ";
+    }
+
+    // Задаются дополнительные точки
+    Y.push_back(y_base[0] / n_additional);
+
+    for (size_t i = 1; i < n_additional; i++) {
+        Y.push_back(Y[i - 1] + y_base[0] / n_additional);
+    }
+
+    for (size_t index = 1; index < y_base.size(); index++) {
+        for (size_t i = 0; i < n_additional; i++) {
+            Y.push_back(Y.back() + (y_base[index] - y_base[index - 1]) / n_additional);
+        }
+    }
+
+    // Разворачиваем y
+    std::reverse(y_base.begin(), y_base.end());
+    for (size_t j = 0; j < baseSize; j++) {
+        y_base[j] = 1.0 / pow(y_base[j], 0.5);
+        x_base.push_back(log(exp(y_base[j]) - one));
+    }
+
+    std::reverse(Y.begin(), Y.end());
+    //std::cout << Y.size() << std::endl;
+    for (size_t j = 0; j < Y.size(); j++) {
+        Y[j] = 1.0 / pow(Y[j], 0.5);
+        X.push_back(log(exp(Y[j]) - one));
+    }
+}
+
+
+TEST_CASE("test_chebyshev_base_nodes") {
+    bmp_real k = 0.5;
+    BmpVector x0, X, y0, Y;
+    const size_t N_base = 1;
+    // Расчет значения интеграла в базовых узлах
+    chebyshevBaseNodes(y0, x0, Y, X, N_base);
+    // Расчет интеграла
+    BmpVector I_base = computeIntegral(x0, k);
+    BmpVector I_additional = computeIntegral(X, k);
+
+    //printResultToFile(I_base, k, "I_base");
+    //printResultToFile(I_additional, k, "I_add");
+    //printResultToFile(y0, k, "y0");
+    //printResultToFile(Y, k, "Y");
 }
