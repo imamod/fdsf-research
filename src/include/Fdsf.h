@@ -1,7 +1,6 @@
 #pragma once
 
-#include "definitions.h"
-#include <vector>
+#include "BasicTypes.h"
 
 namespace fdsf{
 
@@ -14,10 +13,10 @@ namespace fdsf{
 
     // Задает линейно-тригонометрическое сетку в базовых узлах, плюс 10(?)
     // дополнительных точек между каждой парой базовых узлов.
-    void SetLinearTrigonometricGrid(std::vector<bmp_real> &y_base, 
-                                    std::vector<bmp_real> &x_base, 
-                                    std::vector<bmp_real> &Y, 
-                                    std::vector<bmp_real> &X, int N_base);
+    void SetLinearTrigonometricGrid(std::vector<bmp_real> &y_base,
+                                    std::vector<bmp_real> &x_base,
+                                    std::vector<bmp_real> &Y,
+                                    std::vector<bmp_real> &X, size_t N_base);
 
     // Вычисление Г-функции
     bmp_real factorial(bmp_real k);
@@ -51,5 +50,21 @@ namespace fdsf{
 
     // Сгущение по Ричардсону результата работы функции gauss_christoffel_method
     bmp_real richardson_method(bmp_real x, bmp_real t, bmp_real k, bmp_real& a);
+
+    struct integration_segment_values {
+        size_t n; // Текущий отрезок интегрирования
+        size_t N; // Общее число отрезков интегрирования
+    };
+
+    // for k = -3/2
+    bmp_real fermi_dirak_m3half(bmp_real ksi, bmp_real x,
+        bmp_real k, bmp_real a, integration_segment_values isv);
+
+    // for others half-integer k
+    bmp_real fermi_dirak_half_integer(bmp_real ksi, bmp_real x,
+        bmp_real k, bmp_real a, integration_segment_values isv);
+
+    // Formula Euler-Maclaurin 
+    bmp_real euler_maclaurin_method(bmp_real x, const bmp_real k, int N, bmp_real& a);
 
 } // namespace fdsf

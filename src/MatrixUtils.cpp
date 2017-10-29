@@ -1,6 +1,4 @@
-﻿// Implementation of matrix_helper.h
-//
-#include "matrix_helper.h"
+﻿#include "MatrixUtils.h"
 #include <math.h>
 #include <limits>
 #include <iomanip>
@@ -18,13 +16,13 @@ void GetApproxomateValues(matrix_type::_vector &a,
     const size_t baseSize = y0.size();
     matrix_type::_vector F_base(baseSize, 0);
 
-    for (auto j = 0; j < baseSize; j++) {
+    for (size_t j = 0; j < baseSize; j++) {
         bmp_real S1 = 0, S2 = 0;
 
-        for (auto n = 0; n < N_base + 1; n++) {
+        for (size_t n = 0; n < N_base + 1; n++) {
             S1 = S1 + a.at(n)*pow(y0.at(j), n + 1);
         }
-        for (auto m = 0; m < N_base; m++) {
+        for (size_t m = 0; m < N_base; m++) {
                 S2 = S2 + b.at(m)*pow(y0.at(j), m + 1);
         }
  
@@ -37,14 +35,14 @@ void GetApproxomateValues(matrix_type::_vector &a,
     matrix_type::_vector F(addSize, 0);
         
 
-    for (auto j = 0; j < addSize; j++) {
+    for (size_t j = 0; j < addSize; j++) {
         bmp_real S1 = 0, S2 = 0;
 
-        for (auto n = 0; n < N_base + 1; n++) {
+        for (size_t n = 0; n < N_base + 1; n++) {
             S1 = S1 + a.at(n)*pow(Y.at(j), n + 1);
             
         }
-        for (auto m = 0; m < N_base; m++) {
+        for (size_t m = 0; m < N_base; m++) {
             S2 = S2 + b.at(m)*pow(Y.at(j), m + 1);
         }
 
@@ -55,9 +53,9 @@ void GetApproxomateValues(matrix_type::_vector &a,
 
 std::vector < std::vector <bmp_real> > inverse(std::vector < std::vector <bmp_real> > a) 
 {
-    int n = a.size();
+    size_t n = a.size();
     std::vector < std::vector <bmp_real> > ans(n, std::vector <bmp_real>(n, 0));
-    for (auto i = 0; i < n; i++){
+    for (size_t i = 0; i < n; i++){
         ans.at(i).at(i) = 1.0;
     }
     for (auto i = 0; i < n; i++){

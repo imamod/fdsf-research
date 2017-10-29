@@ -15,19 +15,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\excess_power_convergence.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\FDSFHalf.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\FDSFInteger.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\matrix_helper.cpp">
+    <ClCompile Include="..\src\Newton.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Newton.cpp">
+    <ClCompile Include="..\src\ExponentialConvergence.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MatrixUtils.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,22 +35,22 @@
     <ClInclude Include="..\src\include\ChebyshevApp.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\include\definitions.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\include\excess_power_convergence.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\include\FDSFHalf.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\include\FDSFInteger.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\include\matrix_helper.h">
+    <ClInclude Include="..\src\include\Newton.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\include\Newton.h">
+    <ClInclude Include="..\include\BasicService.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\BasicTypes.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\ExponentialConvergence.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\MatrixUtils.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

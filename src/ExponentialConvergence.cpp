@@ -1,14 +1,12 @@
-#include "FDSFInteger.h"
-//#include "FDSFHalf.h"
+#include "Fdsf.h"
 #include "Newton.h"
-#include "excess_power_convergence.h"
+#include "ExponentialConvergence.h"
 
 #include <iostream>
 #include <fstream>
 
 namespace epc {
     using namespace fdsf;
-    typedef bmp_real(*function)(bmp_real x);
 
     // Euler-Macloren Formulas
     static bmp_real trapz(function f, bmp_real a, bmp_real b, size_t N)
@@ -36,32 +34,7 @@ namespace epc {
             (pow(1 - ksi*ksi, k + 2)*(exp_ksi + exp(-x)));
     }
 
-    static bmp_real func_cos(bmp_real x)
-    {
-        return 1.0 / (2 - cos(x));
-        // return cos(x);
-    }
-
-    static bmp_real func_demo(bmp_real x)
-    {
-        size_t n = 2;
-        bmp_real a = 1.75;
-        //return cos(n*x)/(1 - 2*a*cos(x) + a*a);
-        return (a*a - 1)*pow(a, n)*cos(n*x) / pow(1 - 2 * a*cos(x) + a*a, 1);
-    }
-
-    static bmp_real func_exp_sin(bmp_real x)
-    {
-        return exp(sin(x));
-    }
-
-    static bmp_real func_exp_cos(bmp_real x)
-    {
-        return exp(cos(x));
-    }
-
-    static bmp_real Richardson(function f, bmp_real a, bmp_real b, bool countEvery)
-    {
+    bmp_real Richardson(function f, bmp_real a, bmp_real b, bool countEvery) {
         size_t N = 1;
         bmp_real stop_criteria;
         bmp_real I = trapz(f, a, b, N);
@@ -99,12 +72,6 @@ namespace epc {
         return I;
     }
 
-    void checkTrapz(bmp_real a, bmp_real b)
-    {
-        Richardson(func_demo, a, b, true);
-        //Richardson(func_fermi_dirak_half_integer, a, b, true);
-        //Richardson(func_cos, a, b);
-        //Richardson(func_exp_cos, a, b);
-    }
+
 
 } // excess power convergence
