@@ -110,7 +110,7 @@ void probe_dots()
     std::cout.precision(std::numeric_limits<bmp_real>::max_digits10);
     bmp_real k = 7.0 / 2;
     bmp_real t = 0;
-    std::vector<bmp_real> x = { -2, 2 };
+    BmpVector x = { -2, 2 };
     for (size_t i = 0; i < x.size(); i++) {
         bmp_real a;
         bmp_real I_base = fdsf::richardson_method(x[i], t, k, a);
@@ -189,10 +189,10 @@ void GetValue_w(matrix_type::_vector &I_base,
 // *****************************************************************************
 // Функции работы с прецизионными аппроксимациями
 // *****************************************************************************
-void computeIntegral(std::vector<bmp_real> x0,
-                            std::vector<bmp_real> X,
-                            std::vector<bmp_real>& I_base,
-                            std::vector<bmp_real> &I_additional,
+void computeIntegral(BmpVector x0,
+                            BmpVector X,
+                            BmpVector& I_base,
+                            BmpVector &I_additional,
                             bmp_real k)
 {
     bmp_real t = 0, a = 0;
@@ -209,10 +209,10 @@ void computeIntegral(std::vector<bmp_real> x0,
 
 }
 
-void SetLinearTrigonometricGridRight(std::vector<bmp_real> &y_base,
-                                     std::vector<bmp_real> &x_base,
-                                     std::vector<bmp_real> &Y,
-                                     std::vector<bmp_real> &X, size_t N_base)
+void SetLinearTrigonometricGridRight(BmpVector &y_base,
+                                     BmpVector &x_base,
+                                     BmpVector &Y,
+                                     BmpVector &X, size_t N_base)
 {
     size_t n_additional = 11;
     const bmp_real alpha = 2 / (2 + PI);
@@ -287,8 +287,8 @@ void check_quadrature()
 
 void calculate_k_half_integer()
 {
-    std::vector<bmp_real> x0, X, y0, Y;
-    std::vector<bmp_real> I_base, I_additional;
+    BmpVector x0, X, y0, Y;
+    BmpVector I_base, I_additional;
     const bmp_real k = bmp_real(7.0 / 2.0);
     const size_t N_base = 5;
     // Расчет значения интеграла в базовых узлах
@@ -305,10 +305,10 @@ void calculate_k_half_integer()
 
 void check_z_value()
 {
-    std::vector<bmp_real> X, Y;
+    BmpVector X, Y;
     const bmp_real k = bmp_real(1.0 / 2.0);
     bmp_real t = 0, a = 0, h = 0.1;
-    std::vector<bmp_real> I;
+    BmpVector I;
 
     Y.push_back(3.0);
     X.push_back(log(exp(Y[0]) - 1));
@@ -333,9 +333,9 @@ void check_z_value()
 }
 
 
-std::vector<bmp_real> kuzmina_calculate_int(const bmp_real k) {
-    std::vector<bmp_real> x0, X, y0, Y;
-    std::vector<bmp_real> I_base, I_additional;
+BmpVector kuzmina_calculate_int(const bmp_real k) {
+    BmpVector x0, X, y0, Y;
+    BmpVector I_base, I_additional;
     const int N_base = 5;
     // Расчет значения интеграла в базовых узлах
     //fdsf::SetLinearTrigonometricGrid(y0, x0, Y, X, N_base);
@@ -347,9 +347,9 @@ std::vector<bmp_real> kuzmina_calculate_int(const bmp_real k) {
 
 void kuzminaCheck() {
     double k_index = 3.0 / 2;
-    std::vector<bmp_real> I_12_prec = kuzmina_calculate_int(bmp_real(1.0 / 2.0));
-    std::vector<bmp_real> I_32_prec = kuzmina_calculate_int(bmp_real(3.0 / 2.0));
-    std::vector<bmp_real> y;
+    BmpVector I_12_prec = kuzmina_calculate_int(bmp_real(1.0 / 2.0));
+    BmpVector I_32_prec = kuzmina_calculate_int(bmp_real(3.0 / 2.0));
+    BmpVector y;
     std::cout << "got I_32" << std::endl;
     std::cout << I_12_prec.size() << std::endl;
     std::cout << I_32_prec.size() << std::endl;
@@ -360,10 +360,10 @@ void kuzminaCheck() {
     std::cout << y.size() << std::endl;
     //double y_star = 3.75;
     double alpha0 = 2.0 / 5;
-    std::vector<bmp_real> alpha = { 58432.930, 21851.397, 1891.7921, 57.806497 };
-    std::vector<bmp_real> betta = { 0.10730909, 0.0033951152 };
-    std::vector<bmp_real> approximation;
-    std::vector<bmp_real> delta;
+    BmpVector alpha = { 58432.930, 21851.397, 1891.7921, 57.806497 };
+    BmpVector betta = { 0.10730909, 0.0033951152 };
+    BmpVector approximation;
+    BmpVector delta;
 
     ///TODO: correct calculation of I32
     auto k = 2; // from formula
@@ -388,11 +388,11 @@ void kuzminaCheck() {
 }
 
 void calculate_all_k() {
-    std::vector<bmp_real> k = { -0.5, 0.5, 1.5, 2.5, 3.5 };
+    BmpVector k = { -0.5, 0.5, 1.5, 2.5, 3.5 };
     bmp_real left_start = -5.0, right_start = 3;
     bmp_real left_end = 5.0, right_end = 30;
     bmp_real span = 0.1;
-    std::vector<bmp_real> x_left, x_right;
+    BmpVector x_left, x_right;
     for (auto i = left_start; i < left_end; i += span) {
         x_left.push_back(i);
     }
@@ -401,13 +401,13 @@ void calculate_all_k() {
     }
     //std::cout << x_left.size() << std::endl;
     for (auto index : k) {
-        std::vector<bmp_real> I_left;
+        BmpVector I_left;
         for (auto item : x_left) {
             bmp_real t=0, a;
             I_left.push_back(fdsf::richardson_method(item, t, index, a));
             printResultToFile(I_left, index, "I");
         }
-        std::vector<bmp_real> I_right;
+        BmpVector I_right;
         for (auto item : x_right) {
             bmp_real t = 0, a;
             I_right.push_back(fdsf::richardson_method(item, t, index, a));
@@ -416,23 +416,23 @@ void calculate_all_k() {
         //std::cout << I.size() << std::endl;
     }
 
-    std::vector<bmp_real> I_m32;
+    BmpVector I_m32;
     for (auto item : x_left) {
         //I_m32.push_back(fdsf::fd_3mhalf(item));
     }
     printResultToFile(I_m32, -1.5, "I");
 
-    std::vector<bmp_real> I_m32_right;
+    BmpVector I_m32_right;
     for (auto item : x_right) {
         //I_m32_right.push_back(fdsf::fd_3mhalf(item));
     }
     printResultToFile(I_m32_right, -1.5, "I_right");
 }
 
-void chebyshevBaseNodes(std::vector<bmp_real> &y_base,
-                        std::vector<bmp_real> &x_base,
-                        std::vector<bmp_real> &Y,
-                        std::vector<bmp_real> &X, int N_base) {
+void chebyshevBaseNodes(BmpVector &y_base,
+                        BmpVector &x_base,
+                        BmpVector &Y,
+                        BmpVector &X, int N_base) {
     const size_t n_additional = 11;
     const bmp_real one = bmp_real(1);
     const bmp_real num2 = bmp_real(2); //if integer
@@ -479,8 +479,8 @@ void chebyshevBaseNodes(std::vector<bmp_real> &y_base,
 
 void test_chebyshev_base_nodes() {
     bmp_real k = 0.5;
-    std::vector<bmp_real> x0, X, y0, Y;
-    std::vector<bmp_real> I_base, I_additional;
+    BmpVector x0, X, y0, Y;
+    BmpVector I_base, I_additional;
     const size_t N_base = 1;
     // Расчет значения интеграла в базовых узлах
     chebyshevBaseNodes(y0, x0, Y, X, N_base);

@@ -1,9 +1,9 @@
 #include "TestCommon.h"
 #include "Fdsf.h"
 
-std::vector<bmp_real> calculate_series_part(bmp_real k, std::vector<bmp_real>& X) {
+BmpVector calculate_series_part(bmp_real k, BmpVector& X) {
     using namespace fdsf;
-    std::vector<bmp_real> coeff_A = { pow(PI, 2) / 6.0,
+    BmpVector coeff_A = { pow(PI, 2) / 6.0,
         pow(PI, 4) / 90.0,
         pow(PI, 6) / 945.0,
         pow(PI, 8) / 9450.0,
@@ -11,7 +11,7 @@ std::vector<bmp_real> calculate_series_part(bmp_real k, std::vector<bmp_real>& X
         691.0 * pow(PI, 12) / 638512875.0
     };
 
-    std::vector<bmp_real> series_value;
+    BmpVector series_value;
 
     for (size_t i = 0; i < X.size(); i++) {
         bmp_real coeff_C = 1;
@@ -34,7 +34,7 @@ std::vector<bmp_real> calculate_series_part(bmp_real k, std::vector<bmp_real>& X
 }
 
 static bmp_real get_assympt_value(bmp_real x, bmp_real k) {
-    std::vector<bmp_real> I_minus, I, series_part, X = { x };
+    BmpVector I_minus, I, series_part, X = { x };
     bmp_real t = 0, a = 0;
     series_part = calculate_series_part(k, X);
     I_minus.push_back(fdsf::richardson_method(-x, t, k, a));
@@ -94,10 +94,10 @@ TEST_CASE("check_negative_quadrature_values") {
 }
 
 TEST_CASE("calculate_asimpt_value") {
-    std::vector<bmp_real> X, Y;
+    BmpVector X, Y;
     const bmp_real k = bmp_real(1.0 / 2.0);
     bmp_real t = 0, a = 0, h = 0.1;
-    std::vector<bmp_real> I, I_minus, series_part;
+    BmpVector I, I_minus, series_part;
 
     //проверка на идиота при х = 30
     X.push_back(30.0);

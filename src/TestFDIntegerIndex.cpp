@@ -4,7 +4,7 @@
 
 namespace {
     // Для целых
-    std::vector<bmp_real> computeIntegral(const std::vector<bmp_real>& x, size_t k) {
+    BmpVector computeIntegral(const BmpVector& x, size_t k) {
         // std::cout << "      I1(0) : " << fdsf::PI*fdsf::PI / 12 << std::endl;
         /**
          * Соответствие значений t для каждого k, подобрано экспериментально
@@ -18,7 +18,7 @@ namespace {
         };
         // Точка, до которой считаем по схеме Горнера
         bmp_real x_div = bmp_real(-0.1);
-        std::vector<bmp_real> I;
+        BmpVector I;
         for (int i = 0; i < x.size(); i++) {
             auto value = x[i] > x_div ? fdsf::richardson_method(x[i], K_T_MAP[k], k)
                                          : fdsf::Gorner(x[i], k);
@@ -40,11 +40,11 @@ TEST_CASE("k_1") {
     const size_t N_base = 2;
 
     // Расчет значения интеграла в базовых узлах
-    std::vector<bmp_real> x0, X, y0, Y;
+    BmpVector x0, X, y0, Y;
     fdsf::SetLinearTrigonometricGrid(y0, x0, Y, X, N_base);
 
     // Расчет схемы Горнера и подсчета интеграла на Гауссовой сетке
-    std::vector<bmp_real> I_base = computeIntegral(x0, k);
-    std::vector<bmp_real> I_additional = computeIntegral(X, k);
+    BmpVector I_base = computeIntegral(x0, k);
+    BmpVector I_additional = computeIntegral(X, k);
     //GetValue_w(I_base, I_additional, y0, x0, Y, X, k);
 }

@@ -52,10 +52,10 @@ namespace fdsf {
         return 2 * z*sum;
     }
 
-    void SetLinearTrigonometricGrid(std::vector<bmp_real> &y_base,
-                                    std::vector<bmp_real> &x_base,
-                                    std::vector<bmp_real> &Y,
-                                    std::vector<bmp_real> &X, size_t N_base)
+    void SetLinearTrigonometricGrid(BmpVector &y_base,
+                                    BmpVector &x_base,
+                                    BmpVector &Y,
+                                    BmpVector &X, size_t N_base)
     {
         size_t n_additional = 11;
         const bmp_real alpha = 2 / (2 + PI);
@@ -160,7 +160,7 @@ namespace fdsf {
         const bmp_real gamma_1_5 = (num322 - bmp_real(13)*sqrt(num70)) / num1800;
         const bmp_real gamma_2_4 = (num322 + bmp_real(13)*sqrt(num70)) / num1800;
         const bmp_real gamma_3 = bmp_real(64) / bmp_real(225);
-        std::vector<bmp_real> t(5);
+        BmpVector t(5);
 
         bmp_real U = 0;
 

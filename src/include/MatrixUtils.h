@@ -10,8 +10,8 @@ using namespace fdsf;
 
 namespace matrix_type{
     
-    typedef std::vector<std::vector<bmp_real>> _matrix;
-    typedef std::vector<bmp_real> _vector;
+    typedef std::vector<BmpVector> _matrix;
+    typedef BmpVector _vector;
 }
 
 std::vector < std::vector <bmp_real> > inverse(std::vector < std::vector <bmp_real> > a);
