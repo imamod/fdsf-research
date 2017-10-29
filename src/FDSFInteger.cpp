@@ -141,10 +141,8 @@ namespace fdsf {
         if (it != SUPPORTED_HALFINTEGER_INDICES.end()) {
             return SUPPORTED_HALFINTEGER_INDICES[k];
         }
-        if (!k) {
-            return 1;
-        }
-        return k*factorial(k - 1);
+
+        return !k ? 1 : bmp_real(k*factorial(k - 1));
     }
 
     bmp_real gauss_christoffel_method(bmp_real(*f)(bmp_real, bmp_real, bmp_real),
@@ -189,7 +187,7 @@ namespace fdsf {
     bmp_real richardson_method(bmp_real x,
                                bmp_real t,
                                bmp_real k,
-                               bmp_real& a)
+                               bmp_real a)
     {
         int N = 2;
         bmp_real stop_criteria;

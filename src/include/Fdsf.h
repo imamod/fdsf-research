@@ -2,7 +2,7 @@
 
 #include "BasicTypes.h"
 
-namespace fdsf{
+namespace fdsf {
 
     // Значение Ik(0) для индекса k = 0,1,2,3
     const static bmp_real I_k_0[] = { log(bmp_real(2)),
@@ -49,7 +49,7 @@ namespace fdsf{
                  bmp_real x, bmp_real T, bmp_real k, int N);
 
     // Сгущение по Ричардсону результата работы функции gauss_christoffel_method
-    bmp_real richardson_method(bmp_real x, bmp_real t, bmp_real k, bmp_real& a);
+    bmp_real richardson_method(bmp_real x, bmp_real t, bmp_real k, bmp_real a = 0);
 
     struct integration_segment_values {
         size_t n; // Текущий отрезок интегрирования
