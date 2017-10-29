@@ -20,6 +20,17 @@ namespace {
     }
 }
 
+// Сравнение схемы Горнера и метода трапеций epc
+TEST_CASE("GornerVsTrapz") {
+    std::cout.precision(std::numeric_limits<bmp_real>::max_digits10);
+    bmp_real k = 1.0 / 2;
+    bmp_real x = -1;
+    bmp_real I_base = fdsf::richardson_method(x, 0, k);
+    bmp_real I_prec = fdsf::Gorner(x, k);
+    std::cout << I_base << std::endl;
+    std::cout << I_prec << std::endl;
+}
+
 TEST_CASE("ExpConverge") {
     // Для статьи о сверхстепенной сходимости
     //epc::Richardson(func_demo, 0, fdsf::PI, true);

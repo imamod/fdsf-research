@@ -28,6 +28,24 @@ namespace {
         }
         return I;
     }
+
+    void GetValue_w(BmpVector &I_base,
+                    BmpVector &I_additional,
+                    BmpVector y0,
+                    BmpVector x0,
+                    BmpVector Y,
+                    BmpVector X, bmp_real k) {
+        bmp_real y;
+        for (size_t i = 0; i < I_base.size(); i++) {
+            y = log(1 + exp(x0[i]));
+            I_base[i] = pow((I_base[i] * exp(x0[i]) / y0[i]), 1.0 / k);
+        }
+
+        for (size_t i = 0; i < I_additional.size(); i++) {
+            y = log(1 + exp(X[i]));
+            I_additional[i] = pow((I_additional[i] * exp(X[i]) / Y[i]), 1 / k);
+        }
+    }
 }
 
 TEST_CASE("k_1") {
