@@ -10,11 +10,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "msvc14\Test.vcxproj
 		{3F164CBD-907F-416F-BD02-7918C07B6410} = {3F164CBD-907F-416F-BD02-7918C07B6410}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testOpenFFD", "msvc14\testOpenFFD.vcxproj", "{CD9D960B-189D-4F32-A42B-76D7332CD500}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3F164CBD-907F-416F-BD02-7918C07B6410} = {3F164CBD-907F-416F-BD02-7918C07B6410}
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -39,13 +34,6 @@ Global
 		{4866C371-4350-479C-9E44-74B9CD719C39}.Release|Win32.Build.0 = Release|Win32
 		{4866C371-4350-479C-9E44-74B9CD719C39}.Release|x64.ActiveCfg = Release|x64
 		{4866C371-4350-479C-9E44-74B9CD719C39}.Release|x64.Build.0 = Release|x64
-		{CD9D960B-189D-4F32-A42B-76D7332CD500}.Debug|Win32.ActiveCfg = Debug|Win32
-		{CD9D960B-189D-4F32-A42B-76D7332CD500}.Debug|Win32.Build.0 = Debug|Win32
-		{CD9D960B-189D-4F32-A42B-76D7332CD500}.Debug|x64.ActiveCfg = Debug|Win32
-		{CD9D960B-189D-4F32-A42B-76D7332CD500}.Release|Win32.ActiveCfg = Release|Win32
-		{CD9D960B-189D-4F32-A42B-76D7332CD500}.Release|Win32.Build.0 = Release|Win32
-		{CD9D960B-189D-4F32-A42B-76D7332CD500}.Release|x64.ActiveCfg = Release|x64
-		{CD9D960B-189D-4F32-A42B-76D7332CD500}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
