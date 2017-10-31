@@ -1,7 +1,7 @@
 #include "TestCommon.h"
 #include "Fdsf.h"
 
-BmpVector calculate_series_part(bmp_real k, BmpVector& X) {
+BmpVector calculate_series_part(BmpReal k, BmpVector& X) {
     using namespace fdsf;
     BmpVector coeff_A = { pow(PI, 2) / 6.0,
         pow(PI, 4) / 90.0,
@@ -14,9 +14,9 @@ BmpVector calculate_series_part(bmp_real k, BmpVector& X) {
     BmpVector series_value;
 
     for (size_t i = 0; i < X.size(); i++) {
-        bmp_real coeff_C = 1;
-        bmp_real nom = k + 1;
-        bmp_real series_sum = bmp_real(1.0);
+        BmpReal coeff_C = 1;
+        BmpReal nom = k + 1;
+        BmpReal series_sum = BmpReal(1.0);
         for (size_t j = 0; j < coeff_A.size(); j++) {
             coeff_C *= nom*(nom - 1); // По асимптотической формуле парное добавление множителей, поэтому далее отнимаем 2
             series_sum += 2.0 * (1.0 - pow(2.0, 1.0 - 2 * (j + 1))) * pow(X[i], (-2.0)*(j + 1))*coeff_A[j] * coeff_C;
@@ -33,9 +33,9 @@ BmpVector calculate_series_part(bmp_real k, BmpVector& X) {
     return series_value;
 }
 
-static bmp_real get_assympt_value(bmp_real x, bmp_real k) {
+static BmpReal get_assympt_value(BmpReal x, BmpReal k) {
     BmpVector I_minus, I, series_part, X = { x };
-    bmp_real t = 0, a = 0;
+    BmpReal t = 0, a = 0;
     series_part = calculate_series_part(k, X);
     I_minus.push_back(fdsf::richardson_method(-x, t, k, a));
     I.push_back(I_minus[0] + series_part[0]);
@@ -43,8 +43,8 @@ static bmp_real get_assympt_value(bmp_real x, bmp_real k) {
     return series_part[0];
 }
 
-static bmp_real get_series_value(bmp_real x, bmp_real k) {
-    bmp_real series_value = 0;
+static BmpReal get_series_value(BmpReal x, BmpReal k) {
+    BmpReal series_value = 0;
     auto N = log(fdsf::epsilon) / (x);
 
     for (size_t n = 1; n < N; ++n) {
@@ -61,20 +61,20 @@ void SetLinearTrigonometricGridRight(BmpVector &y_base,
                                      BmpVector &X, size_t N_base) {
     using namespace fdsf;
     size_t n_additional = 11;
-    const bmp_real alpha = 2 / (2 + PI);
-    const bmp_real one = bmp_real(1);
-    const bmp_real num2 = bmp_real(2); //if integer
-    const bmp_real x_star = bmp_real(10);
-    const bmp_real y_star = bmp_real(log(1 + exp(x_star))); // if half-integer
-    //bmp_real baseSize = bmp_real(2 * N_base + 1); // if integer || half-integer & !fixed a(N+1)
-    //bmp_real baseSize = bmp_real(2 * N_base ); // if half-integer & fixed a(N+1)
-    bmp_real baseSize = bmp_real(N_base); // if poly approximation
+    const BmpReal alpha = 2 / (2 + PI);
+    const BmpReal one = BmpReal(1);
+    const BmpReal num2 = BmpReal(2); //if integer
+    const BmpReal x_star = BmpReal(10);
+    const BmpReal y_star = BmpReal(log(1 + exp(x_star))); // if half-integer
+    //BmpReal baseSize = BmpReal(2 * N_base + 1); // if integer || half-integer & !fixed a(N+1)
+    //BmpReal baseSize = BmpReal(2 * N_base ); // if half-integer & fixed a(N+1)
+    BmpReal baseSize = BmpReal(N_base); // if poly approximation
 
-    const bmp_real y_star_inv = 1 / (y_star * y_star);
-    //const bmp_real y_star_inv = 1 / y_star;
-    //const bmp_real y_star_inv = 1 / pow(y_star, 0.5);
-    //const bmp_real y_star_inv = 1 / pow(y_star, 0.25 );
-    //const bmp_real y_star_inv = 1 / pow(y_star, 3.0 / 2);
+    const BmpReal y_star_inv = 1 / (y_star * y_star);
+    //const BmpReal y_star_inv = 1 / y_star;
+    //const BmpReal y_star_inv = 1 / pow(y_star, 0.5);
+    //const BmpReal y_star_inv = 1 / pow(y_star, 0.25 );
+    //const BmpReal y_star_inv = 1 / pow(y_star, 3.0 / 2);
 
     // Задаются базовые узлы интерполяции
     for (size_t j = 1; j <= baseSize; j++) {
@@ -121,8 +121,8 @@ void SetLinearTrigonometricGridRight(BmpVector &y_base,
 // *****************************************************************************
 // Функции работы с прецизионными аппроксимациями
 // *****************************************************************************
-BmpVector computeIntegral(BmpVector x, bmp_real k) {
-    bmp_real t = 0, a = 0;
+BmpVector computeIntegral(BmpVector x, BmpReal k) {
+    BmpReal t = 0, a = 0;
     BmpVector I;
     for (size_t i = 0; i < x.size(); ++i) {
         I.push_back(fdsf::richardson_method(x.at(i), t, k, a));
@@ -132,9 +132,9 @@ BmpVector computeIntegral(BmpVector x, bmp_real k) {
 }
 
 TEST_CASE("comp_kostya_and_precise") {
-    const bmp_real k = bmp_real(1.0 / 2.0);
-    bmp_real x = bmp_real(-0.1), I, I_kostya, I_precise;
-    bmp_real t = 0, a = 0;
+    const BmpReal k = BmpReal(1.0 / 2.0);
+    BmpReal x = BmpReal(-0.1), I, I_kostya, I_precise;
+    BmpReal t = 0, a = 0;
 #if 0
     I = fdsf::richardson_method(x, t, k, a);
     I_kostya = fdsf::fd_half(x);
@@ -158,10 +158,10 @@ TEST_CASE("comp_kostya_and_precise") {
 }
 
 TEST_CASE("check_negative_quadrature_values") {
-    std::cout.precision(std::numeric_limits<bmp_real>::max_digits10);
-    const bmp_real k = bmp_real(1.0 / 2.0);
-    bmp_real x = bmp_real(-0.1), I, I_precise;
-    bmp_real t = 0;
+    std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
+    const BmpReal k = BmpReal(1.0 / 2.0);
+    BmpReal x = BmpReal(-0.1), I, I_precise;
+    BmpReal t = 0;
     I = fdsf::richardson_method(x, t, k);
     I_precise = get_series_value(x, k);
     filesys::writeFile("../../test/test.txt", {I, I_precise});
@@ -171,8 +171,8 @@ TEST_CASE("check_negative_quadrature_values") {
 
 TEST_CASE("calculate_asimpt_value") {
     BmpVector X, Y;
-    const bmp_real k = bmp_real(1.0 / 2.0);
-    bmp_real t = 0, a = 0, h = 0.1;
+    const BmpReal k = BmpReal(1.0 / 2.0);
+    BmpReal t = 0, a = 0, h = 0.1;
     BmpVector I, I_minus, series_part;
 
     //проверка на идиота при х = 30
@@ -209,7 +209,7 @@ TEST_CASE("calculate_asimpt_value") {
 
 TEST_CASE("calculate_k_half_integer") {
     BmpVector x0, X, y0, Y;
-    const bmp_real k = bmp_real(7.0 / 2.0);
+    const BmpReal k = BmpReal(7.0 / 2.0);
     const size_t N_base = 5;
     // Расчет значения интеграла в базовых узлах
     fdsf::SetLinearTrigonometricGrid(y0, x0, Y, X, N_base);
@@ -230,13 +230,13 @@ void chebyshevBaseNodes(BmpVector &y_base,
                         BmpVector &X, int N_base) {
     using namespace fdsf;
     const size_t n_additional = 11;
-    const bmp_real one = bmp_real(1);
-    const bmp_real num2 = bmp_real(2); //if integer
-    const bmp_real x_star = bmp_real(3);
-    const bmp_real y_star = bmp_real(log(1 + exp(x_star))); // if half-integer
-    bmp_real baseSize = bmp_real(N_base); // if poly approximation
+    const BmpReal one = BmpReal(1);
+    const BmpReal num2 = BmpReal(2); //if integer
+    const BmpReal x_star = BmpReal(3);
+    const BmpReal y_star = BmpReal(log(1 + exp(x_star))); // if half-integer
+    BmpReal baseSize = BmpReal(N_base); // if poly approximation
 
-    const bmp_real y_star_inv = 1 / (y_star * y_star);
+    const BmpReal y_star_inv = 1 / (y_star * y_star);
 
     // Задаются базовые узлы интерполяции
     for (size_t j = 1; j <= baseSize; j++) {
@@ -274,7 +274,7 @@ void chebyshevBaseNodes(BmpVector &y_base,
 
 
 TEST_CASE("test_chebyshev_base_nodes") {
-    bmp_real k = 0.5;
+    BmpReal k = 0.5;
     BmpVector x0, X, y0, Y;
     const size_t N_base = 1;
     // Расчет значения интеграла в базовых узлах
@@ -291,9 +291,9 @@ TEST_CASE("test_chebyshev_base_nodes") {
 
 TEST_CASE("calculate_all_k") {
     BmpVector k = { -0.5, 0.5, 1.5, 2.5, 3.5 };
-    bmp_real left_start = -5.0, right_start = 3;
-    bmp_real left_end = 5.0, right_end = 30;
-    bmp_real span = 0.1;
+    BmpReal left_start = -5.0, right_start = 3;
+    BmpReal left_end = 5.0, right_end = 30;
+    BmpReal span = 0.1;
     BmpVector x_left, x_right;
     for (auto i = left_start; i < left_end; i += span) {
         x_left.push_back(i);
@@ -305,13 +305,13 @@ TEST_CASE("calculate_all_k") {
     for (auto index : k) {
         BmpVector I_left;
         for (auto item : x_left) {
-            bmp_real t = 0, a;
+            BmpReal t = 0, a;
             I_left.push_back(fdsf::richardson_method(item, t, index, a));
             //filesys::writeFile("I", I_left);
         }
         BmpVector I_right;
         for (auto item : x_right) {
-            bmp_real t = 0, a;
+            BmpReal t = 0, a;
             I_right.push_back(fdsf::richardson_method(item, t, index, a));
             //filesys::writeFile("I_right", I_right);
         }

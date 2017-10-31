@@ -4,43 +4,40 @@
 
 namespace fdsf {
 
-    typedef bmp_real(*function)(bmp_real ksi, bmp_real x, 
-                                bmp_real k, bmp_real a, integration_segment_values isv);
+    typedef BmpReal(*function)(BmpReal ksi, BmpReal x, 
+                                BmpReal k, BmpReal a, integration_segment_values isv);
 
 
-    bmp_real fermi_dirak_half_integer(bmp_real ksi, bmp_real x, 
-                                      bmp_real k, bmp_real a, 
-                                      integration_segment_values isv)
-    {
-        bmp_real denom = (1 + ksi) * (bmp_real(isv.N - isv.n) / bmp_real(isv.N));
-        //bmp_real denom = (1 - ksi * ksi);
-        bmp_real exp_ksi = exp(-a * ksi * ksi / denom);
+    BmpReal fermi_dirak_half_integer(BmpReal ksi, BmpReal x, 
+                                      BmpReal k, BmpReal a, 
+                                      integration_segment_values isv) {
+        BmpReal denom = (1 + ksi) * (BmpReal(isv.N - isv.n) / BmpReal(isv.N));
+        //BmpReal denom = (1 - ksi * ksi);
+        BmpReal exp_ksi = exp(-a * ksi * ksi / denom);
 
         return (2*pow(a, k + 1) * pow(ksi, 2 * k + 1) * exp_ksi) /
                (pow(denom, k + 2) * (exp_ksi + exp(-x)));
     }
 
-    bmp_real fermi_dirak_m3half(bmp_real ksi, bmp_real x,
-                                bmp_real k, bmp_real a,
-                                integration_segment_values isv)
-    {
-        bmp_real exp_ksi = exp(-a * ksi * ksi / (1 - ksi * ksi));
-        bmp_real sum_exp = exp_ksi + exp(-x);
-        bmp_real exp_diff = exp( -a * ksi * ksi / (1 - ksi * ksi) - x);
+    BmpReal fermi_dirak_m3half(BmpReal ksi, BmpReal x,
+                                BmpReal k, BmpReal a,
+                                integration_segment_values isv) {
+        BmpReal exp_ksi = exp(-a * ksi * ksi / (1 - ksi * ksi));
+        BmpReal sum_exp = exp_ksi + exp(-x);
+        BmpReal exp_diff = exp( -a * ksi * ksi / (1 - ksi * ksi) - x);
 
         return (-4 * exp_diff * sqrt(abs(a)) * exp_ksi) /
-            (pow(1 - ksi * ksi, bmp_real( 3.0 / 2 )) * sum_exp * sum_exp);
+            (pow(1 - ksi * ksi, BmpReal( 3.0 / 2 )) * sum_exp * sum_exp);
     }
 
     // Euler-Macloren Formulas
-    static bmp_real trapz(function f, bmp_real x, const bmp_real k, 
-                          size_t N, bmp_real a)
-    {
-        bmp_real h = bmp_real(1.0 / N);
+    static BmpReal trapz(function f, BmpReal x, const BmpReal k, 
+                          size_t N, BmpReal a) {
+        BmpReal h = BmpReal(1.0 / N);
         integration_segment_values isv = {0, N};
-        bmp_real u0 = f(0, x, k, a, isv);
+        BmpReal u0 = f(0, x, k, a, isv);
         // uN принудительно задаем нулем, чтобы не было переполнения
-        bmp_real I = u0 / 2; 
+        BmpReal I = u0 / 2; 
 //#if 0
         // true work
         for (size_t i = 1; i < N; i++) {
@@ -61,11 +58,10 @@ namespace fdsf {
         return h*I;
     }
 
-    static bmp_real quad(function f, bmp_real x, const bmp_real k, 
-                         size_t N, bmp_real a)
-    {
-        bmp_real I = 0;
-        bmp_real h = bmp_real(1.0 / N);
+    static BmpReal quad(function f, BmpReal x, const BmpReal k, 
+                         size_t N, BmpReal a) {
+        BmpReal I = 0;
+        BmpReal h = BmpReal(1.0 / N);
         for (size_t i = 0; i < N; i++) {
             //I += f((i + 1.0/2)*h, x, k, a);
         }
@@ -73,11 +69,10 @@ namespace fdsf {
         return I;
     }
 
-    static bmp_real simpson(function f, bmp_real x, 
-                            const bmp_real k, size_t N, bmp_real a)
-    {
-        bmp_real I = 0;
-        bmp_real h = bmp_real(1.0 / N);
+    static BmpReal simpson(function f, BmpReal x, 
+                            const BmpReal k, size_t N, BmpReal a) {
+        BmpReal I = 0;
+        BmpReal h = BmpReal(1.0 / N);
         for (size_t i = 0; i < N; i++) {
             //I += f((i + 1.0 / 2)*h, x, k, a);
         }
@@ -86,9 +81,8 @@ namespace fdsf {
         return I;
     }
 
-    bmp_real euler_maclaurin_method(bmp_real x, const bmp_real k, int N, bmp_real& a)
-    {
-        //bmp_real a = newton::NewtonsMethod(x, k);
+    BmpReal euler_maclaurin_method(BmpReal x, const BmpReal k, int N, BmpReal& a) {
+        //BmpReal a = newton::NewtonsMethod(x, k);
         a = newton::NewtonsMethod(x, k);
         //std::cout << "a = " << a << std::endl;
         if (k == -3.0 / 2) {

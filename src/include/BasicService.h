@@ -9,7 +9,7 @@ namespace filesys {
 
 // Сверхстепенная сходимость
 namespace epc {
-    typedef bmp_real(*function)(bmp_real x);
+    typedef BmpReal(*function)(BmpReal x);
 
-    bmp_real Richardson(function f, bmp_real a, bmp_real b, bool countEvery = false);
+    BmpReal Richardson(function f, BmpReal a, BmpReal b, bool countEvery = false);
 } // exponential_convergense

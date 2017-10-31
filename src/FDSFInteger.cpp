@@ -7,17 +7,15 @@
 
 namespace fdsf {
 
-    bmp_real get_T_max(bmp_real X, int k)
-    {
-        bmp_real a1;
+    BmpReal get_T_max(BmpReal X, int k) {
+        BmpReal a1;
         if (k != 0) {
             a1 = pow(factorial(k + 1), -1 / k);
         }
         int i = 1;
-        bmp_real y = log(1 + exp(X));
-        bmp_real T = X - log(epsilon), I_approximate;
-        while (true)
-        {
+        BmpReal y = log(1 + exp(X));
+        BmpReal T = X - log(epsilon), I_approximate;
+        while (true) {
             // 3-х итераций вполне достаточно для определения Tmax
             if (i > 3) {
                 break;
@@ -37,12 +35,11 @@ namespace fdsf {
     }
 
     // Новая схема Горнера для прецизионного вычисления y
-    static bmp_real GornerSchemeForPrecesionY(int N, bmp_real x)
-    {
-        //bmp_real alpha = x < epsilon ? exp(x) : exp(-x);
-        const bmp_real alpha = exp(x);
-        const bmp_real z = alpha / (2 + alpha);
-        bmp_real sum = 1.0 / (2 * N + 1);
+    static BmpReal GornerSchemeForPrecesionY(int N, BmpReal x) {
+        //BmpReal alpha = x < epsilon ? exp(x) : exp(-x);
+        const BmpReal alpha = exp(x);
+        const BmpReal z = alpha / (2 + alpha);
+        BmpReal sum = 1.0 / (2 * N + 1);
 
         for (int i = N - 1; i >= 0; i--) {
             sum = 1.0 / (2 * i + 1.0) + z*z*sum;
@@ -55,16 +52,15 @@ namespace fdsf {
     void SetLinearTrigonometricGrid(BmpVector &y_base,
                                     BmpVector &x_base,
                                     BmpVector &Y,
-                                    BmpVector &X, size_t N_base)
-    {
+                                    BmpVector &X, size_t N_base) {
         size_t n_additional = 11;
-        const bmp_real alpha = 2 / (2 + PI);
-        const bmp_real one = bmp_real(1);
-        const bmp_real num2 = bmp_real(2); //if integer
-        const bmp_real x_star = bmp_real(3);
-        const bmp_real y_star = bmp_real(log(1 + exp(x_star))); // if half-integer
-        bmp_real baseSize = bmp_real(2 * N_base + 1); // if integer || half-integer & !fixed a(N+1)
-        //bmp_real baseSize = bmp_real(2 * N_base ); // if half-integer & fixed a(N+1)
+        const BmpReal alpha = 2 / (2 + PI);
+        const BmpReal one = BmpReal(1);
+        const BmpReal num2 = BmpReal(2); //if integer
+        const BmpReal x_star = BmpReal(3);
+        const BmpReal y_star = BmpReal(log(1 + exp(x_star))); // if half-integer
+        BmpReal baseSize = BmpReal(2 * N_base + 1); // if integer || half-integer & !fixed a(N+1)
+        //BmpReal baseSize = BmpReal(2 * N_base ); // if half-integer & fixed a(N+1)
 
         // Задаются базовые узлы интерполяции
         for (size_t j = 1; j <= baseSize; j++) {
@@ -90,14 +86,11 @@ namespace fdsf {
         }
     }
 
-    bmp_real fermi_dirak_integer(bmp_real t, 
-                                 bmp_real x, 
-                                 bmp_real k)
-    {
-        return pow(t, k) / (boost::math::tgamma(bmp_real(k)) * (exp(x) + exp(t)));
+    BmpReal fermi_dirak_integer(BmpReal t, BmpReal x, BmpReal k) {
+        return pow(t, k) / (boost::math::tgamma(BmpReal(k)) * (exp(x) + exp(t)));
     }
 #if 0
-    bmp_real fermi_dirak_half_integer(bmp_real t, bmp_real x, bmp_real k)
+    BmpReal fermi_dirak_half_integer(BmpReal t, BmpReal x, BmpReal k)
     {
         // для полуцелых
         return 2 * pow(t, 2 * k + 1) / (1 + exp(t*t - x));
@@ -106,17 +99,15 @@ namespace fdsf {
 
     // Получение необходимого числа членов для схемы Горнера произвольной 
     // заданной точности
-    static bmp_real get_N_for_Gorner(bmp_real x, bmp_real k)
-    {
+    static BmpReal get_N_for_Gorner(BmpReal x, BmpReal k) {
         return log(fdsf::epsilon) / x;
     }
 
-    bmp_real Gorner(bmp_real x, bmp_real k)
-    {
+    BmpReal Gorner(BmpReal x, BmpReal k) {
         //size_t N = ceil(get_N_for_Gorner(x, k));
         size_t N = (size_t)(get_N_for_Gorner(x, k)) + 1;
-        bmp_real exp_x = exp(x);
-        bmp_real sum = 1.0 / pow(N, k + 1);
+        BmpReal exp_x = exp(x);
+        BmpReal sum = 1.0 / pow(N, k + 1);
 
         for (size_t i = N - 1; i > 0; i--) {
             sum = 1 / pow(i, k + 1) - exp_x * sum;
@@ -126,9 +117,9 @@ namespace fdsf {
     }
 
     // TODO: rename as gamma
-    bmp_real factorial(bmp_real _k) {
+    BmpReal factorial(BmpReal _k) {
         auto k = static_cast<double>(_k);
-        std::unordered_map<double, bmp_real> SUPPORTED_HALFINTEGER_INDICES = {
+        std::unordered_map<double, BmpReal> SUPPORTED_HALFINTEGER_INDICES = {
             { -1.5, -2 * sqrt(PI) },
             { -0.5, sqrt(PI) },
             { 0.5, sqrt(PI) / 2 },
@@ -142,27 +133,26 @@ namespace fdsf {
             return SUPPORTED_HALFINTEGER_INDICES[k];
         }
 
-        return !k ? 1 : bmp_real(k*factorial(k - 1));
+        return !k ? 1 : BmpReal(k*factorial(k - 1));
     }
 
-    bmp_real gauss_christoffel_method(bmp_real(*f)(bmp_real, bmp_real, bmp_real),
-                                 bmp_real x, bmp_real T, bmp_real k, int N)
-    {
+    BmpReal gauss_christoffel_method(BmpReal(*f)(BmpReal, BmpReal, BmpReal),
+                                 BmpReal x, BmpReal T, BmpReal k, int N) {
         // Определяем вспомогательные числа, чтобы не скатится до точности 16 знаков
-        bmp_real half = bmp_real(1.0) / 2;
-        bmp_real num35 = bmp_real(35);
-        bmp_real num63 = bmp_real(63);
-        bmp_real num70 = bmp_real(70);
-        bmp_real num322 = bmp_real(322);
-        bmp_real num1800 = bmp_real(1800);
+        BmpReal half = BmpReal(1.0) / 2;
+        BmpReal num35 = BmpReal(35);
+        BmpReal num63 = BmpReal(63);
+        BmpReal num70 = BmpReal(70);
+        BmpReal num322 = BmpReal(322);
+        BmpReal num1800 = BmpReal(1800);
 
         // Веса формул Гаусса-Кристоффеля с N=5
-        const bmp_real gamma_1_5 = (num322 - bmp_real(13)*sqrt(num70)) / num1800;
-        const bmp_real gamma_2_4 = (num322 + bmp_real(13)*sqrt(num70)) / num1800;
-        const bmp_real gamma_3 = bmp_real(64) / bmp_real(225);
+        const BmpReal gamma_1_5 = (num322 - BmpReal(13)*sqrt(num70)) / num1800;
+        const BmpReal gamma_2_4 = (num322 + BmpReal(13)*sqrt(num70)) / num1800;
+        const BmpReal gamma_3 = BmpReal(64) / BmpReal(225);
         BmpVector t(5);
 
-        bmp_real U = 0;
+        BmpReal U = 0;
 
         for (int n = N - 1; n >= 0; n--) {
             // Расчет дополнительных узлов
@@ -179,19 +169,15 @@ namespace fdsf {
         return U / N;
     }
 
-    bool hasFractionalPart(bmp_real value) {
+    bool hasFractionalPart(BmpReal value) {
         return value - floor(value) > 0;
     }
 
     // Сгущение по Ричардсону по сеточно-Гауссову методу
-    bmp_real richardson_method(bmp_real x,
-                               bmp_real t,
-                               bmp_real k,
-                               bmp_real a)
-    {
+    BmpReal richardson_method(BmpReal x, BmpReal t, BmpReal k, BmpReal a) {
         int N = 2;
-        bmp_real stop_criteria;
-        bmp_real I_n, I_2n;
+        BmpReal stop_criteria;
+        BmpReal I_n, I_2n;
 
         bool isHalfInteger = hasFractionalPart(k);
         if (isHalfInteger) {
@@ -204,7 +190,7 @@ namespace fdsf {
         //fout.open("check_a_x.txt");
         //std::cout << "x = " << x << std::endl;
         //fout << (I_n) << std::fixed <<
-        //    std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
+        //    std::setprecision(std::numeric_limits<BmpReal>::max_digits10) << std::endl;
         //std::cout << "N = " << N << ": I = " << I_n << std::endl;
         do {
             if (isHalfInteger) {
@@ -215,7 +201,7 @@ namespace fdsf {
                 I_2n = gauss_christoffel_method(&fermi_dirak_integer, x, t, k, 2 * N);
             }
             //fout << I_2n << std::fixed <<
-            //    std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
+            //    std::setprecision(std::numeric_limits<BmpReal>::max_digits10) << std::endl;
 
             stop_criteria = (I_n / I_2n - 1); 
             //stop_criteria = (I_n / 0.52115038310799122 - 1); //k=-0.5
@@ -227,7 +213,7 @@ namespace fdsf {
         //while (abs(stop_criteria) > epsilon*100);
         //std::cout << "N = " << N << ": I = ";
         //std::cout << I_2n << std::fixed <<
-        //    std::setprecision(std::numeric_limits<bmp_real>::max_digits10) << std::endl;
+        //    std::setprecision(std::numeric_limits<BmpReal>::max_digits10) << std::endl;
 
         //fout.close();
         return I_n;

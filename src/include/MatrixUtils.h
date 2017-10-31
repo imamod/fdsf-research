@@ -14,7 +14,7 @@ namespace matrix_type{
     typedef BmpVector _vector;
 }
 
-std::vector < std::vector <bmp_real> > inverse(std::vector < std::vector <bmp_real> > a);
+std::vector < std::vector <BmpReal> > inverse(std::vector < std::vector <BmpReal> > a);
 
 class CMatrix {
 

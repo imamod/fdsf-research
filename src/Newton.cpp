@@ -3,10 +3,10 @@
 namespace fdsf {
     namespace newton {
 
-        typedef bmp_real(*function)(bmp_real x, bmp_real a, bmp_real k);
+        typedef BmpReal(*function)(BmpReal x, BmpReal a, BmpReal k);
 
         // Целевая функция
-        static bmp_real Function(bmp_real x, bmp_real a, bmp_real k)
+        static BmpReal Function(BmpReal x, BmpReal a, BmpReal k)
         {
             if ( k == -3.0 / 2 )
             {
@@ -19,7 +19,7 @@ namespace fdsf {
         }
 
         //Первая производная
-        static bmp_real FirstDerivative(bmp_real x, bmp_real a, bmp_real k)
+        static BmpReal FirstDerivative(BmpReal x, BmpReal a, BmpReal k)
         {
             if (k == -3.0 / 2) {
                 //return 1 + 432.0 / (64 * a * a - 81);
@@ -31,11 +31,11 @@ namespace fdsf {
         }
 
         // Метод Ньютона 
-        static bmp_real NewtonInternal(function f, function df,
-            bmp_real x, bmp_real a0,
-            bmp_real k, bmp_real eps)
+        static BmpReal NewtonInternal(function f, function df,
+            BmpReal x, BmpReal a0,
+            BmpReal k, BmpReal eps)
         {
-            bmp_real a1 = a0 - f(x, a0, k) / df(x, a0, k);
+            BmpReal a1 = a0 - f(x, a0, k) / df(x, a0, k);
             while (abs(a0 - a1) > eps) {
                 a0 = a1;
                 a1 = a0 - f(x, a0, k) / df(x, a0, k);
@@ -44,9 +44,9 @@ namespace fdsf {
             return a1;
         }
 
-        bmp_real NewtonsMethod(bmp_real x, bmp_real k)
+        BmpReal NewtonsMethod(BmpReal x, BmpReal k)
         {
-            bmp_real a0;
+            BmpReal a0;
 
             if (k == -3.0 / 2) {
                 a0 = 1.13; // Начальное приближение

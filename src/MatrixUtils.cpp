@@ -17,7 +17,7 @@ void GetApproxomateValues(matrix_type::_vector &a,
     matrix_type::_vector F_base(baseSize, 0);
 
     for (size_t j = 0; j < baseSize; j++) {
-        bmp_real S1 = 0, S2 = 0;
+        BmpReal S1 = 0, S2 = 0;
 
         for (size_t n = 0; n < N_base + 1; n++) {
             S1 = S1 + a.at(n)*pow(y0.at(j), n + 1);
@@ -36,7 +36,7 @@ void GetApproxomateValues(matrix_type::_vector &a,
         
 
     for (size_t j = 0; j < addSize; j++) {
-        bmp_real S1 = 0, S2 = 0;
+        BmpReal S1 = 0, S2 = 0;
 
         for (size_t n = 0; n < N_base + 1; n++) {
             S1 = S1 + a.at(n)*pow(Y.at(j), n + 1);
@@ -51,16 +51,16 @@ void GetApproxomateValues(matrix_type::_vector &a,
     }
 }
 
-std::vector < std::vector <bmp_real> > inverse(std::vector < std::vector <bmp_real> > a) 
+std::vector < std::vector <BmpReal> > inverse(std::vector < std::vector <BmpReal> > a) 
 {
     size_t n = a.size();
-    std::vector < std::vector <bmp_real> > ans(n, std::vector <bmp_real>(n, 0));
+    std::vector < std::vector <BmpReal> > ans(n, std::vector <BmpReal>(n, 0));
     for (size_t i = 0; i < n; i++){
         ans.at(i).at(i) = 1.0;
     }
     for (auto i = 0; i < n; i++){
         int row = i;
-        bmp_real mx = a.at(i).at(i);
+        BmpReal mx = a.at(i).at(i);
         for (auto k = i + 1; k < n; k++){
             if ((abs(a.at(k).at(i)) - mx) > epsilon){
                 row = k;
@@ -69,7 +69,7 @@ std::vector < std::vector <bmp_real> > inverse(std::vector < std::vector <bmp_re
         }
 
         for (auto j = i + 1; j < n; j++){
-            bmp_real e = a.at(j).at(i) / a.at(i).at(i);
+            BmpReal e = a.at(j).at(i) / a.at(i).at(i);
             for (auto k = 0; k < n; k++){
                 a.at(j).at(k) -= e*a.at(i).at(k);
                 ans.at(j).at(k) -= e*ans.at(i).at(k);
@@ -78,7 +78,7 @@ std::vector < std::vector <bmp_real> > inverse(std::vector < std::vector <bmp_re
     }
     for (auto i = n - 1; i >= 0; i--) {
         for (auto j = i - 1; j >= 0; j--){
-            bmp_real e = a.at(j).at(i) / a.at(i).at(i);
+            BmpReal e = a.at(j).at(i) / a.at(i).at(i);
             for (auto k = 0; k < n; k++){
                 a.at(j).at(k) -= e*a.at(i).at(k);
                 ans.at(j).at(k) -= e*ans.at(i).at(k);
@@ -86,7 +86,7 @@ std::vector < std::vector <bmp_real> > inverse(std::vector < std::vector <bmp_re
         }
         for (auto j = 0; j < n; j++) {
             ans.at(i).at(j) /= a.at(i).at(i);
-            //std::cout << std::setprecision(std::numeric_limits<bmp_real>::digits10 + 2) << ans.at(i).at(i) << " ";
+            //std::cout << std::setprecision(std::numeric_limits<BmpReal>::digits10 + 2) << ans.at(i).at(i) << " ";
         }
         //std::cout << std::endl;
     }
@@ -125,9 +125,9 @@ void CMatrix::find_coefficients(matrix_type::_matrix A_inv, matrix_type::_vector
         ksi.push_back(0);
         for (size_t j = 0; j < B.size(); j++) {
             ksi.at(i) += A_inv.at(i).at(j)*B.at(j);
-            //std::cout << "i = " << i << " j = " << j << ": " << std::setprecision(std::numeric_limits<bmp_real>::digits10 + 2) << ksi.at(i) << " " << std::endl;
+            //std::cout << "i = " << i << " j = " << j << ": " << std::setprecision(std::numeric_limits<BmpReal>::digits10 + 2) << ksi.at(i) << " " << std::endl;
         }
-        //std::cout << std::setprecision(std::numeric_limits<bmp_real>::digits10 + 2) << ksi.at(i) << " " << std::endl;
+        //std::cout << std::setprecision(std::numeric_limits<BmpReal>::digits10 + 2) << ksi.at(i) << " " << std::endl;
     }
 
     for (size_t j = 0; j < ksi.size(); j++) {

@@ -8,16 +8,16 @@ namespace {
         // std::cout << "      I1(0) : " << fdsf::PI*fdsf::PI / 12 << std::endl;
         /**
          * Соответствие значений t для каждого k, подобрано экспериментально
-         * bmp_real t = fdsf::get_T_max(X.at(i), k);
+         * BmpReal t = fdsf::get_T_max(X.at(i), k);
          */
-        std::unordered_map<size_t, bmp_real> K_T_MAP = {
+        std::unordered_map<size_t, BmpReal> K_T_MAP = {
             { 1, 60 },
             { 2, 75 },
             { 3, 100 },
             { 4, 120 }
         };
         // Точка, до которой считаем по схеме Горнера
-        bmp_real x_div = bmp_real(-0.1);
+        BmpReal x_div = BmpReal(-0.1);
         BmpVector I;
         for (int i = 0; i < x.size(); i++) {
             auto value = x[i] > x_div ? fdsf::richardson_method(x[i], K_T_MAP[k], k)
@@ -34,8 +34,8 @@ namespace {
                     BmpVector y0,
                     BmpVector x0,
                     BmpVector Y,
-                    BmpVector X, bmp_real k) {
-        bmp_real y;
+                    BmpVector X, BmpReal k) {
+        BmpReal y;
         for (size_t i = 0; i < I_base.size(); i++) {
             y = log(1 + exp(x0[i]));
             I_base[i] = pow((I_base[i] * exp(x0[i]) / y0[i]), 1.0 / k);
@@ -49,7 +49,7 @@ namespace {
 }
 
 TEST_CASE("k_1") {
-    std::cout.precision(std::numeric_limits<bmp_real>::max_digits10);
+    std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
     //int N_gorner = 260, k = 1;
     //int N_gorner = 214, k = 2;
     //int N_gorner = 165, k = 3;

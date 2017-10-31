@@ -7,7 +7,7 @@ namespace fdsf {
         //using namespace fdsf;
 
         // Метод Ньютона
-        bmp_real NewtonsMethod(bmp_real x, bmp_real k);
+        BmpReal NewtonsMethod(BmpReal x, BmpReal k);
 
     } // namespace newton
 }
