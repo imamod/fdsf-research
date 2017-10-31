@@ -68,23 +68,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetExt>.lib</TargetExt>
-    <OutDir>$(SolutionDir)\build\$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)\build\$(Platform)\$(IntDir)</IntDir>
+    <OutDir>..\build\$(Platform)\</OutDir>
+    <IntDir>..\build\$(Platform)\$(IntDir)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetExt>.lib</TargetExt>
-    <OutDir>$(SolutionDir)\build\$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)\build\$(Platform)\$(IntDir)</IntDir>
+    <OutDir>..\build\$(Platform)\</OutDir>
+    <IntDir>..\build\$(Platform)\$(IntDir)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetExt>.lib</TargetExt>
-    <OutDir>$(SolutionDir)\build\$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)\build\$(Platform)\$(IntDir)</IntDir>
+    <OutDir>..\build\$(Platform)\</OutDir>
+    <IntDir>..\build\$(Platform)\$(IntDir)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetExt>.lib</TargetExt>
-    <OutDir>$(SolutionDir)\build\$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)\build\$(Platform)\$(IntDir)</IntDir>
+    <OutDir>..\build\$(Platform)\</OutDir>
+    <IntDir>..\build\$(Platform)\$(IntDir)</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -97,6 +97,7 @@
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <XMLDocumentationFileName>$(IntDir)</XMLDocumentationFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
