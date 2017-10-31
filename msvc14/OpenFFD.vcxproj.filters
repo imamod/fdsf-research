@@ -30,6 +30,9 @@
     <ClCompile Include="..\src\MatrixUtils.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\BasicService.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\Newton.h">

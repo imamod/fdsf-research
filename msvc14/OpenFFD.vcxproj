@@ -179,6 +179,7 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\BasicService.cpp" />
     <ClCompile Include="..\src\ExponentialConvergence.cpp" />
     <ClCompile Include="..\src\FDSFHalf.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

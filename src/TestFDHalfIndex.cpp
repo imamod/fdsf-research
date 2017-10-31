@@ -161,11 +161,11 @@ TEST_CASE("check_negative_quadrature_values") {
     std::cout.precision(std::numeric_limits<bmp_real>::max_digits10);
     const bmp_real k = bmp_real(1.0 / 2.0);
     bmp_real x = bmp_real(-0.1), I, I_precise;
-    bmp_real t = 0, a = 0;
-    I = fdsf::richardson_method(x, t, k, a);
+    bmp_real t = 0;
+    I = fdsf::richardson_method(x, t, k);
     I_precise = get_series_value(x, k);
-    std::cout << "I_quadrature: " << I << std::endl;
-    std::cout << "I_precise: " << I_precise << std::endl;
+    filesys::writeFile("../../test/test.txt", {I, I_precise});
+    // TODO: добавить точность отдельно для double и mp
     REQUIRE(abs(I - I_precise) < 1e-17);
 }
 
@@ -218,10 +218,10 @@ TEST_CASE("calculate_k_half_integer") {
     BmpVector I_base = computeIntegral(x0, k);
     BmpVector I_additional = computeIntegral(X, k);
 
-    //printResultToFile(I_base, k, "I_base");
-    //printResultToFile(I_additional, k, "I_add");
-    //printResultToFile(y0, k, "y0");
-    //printResultToFile(Y, k, "Y");
+    filesys::writeFile("I_base_72", I_base);
+    filesys::writeFile("I_add_72", I_additional);
+    filesys::writeFile("y0_72", y0);
+    filesys::writeFile("Y_72", Y);
 }
 
 void chebyshevBaseNodes(BmpVector &y_base,
@@ -283,10 +283,10 @@ TEST_CASE("test_chebyshev_base_nodes") {
     BmpVector I_base = computeIntegral(x0, k);
     BmpVector I_additional = computeIntegral(X, k);
 
-    //printResultToFile(I_base, k, "I_base");
-    //printResultToFile(I_additional, k, "I_add");
-    //printResultToFile(y0, k, "y0");
-    //printResultToFile(Y, k, "Y");
+    filesys::writeFile("I_base", I_base);
+    filesys::writeFile("I_add", I_additional);
+    filesys::writeFile("y0", y0);
+    filesys::writeFile("Y", Y);
 }
 
 TEST_CASE("calculate_all_k") {
@@ -307,13 +307,13 @@ TEST_CASE("calculate_all_k") {
         for (auto item : x_left) {
             bmp_real t = 0, a;
             I_left.push_back(fdsf::richardson_method(item, t, index, a));
-            //printResultToFile(I_left, index, "I");
+            //filesys::writeFile("I", I_left);
         }
         BmpVector I_right;
         for (auto item : x_right) {
             bmp_real t = 0, a;
             I_right.push_back(fdsf::richardson_method(item, t, index, a));
-            //printResultToFile(I_right, index, "I_right");
+            //filesys::writeFile("I_right", I_right);
         }
         //std::cout << I.size() << std::endl;
     }
@@ -322,11 +322,11 @@ TEST_CASE("calculate_all_k") {
     for (auto item : x_left) {
         //I_m32.push_back(fdsf::fd_3mhalf(item));
     }
-    //printResultToFile(I_m32, -1.5, "I");
+    //filesys::writeFile("I_m32", I_m32);
 
     BmpVector I_m32_right;
     for (auto item : x_right) {
         //I_m32_right.push_back(fdsf::fd_3mhalf(item));
     }
-    //printResultToFile(I_m32_right, -1.5, "I_right");
+    //filesys::writeFile("I_right_m32", I_m32_right);
 }

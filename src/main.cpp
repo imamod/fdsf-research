@@ -136,24 +136,7 @@ void forPlot()
         fout.close();
 }
 #endif
-// Вывод значений в файл
-void printResultToFile(matrix_type::_vector x, bmp_real k, std::string varName)
-{
-    std::string fileName = { 0 };
-    std::stringstream convertor;
-    convertor << k;
-    convertor >> fileName;
-    fileName = varName + "_k" + fileName + ".txt";
 
-    std::ofstream f_out;
-    f_out.open(fileName);
-    f_out.precision(std::numeric_limits<bmp_real>::max_digits10);
-    for (size_t i = 0; i < x.size(); i++) {
-        f_out << std::fixed << x[i] << std::endl;
-    }
-
-    f_out.close();
-}
 
 // *****************************************************************************
 // Функции работы с прецизионными аппроксимациями
