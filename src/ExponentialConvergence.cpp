@@ -1,16 +1,14 @@
+#include "BasicService.h"
 #include "Fdsf.h"
 #include "Newton.h"
-#include "ExponentialConvergence.h"
 
 #include <iostream>
 #include <fstream>
 
 namespace epc {
-    using namespace fdsf;
 
     // Euler-Macloren Formulas
-    static bmp_real trapz(function f, bmp_real a, bmp_real b, size_t N)
-    {
+    static bmp_real trapz(function f, bmp_real a, bmp_real b, size_t N) {
         bmp_real h = bmp_real((b - a) / N);
         bmp_real I = (f(a) + f(b)) / 2;
         //bmp_real I = f(a) / 2;
@@ -22,11 +20,10 @@ namespace epc {
         return h*I;
     }
 
-    static bmp_real func_fermi_dirak_half_integer(bmp_real ksi)
-    {
+    static bmp_real func_fermi_dirak_half_integer(bmp_real ksi) {
         bmp_real x = -10.0;
         bmp_real k = 3.0 / 2;
-        bmp_real a = newton::NewtonsMethod(x, k);
+        bmp_real a = fdsf::newton::NewtonsMethod(x, k);
         //std::cout << "a = " << a << std::endl;
         bmp_real exp_ksi = exp(-a*ksi*ksi / (1 - ksi*ksi));
 
@@ -72,6 +69,4 @@ namespace epc {
         return I;
     }
 
-
-
-} // excess power convergence
+} // exponential convergence

@@ -38,19 +38,16 @@
     <ClInclude Include="..\src\include\Newton.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\BasicService.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\BasicTypes.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\include\ExponentialConvergence.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\include\MatrixUtils.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\include\Fdsf.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\BasicService.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\BasicTypes.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

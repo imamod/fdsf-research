@@ -33,6 +33,7 @@ TEST_CASE("GornerVsTrapz") {
 }
 
 TEST_CASE("ExpConverge") {
+    std::setprecision(std::numeric_limits<bmp_real>::max_digits10);
     // Для статьи о сверхстепенной сходимости
     //epc::Richardson(func_demo, 0, fdsf::PI, true);
     epc::Richardson(func_cos, 0, 1);
