@@ -1,12 +1,9 @@
+#include "BasicService.h"
 #include "Fdsf.h"
-#include "Newton.h"
-#include <iostream>
 
 namespace fdsf {
 
-    typedef BmpReal(*function)(BmpReal ksi, BmpReal x, 
-                                BmpReal k, BmpReal a, integration_segment_values isv);
-
+    using FermiFunction = std::function<BmpReal(const BmpReal& ksi, const BmpReal& x, BmpReal k, BmpReal a, const integration_segment_values& isv)>;
 
     BmpReal fermi_dirak_half_integer(BmpReal ksi, BmpReal x, 
                                       BmpReal k, BmpReal a, 
@@ -31,8 +28,7 @@ namespace fdsf {
     }
 
     // Euler-Macloren Formulas
-    static BmpReal trapz(function f, BmpReal x, const BmpReal k, 
-                          size_t N, BmpReal a) {
+    static BmpReal trapz(FermiFunction f, BmpReal x, const BmpReal k, size_t N, BmpReal a) {
         BmpReal h = BmpReal(1.0 / N);
         integration_segment_values isv = {0, N};
         BmpReal u0 = f(0, x, k, a, isv);
@@ -58,7 +54,7 @@ namespace fdsf {
         return h*I;
     }
 
-    static BmpReal quad(function f, BmpReal x, const BmpReal k, 
+    static BmpReal quad(FermiFunction f, BmpReal x, const BmpReal k,
                          size_t N, BmpReal a) {
         BmpReal I = 0;
         BmpReal h = BmpReal(1.0 / N);
@@ -69,8 +65,7 @@ namespace fdsf {
         return I;
     }
 
-    static BmpReal simpson(function f, BmpReal x, 
-                            const BmpReal k, size_t N, BmpReal a) {
+    static BmpReal simpson(FermiFunction f, const BmpReal& x, const BmpReal& k, size_t N, BmpReal a) {
         BmpReal I = 0;
         BmpReal h = BmpReal(1.0 / N);
         for (size_t i = 0; i < N; i++) {
@@ -83,8 +78,7 @@ namespace fdsf {
 
     BmpReal euler_maclaurin_method(BmpReal x, const BmpReal k, int N, BmpReal& a) {
         //BmpReal a = newton::NewtonsMethod(x, k);
-        a = newton::NewtonsMethod(x, k);
-        //std::cout << "a = " << a << std::endl;
+        a = NewtonsMethod(x, k);
         if (k == -3.0 / 2) {
             return trapz(fermi_dirak_m3half, x, k, N, a);
         } 

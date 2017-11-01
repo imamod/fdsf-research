@@ -1,6 +1,8 @@
 #pragma once
 
 #include "BasicTypes.h"
+#include <functional>
+#include <iostream>
 
 namespace filesys {
     // Записать данные в файл
@@ -9,7 +11,10 @@ namespace filesys {
 
 // Сверхстепенная сходимость
 namespace epc {
-    typedef BmpReal(*function)(BmpReal x);
-
-    BmpReal Richardson(function f, BmpReal a, BmpReal b, bool countEvery = false);
+    BmpReal Richardson(std::function<BmpReal(const BmpReal&)> f, BmpReal a, BmpReal b, bool countEvery = false);
 } // exponential_convergense
+
+namespace fdsf {
+    // Метод Ньютона
+    BmpReal NewtonsMethod(BmpReal x, BmpReal k);
+}
