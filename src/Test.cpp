@@ -21,6 +21,7 @@ namespace {
     }
 }
 
+
 // Сравнение схемы Горнера и метода трапеций epc
 TEST_CASE("GornerVsTrapz") {
     std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
@@ -65,6 +66,6 @@ TEST_CASE("BOOST_GAMMA") {
 TEST_CASE("Calc_PI") {
     BmpReal my_pi = boost::math::constants::pi<BmpReal>();
     std::cout << "my_pi = " << my_pi << std::endl;
-    std::cout << "4atg1 = " << 4 * boost::multiprecision::atan(BmpReal(1)) << std::endl;
+    //std::cout << "4atg1 = " << 4 * boost::multiprecision::atan(BmpReal(1)) << std::endl;
     std::cout << "I1(0) = " << my_pi*my_pi / 12 << std::endl;
 }

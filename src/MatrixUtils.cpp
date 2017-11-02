@@ -3,18 +3,21 @@
 #include <limits>
 #include <iomanip>
 
-void GetApproxomateValues(matrix_type::_vector &a,
-                          matrix_type::_vector &b,
-                          matrix_type::_vector &y0,
-                          matrix_type::_vector &Y,
-                          matrix_type::_vector &I,
-                          matrix_type::_vector &z,
-                          matrix_type::_vector &delta_base,
-                          matrix_type::_vector &delta_additional, 
-                          const size_t N_base)
-{
+CMatrix::CMatrix(const BmpMatrix& matrix)
+    : m_matrix(matrix) {}
+
+
+void GetApproxomateValues(BmpVector &a,
+                          BmpVector &b,
+                          BmpVector &y0,
+                          BmpVector &Y,
+                          BmpVector &I,
+                          BmpVector &z,
+                          BmpVector &delta_base,
+                          BmpVector &delta_additional,
+                          const size_t N_base) {
     const size_t baseSize = y0.size();
-    matrix_type::_vector F_base(baseSize, 0);
+    BmpVector F_base(baseSize, 0);
 
     for (size_t j = 0; j < baseSize; j++) {
         BmpReal S1 = 0, S2 = 0;
@@ -32,7 +35,7 @@ void GetApproxomateValues(matrix_type::_vector &a,
     //-------------------------------------- - 
     //Äîáàâèì âñïîìîãàòåëüíóþ ñåòêó 
     const size_t addSize = Y.size();
-    matrix_type::_vector F(addSize, 0);
+    BmpVector F(addSize, 0);
         
 
     for (size_t j = 0; j < addSize; j++) {
@@ -51,41 +54,41 @@ void GetApproxomateValues(matrix_type::_vector &a,
     }
 }
 
-std::vector < std::vector <BmpReal> > inverse(std::vector < std::vector <BmpReal> > a) 
-{
-    size_t n = a.size();
-    std::vector < std::vector <BmpReal> > ans(n, std::vector <BmpReal>(n, 0));
-    for (size_t i = 0; i < n; i++){
+// Получить обратную матрицу
+BmpMatrix CMatrix::inverse() {
+    size_t n = m_matrix.size();
+    BmpMatrix ans(n, BmpVector(n, 0));
+    for (size_t i = 0; i < n; i++) {
         ans.at(i).at(i) = 1.0;
     }
-    for (auto i = 0; i < n; i++){
-        int row = i;
-        BmpReal mx = a.at(i).at(i);
-        for (auto k = i + 1; k < n; k++){
-            if ((abs(a.at(k).at(i)) - mx) > epsilon){
+    for (size_t i = 0; i < n; i++) {
+        size_t row = i;
+        BmpReal mx = m_matrix.at(i).at(i);
+        for (size_t k = i + 1; k < n; k++) {
+            if ((abs(m_matrix.at(k).at(i)) - mx) > fdsf::epsilon) {
                 row = k;
-                mx = abs(a.at(k).at(i));
+                mx = abs(m_matrix.at(k).at(i));
             }
         }
 
-        for (auto j = i + 1; j < n; j++){
-            BmpReal e = a.at(j).at(i) / a.at(i).at(i);
-            for (auto k = 0; k < n; k++){
-                a.at(j).at(k) -= e*a.at(i).at(k);
+        for (size_t j = i + 1; j < n; j++) {
+            BmpReal e = m_matrix.at(j).at(i) / m_matrix.at(i).at(i);
+            for (size_t k = 0; k < n; k++){
+                m_matrix.at(j).at(k) -= e*m_matrix.at(i).at(k);
                 ans.at(j).at(k) -= e*ans.at(i).at(k);
             }
         }
     }
-    for (auto i = n - 1; i >= 0; i--) {
-        for (auto j = i - 1; j >= 0; j--){
-            BmpReal e = a.at(j).at(i) / a.at(i).at(i);
-            for (auto k = 0; k < n; k++){
-                a.at(j).at(k) -= e*a.at(i).at(k);
+    for (size_t i = n - 1; i >= 0; i--) {
+        for (size_t j = i - 1; j >= 0; j--) {
+            BmpReal e = m_matrix.at(j).at(i) / m_matrix.at(i).at(i);
+            for (size_t k = 0; k < n; k++) {
+                m_matrix.at(j).at(k) -= e*m_matrix.at(i).at(k);
                 ans.at(j).at(k) -= e*ans.at(i).at(k);
             }
         }
-        for (auto j = 0; j < n; j++) {
-            ans.at(i).at(j) /= a.at(i).at(i);
+        for (size_t j = 0; j < n; j++) {
+            ans.at(i).at(j) /= m_matrix.at(i).at(i);
             //std::cout << std::setprecision(std::numeric_limits<BmpReal>::digits10 + 2) << ans.at(i).at(i) << " ";
         }
         //std::cout << std::endl;
@@ -93,13 +96,12 @@ std::vector < std::vector <BmpReal> > inverse(std::vector < std::vector <BmpReal
     return ans;
 }
 
-void CMatrix::fill_matrix(const size_t N_base, matrix_type::_vector z,
-                          matrix_type::_vector y0,
-                          matrix_type::_vector &B, matrix_type::_matrix &A)
-{
+void CMatrix::fill_matrix(const size_t N_base, BmpVector z,
+                          BmpVector y0,
+                          BmpVector &B, BmpMatrix &A) {
     for (size_t i = 0; i < 2 * N_base + 1; i++) {
         B.push_back(z.at(i) - 1);
-        matrix_type::_vector ivec;
+        BmpVector ivec;
         for (size_t j = 0; j < 2 * N_base + 1; j++) {
             ivec.push_back(0);
         }
@@ -117,10 +119,9 @@ void CMatrix::fill_matrix(const size_t N_base, matrix_type::_vector z,
     }
 }
 
-void CMatrix::find_coefficients(matrix_type::_matrix A_inv, matrix_type::_vector B,
-                                matrix_type::_vector &a, matrix_type::_vector &b, size_t N)
-{
-    matrix_type::_vector ksi;
+void CMatrix::find_coefficients(BmpMatrix A_inv, BmpVector B,
+                                BmpVector &a, BmpVector &b, size_t N) {
+    BmpVector ksi;
     for (size_t i = 0; i < B.size(); i++) {
         ksi.push_back(0);
         for (size_t j = 0; j < B.size(); j++) {
@@ -142,8 +143,18 @@ void CMatrix::find_coefficients(matrix_type::_matrix A_inv, matrix_type::_vector
     }
 }
 
-std::ostream& operator << (std::ostream& output, CMatrix& a)
-{
+// Вывод объекта СMatrix
+std::ostream& operator << (std::ostream& output, CMatrix& a) {
     output << a << " ";
     return output;
+}
+
+// Распечатать матрицу
+void CMatrix::print(const BmpMatrix& matrix) {
+    for (const auto& row : matrix) {
+        for (const auto& item : row) {
+            std::cout << std::setw(8) << std::setfill(' ') << item << " ";
+        }
+        std::cout << std::endl;
+    }
 }

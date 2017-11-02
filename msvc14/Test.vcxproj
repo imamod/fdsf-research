@@ -159,6 +159,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\src\TestMatrix.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\3dparty\catch.hpp" />

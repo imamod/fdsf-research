@@ -305,14 +305,14 @@ TEST_CASE("calculate_all_k") {
     for (auto index : k) {
         BmpVector I_left;
         for (auto item : x_left) {
-            BmpReal t = 0, a;
-            I_left.push_back(fdsf::richardson_method(item, t, index, a));
+            BmpReal t = 0;
+            I_left.push_back(fdsf::richardson_method(item, t, index));
             //filesys::writeFile("I", I_left);
         }
         BmpVector I_right;
         for (auto item : x_right) {
-            BmpReal t = 0, a;
-            I_right.push_back(fdsf::richardson_method(item, t, index, a));
+            BmpReal t = 0;
+            I_right.push_back(fdsf::richardson_method(item, t, index));
             //filesys::writeFile("I_right", I_right);
         }
         //std::cout << I.size() << std::endl;
