@@ -87,4 +87,68 @@ namespace fdsf {
         }
     }
 
+    // TODO: split this function
+    void SetLinearTrigonometricGridRight(BmpVector &y_base,
+                                         BmpVector &x_base,
+                                         BmpVector &Y,
+                                         BmpVector &X, size_t N_base) {
+        using namespace fdsf;
+        size_t n_additional = 11;
+        const BmpReal alpha = 2 / (2 + PI);
+        const BmpReal one = BmpReal(1);
+        const BmpReal num2 = BmpReal(2); //if integer
+        const BmpReal x_star = BmpReal(3);
+        const BmpReal y_star = BmpReal(log(1 + exp(x_star))); // if half-integer
+                                                              //BmpReal baseSize = BmpReal(2 * N_base + 1); // if integer || half-integer & !fixed a(N+1)
+        BmpReal baseSize = BmpReal(2 * N_base); // if half-integer & fixed a(N+1)
+                                                //BmpReal baseSize = BmpReal(N_base); // if poly approximation
+
+        //const BmpReal y_star_inv = 1 / (y_star * y_star);
+        const BmpReal y_star_inv = 1 / y_star;
+        //const BmpReal y_star_inv = 1 / pow(y_star, 0.5);
+        //const BmpReal y_star_inv = 1 / pow(y_star, 0.25 );
+        //const BmpReal y_star_inv = 1 / pow(y_star, 3.0 / 2);
+
+        // Задаются базовые узлы интерполяции
+        for (size_t j = 1; j <= baseSize; j++) {
+            y_base.push_back(y_star_inv / num2*(num2 * alpha*j / baseSize
+                + (one - alpha)*(one - cos(PI*j / baseSize))));
+        }
+
+        // Задаются дополнительные точки
+        Y.push_back(y_base[0] / n_additional);
+
+        for (size_t i = 1; i < n_additional; i++) {
+            Y.push_back(Y[i - 1] + y_base[0] / n_additional);
+        }
+
+        for (size_t index = 1; index < y_base.size(); index++) {
+            for (size_t i = 0; i < n_additional; i++) {
+                Y.push_back(Y.back() + (y_base[index] - y_base[index - 1]) / n_additional);
+            }
+        }
+
+        // Разворачиваем y
+        std::reverse(y_base.begin(), y_base.end());
+        for (size_t j = 0; j < baseSize; j++) {
+            //y_base[j] = 1.0 / pow(y_base[j], 0.5);
+            y_base[j] = 1.0 / y_base[j];
+            //y_base[j] = 1.0 / (y_base[j] * y_base[j]);
+            //y_base[j] = 1.0 / (pow(y_base[j], 4));
+            //y_base[j] = 1.0 / (pow(y_base[j], 2.0 / 3));
+            x_base.push_back(log(exp(y_base[j]) - one));
+        }
+
+        std::reverse(Y.begin(), Y.end());
+        //std::cout << Y.size() << std::endl;
+        for (size_t j = 0; j < Y.size(); j++) {
+            //Y[j] = 1.0 / pow(Y[j], 0.5);
+            Y[j] = 1.0 / Y[j]; 
+            //Y[j] = 1.0 / (Y[j] * Y[j]);
+            //Y[j] = 1.0 / pow(Y[j], 4);
+            //Y[j] = 1.0 / pow(Y[j], 2.0 / 3);
+            X.push_back(log(exp(Y[j]) - one));
+        }
+    }
+
 }; //fdsf

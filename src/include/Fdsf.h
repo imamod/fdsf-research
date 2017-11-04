@@ -18,6 +18,15 @@ namespace fdsf {
                                     BmpVector &Y,
                                     BmpVector &X, size_t N_base);
 
+    /**
+     * Задает правую линейно-тригонометрическое сетку в базовых узлах, плюс 10(?)
+     * дополнительных точек между каждой парой базовых узлов. Актуально только для полуцелых индексов
+     */
+    void SetLinearTrigonometricGridRight(BmpVector &y_base,
+                                         BmpVector &x_base,
+                                         BmpVector &Y,
+                                         BmpVector &X, size_t N_base);
+
     // Вычисление Г-функции
     BmpReal factorial(BmpReal k);
 
