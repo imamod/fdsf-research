@@ -2,7 +2,10 @@
 
 #include "BasicTypes.h"
 #include <functional>
-#include <iostream>
+
+namespace test {
+    void printVector(const BmpVector& v);
+}
 
 namespace filesys {
     // Записать данные в файл
@@ -12,7 +15,7 @@ namespace filesys {
 // Сверхстепенная сходимость
 namespace epc {
     BmpReal Richardson(std::function<BmpReal(const BmpReal&)> f, BmpReal a, BmpReal b, bool countEvery = false);
-} // exponential_convergense
+}
 
 namespace fdsf {
     // Метод Ньютона

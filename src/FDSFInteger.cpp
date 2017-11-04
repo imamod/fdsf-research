@@ -49,43 +49,6 @@ namespace fdsf {
         return 2 * z*sum;
     }
 
-    void SetLinearTrigonometricGrid(BmpVector &y_base,
-                                    BmpVector &x_base,
-                                    BmpVector &Y,
-                                    BmpVector &X, size_t N_base) {
-        size_t n_additional = 11;
-        const BmpReal alpha = 2 / (2 + PI);
-        const BmpReal one = BmpReal(1);
-        const BmpReal num2 = BmpReal(2); //if integer
-        const BmpReal x_star = BmpReal(3);
-        const BmpReal y_star = BmpReal(log(1 + exp(x_star))); // if half-integer
-        BmpReal baseSize = BmpReal(2 * N_base + 1); // if integer || half-integer & !fixed a(N+1)
-        //BmpReal baseSize = BmpReal(2 * N_base ); // if half-integer & fixed a(N+1)
-
-        // Задаются базовые узлы интерполяции
-        for (size_t j = 1; j <= baseSize; j++) {
-            y_base.push_back(y_star / num2*(num2 * alpha*j / baseSize
-                + (one - alpha)*(one - cos(PI*j / baseSize))));
-            x_base.push_back(log(exp(y_base.at(j - 1)) - one));
-        }
-
-        Y.push_back(y_base.at(0) / n_additional);
-        X.push_back(log(exp(Y.at(0)) - one));
-
-        for (size_t i = 1; i < n_additional; i++)
-        {
-            Y.push_back(Y.at(i - 1) + y_base.at(0) / n_additional);
-            X.push_back(log(exp(Y.at(i)) - one));
-        }
-
-        for (size_t index = 1; index < y_base.size(); index++) {
-            for (size_t i = 0; i < n_additional; i++) {
-                Y.push_back(Y.back() + (y_base.at(index) - y_base.at(index - 1)) / n_additional);
-                X.push_back(log(exp(Y.back()) - one));
-            }
-        }
-    }
-
     BmpReal fermi_dirak_integer(BmpReal t, BmpReal x, BmpReal k) {
         return pow(t, k) / (boost::math::tgamma(BmpReal(k)) * (exp(x) + exp(t)));
     }

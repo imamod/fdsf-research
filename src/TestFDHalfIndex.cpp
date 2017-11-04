@@ -59,10 +59,10 @@ static BmpReal get_series_value(BmpReal x, BmpReal k) {
 // Функции работы с прецизионными аппроксимациями
 // *****************************************************************************
 BmpVector computeIntegral(BmpVector x, BmpReal k) {
-    BmpReal t = 0, a = 0;
+    BmpReal t = 0;
     BmpVector I;
     for (size_t i = 0; i < x.size(); ++i) {
-        I.push_back(fdsf::richardson_method(x.at(i), t, k, a));
+        I.push_back(fdsf::richardson_method(x.at(i), t, k));
         //std::cout << "x0: " << x0.at(i) << " I_base: " << I_base.at(i) << std::endl;
     }
     return I;
@@ -145,15 +145,17 @@ TEST_CASE("calculate_asimpt_value") {
 }
 
 TEST_CASE("calculate_k_half_integer") {
-    BmpVector x0, X, y0, Y;
     const BmpReal k = BmpReal(7.0 / 2.0);
-    const size_t N_base = 5;
     // Расчет значения интеграла в базовых узлах
-    fdsf::SetLinearTrigonometricGrid(y0, x0, Y, X, N_base);
+    Grid grid(5);
+    grid.setLinearTrigonometricGrid();
+    BmpVector y0 = grid.base();
+    BmpVector Y = grid.additional();
+
     //SetLinearTrigonometricGridRight(y0, x0, Y, X, N_base);
     // Расчет интеграла
-    BmpVector I_base = computeIntegral(x0, k);
-    BmpVector I_additional = computeIntegral(X, k);
+    BmpVector I_base = computeIntegral(grid.xByY(y0), k);
+    BmpVector I_additional = computeIntegral(grid.xByY(Y), k);
 
     filesys::writeFile("I_base_72", I_base);
     filesys::writeFile("I_add_72", I_additional);
@@ -164,19 +166,27 @@ TEST_CASE("calculate_k_half_integer") {
 
 TEST_CASE("calc_k_12") {
     const BmpReal k = BmpReal(1.0 / 2.0);
-    const size_t N_base = 10;
-    BmpVector x0, X, y0, Y;
+    const std::vector<size_t> N_base = {3, 5, 7, 9};
     // Расчет значения интеграла в базовых узлах
-    //fdsf::SetLinearTrigonometricGrid(y0, x0, Y, X, N_base);
-    fdsf::SetLinearTrigonometricGridRight(y0, x0, Y, X, N_base);
-    // Расчет интеграла
-    BmpVector I_base = computeIntegral(x0, k);
-    BmpVector I_additional = computeIntegral(X, k);
+    for (const auto& it : N_base) {
+        Grid grid(it);
+        //grid.setLinearGrid();
+        //grid.setLinearTrigonometricGrid();
+        grid.setLinearTrigonometricGridRight();
+        BmpVector y0 = grid.base();
+        BmpVector Y = grid.additional();
+        BmpVector x0 = grid.xByY(y0);
+        BmpVector X = grid.xByY(Y);
 
-    filesys::writeFile("I_base_12.txt", I_base);
-    filesys::writeFile("I_add_12.txt", I_additional);
-    filesys::writeFile("y0_12.txt", y0);
-    filesys::writeFile("Y_12.txt", Y);
+        // Расчет интеграла
+        BmpVector I_base = computeIntegral(x0, k);
+        BmpVector I_additional = computeIntegral(X, k);
+
+        filesys::writeFile("I_base_n" + std::to_string(it) + "_12.txt", I_base);
+        filesys::writeFile("I_add_n" + std::to_string(it) + "_12.txt", I_additional);
+        filesys::writeFile("y0_n" + std::to_string(it) + "_12.txt", y0);
+        filesys::writeFile("Y_n" + std::to_string(it) + "_12.txt", Y);
+    }
 }
 
 void chebyshevBaseNodes(BmpVector &y_base,

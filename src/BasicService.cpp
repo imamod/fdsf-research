@@ -1,5 +1,6 @@
 #include "BasicService.h"
 
+#include <iostream>
 #include <fstream>
 
 namespace filesys {
@@ -11,5 +12,14 @@ namespace filesys {
             file << std::fixed << it << std::endl;
         }
         file.close();
+    }
+}
+
+namespace test {
+    void printVector(const BmpVector& v) {
+        for (auto const& it : v) {
+            std::cout << it << " ";
+        }
+        std::cout << std::endl;
     }
 }

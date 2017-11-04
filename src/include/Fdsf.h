@@ -11,22 +11,6 @@ namespace fdsf {
                                       7.0*PI*PI*PI*PI / 120.0 
                                     };
 
-    // «адает линейно-тригонометрическое сетку в базовых узлах, плюс 10(?)
-    // дополнительных точек между каждой парой базовых узлов.
-    void SetLinearTrigonometricGrid(BmpVector &y_base,
-                                    BmpVector &x_base,
-                                    BmpVector &Y,
-                                    BmpVector &X, size_t N_base);
-
-    /**
-     * «адает правую линейно-тригонометрическое сетку в базовых узлах, плюс 10(?)
-     * дополнительных точек между каждой парой базовых узлов. јктуально только дл€ полуцелых индексов
-     */
-    void SetLinearTrigonometricGridRight(BmpVector &y_base,
-                                         BmpVector &x_base,
-                                         BmpVector &Y,
-                                         BmpVector &X, size_t N_base);
-
     // ¬ычисление √-функции
     BmpReal factorial(BmpReal k);
 

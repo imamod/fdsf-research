@@ -55,14 +55,14 @@ TEST_CASE("k_1") {
     //int N_gorner = 165, k = 3;
     const size_t k = 1;
     // TODO: tests for N = 2 - 6
-    const size_t N_base = 2;
-
     // Расчет значения интеграла в базовых узлах
-    BmpVector x0, X, y0, Y;
-    fdsf::SetLinearTrigonometricGrid(y0, x0, Y, X, N_base);
+    Grid grid(5);
+    grid.setLinearTrigonometricGrid();
+    BmpVector y0 = grid.base();
+    BmpVector Y = grid.additional();
 
     // Расчет схемы Горнера и подсчета интеграла на Гауссовой сетке
-    BmpVector I_base = computeIntegral(x0, k);
-    BmpVector I_additional = computeIntegral(X, k);
+    BmpVector I_base = computeIntegral(grid.xByY(y0), k);
+    BmpVector I_additional = computeIntegral(grid.xByY(Y), k);
     //GetValue_w(I_base, I_additional, y0, x0, Y, X, k);
 }

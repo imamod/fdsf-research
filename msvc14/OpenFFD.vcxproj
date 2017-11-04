@@ -187,6 +187,7 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\FDSFInteger.cpp" />
+    <ClCompile Include="..\src\Grid.cpp" />
     <ClCompile Include="..\src\MatrixUtils.cpp" />
     <ClCompile Include="..\src\Newton.cpp" />
   </ItemGroup>
@@ -194,6 +195,7 @@
     <ClInclude Include="..\src\include\BasicService.h" />
     <ClInclude Include="..\src\include\BasicTypes.h" />
     <ClInclude Include="..\src\include\Fdsf.h" />
+    <ClInclude Include="..\src\include\Grid.h" />
     <ClInclude Include="..\src\include\MatrixUtils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

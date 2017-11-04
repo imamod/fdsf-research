@@ -34,3 +34,15 @@ TEST_CASE("Matrix_Tests") {
     //GetApproxomateValues(a, b, y0, Y, I_additional, I_base, delta_base, delta_add, N_base);
     //printResultToFile(delta_base, k, "delta_base"); printResultToFile(delta_add, k, "delta_add");
 }
+
+TEST_CASE("ExampleGrid") {
+    size_t N = 5;
+    Grid grid(N);
+    grid.setLinearGrid();
+    auto base = grid.base();
+    auto additional = grid.additional();
+    std::cout << "Base: ";
+    test::printVector(base);
+    std::cout << "Additional: ";
+    test::printVector(additional);
+}
