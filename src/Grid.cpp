@@ -6,7 +6,7 @@ Grid::Grid(size_t N_base, size_t addNCount)
     , m_base(0)
     , m_additional(0) {}
 
-// Установить сетку базовых узлов по линейному закону
+// Установить сетку базовых узлов по линейному закону (справа)
 void Grid::setLinearGrid() {
     const BmpReal x_star = BmpReal(3);
     const BmpReal y_star = BmpReal(log(1 + exp(x_star))); // if half-integer
@@ -33,14 +33,14 @@ void Grid::setLinearGrid() {
 
     // Разворачиваем y
     std::reverse(m_base.begin(), m_base.end());
-    for (size_t j = 0; j < baseSize; j++) {
-        m_base[j] = 1.0 / m_base[j];
+    for (auto& item : m_base) {
+        item = 1.0 / item;
     }
 
     std::reverse(m_additional.begin(), m_additional.end());
     //std::cout << Y.size() << std::endl;
-    for (size_t j = 0; j < m_additional.size(); j++) {
-        m_additional[j] = 1.0 / m_additional[j];
+    for (auto& item : m_additional) {
+        item = 1.0 / item;
     }
 }
 
@@ -117,9 +117,9 @@ void Grid::setLinearTrigonometricGridRight() {
 
     // Разворачиваем y
     std::reverse(m_base.begin(), m_base.end());
-    for (size_t j = 0; j < baseSize; j++) {
+    for (auto& item : m_base) {
         //y_base[j] = 1.0 / pow(y_base[j], 0.5);
-        m_base[j] = 1.0 / m_base[j];
+        item = 1.0 / item;
         //y_base[j] = 1.0 / (y_base[j] * y_base[j]);
         //y_base[j] = 1.0 / (pow(y_base[j], 4));
         //y_base[j] = 1.0 / (pow(y_base[j], 2.0 / 3));
@@ -127,9 +127,9 @@ void Grid::setLinearTrigonometricGridRight() {
 
     std::reverse(m_additional.begin(), m_additional.end());
     //std::cout << Y.size() << std::endl;
-    for (size_t j = 0; j < m_additional.size(); ++j) {
+    for (auto& item : m_additional) {
         //Y[j] = 1.0 / pow(Y[j], 0.5);
-        m_additional[j] = 1.0 / m_additional[j];
+        item = 1.0 / item;
         //Y[j] = 1.0 / (Y[j] * Y[j]);
         //Y[j] = 1.0 / pow(Y[j], 4);
         //Y[j] = 1.0 / pow(Y[j], 2.0 / 3);
