@@ -182,10 +182,11 @@ TEST_CASE("calc_k_12") {
         BmpVector I_base = computeIntegral(x0, k);
         BmpVector I_additional = computeIntegral(X, k);
 
-        filesys::writeFile("I_base_n" + std::to_string(it) + "_12.txt", I_base);
-        filesys::writeFile("I_add_n" + std::to_string(it) + "_12.txt", I_additional);
-        filesys::writeFile("y0_n" + std::to_string(it) + "_12.txt", y0);
-        filesys::writeFile("Y_n" + std::to_string(it) + "_12.txt", Y);
+        std::string absFilename = filesys::createDirectory(12, it, "test/");
+        filesys::writeFile(absFilename + "y0.txt", y0);
+        filesys::writeFile(absFilename + "I_base.txt", I_base);
+        filesys::writeFile(absFilename + "I_add.txt", I_additional);
+        filesys::writeFile(absFilename + "Y.txt", Y);
     }
 }
 

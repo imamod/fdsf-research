@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <experimental/filesystem>
+
 
 namespace filesys {
     // Вывод значений в файл
@@ -13,6 +15,23 @@ namespace filesys {
         }
         file.close();
     }
+
+    std::string createDirectory(BmpReal k, size_t n, const std::string& prefix) {
+        namespace fs = std::experimental::filesystem;
+        if (!prefix.empty() && !fs::exists(prefix)) {
+            fs::create_directory(prefix);
+        }
+        std::string path(prefix + "k" + std::to_string(k));
+        if (!fs::exists(path)) {
+            fs::create_directory(path);
+        }
+        path += "/n" + std::to_string(n);
+        if (!fs::exists(path)) {
+            fs::create_directory(path);
+        }
+        return path + "/";
+    }
+
 }
 
 namespace test {

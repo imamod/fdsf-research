@@ -10,6 +10,7 @@ namespace test {
 namespace filesys {
     // Записать данные в файл
     void writeFile(const std::string& filename, const BmpVector& data);
+    std::string createDirectory(BmpReal k, size_t n, const std::string& prefix = "");
 }
 
 // Сверхстепенная сходимость
