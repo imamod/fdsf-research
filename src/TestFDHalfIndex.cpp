@@ -35,9 +35,9 @@ BmpVector calculate_series_part(BmpReal k, BmpVector& X) {
 
 static BmpReal get_assympt_value(BmpReal x, BmpReal k) {
     BmpVector I_minus, I, series_part, X = { x };
-    BmpReal t = 0, a = 0;
+    BmpReal t = 0;
     series_part = calculate_series_part(k, X);
-    I_minus.push_back(fdsf::richardson_method(-x, t, k, a));
+    I_minus.push_back(fdsf::richardson_method(-x, t, k));
     I.push_back(I_minus[0] + series_part[0]);
     //return I[0];
     return series_part[0];
@@ -71,9 +71,9 @@ BmpVector computeIntegral(BmpVector x, BmpReal k) {
 TEST_CASE("comp_kostya_and_precise") {
     const BmpReal k = BmpReal(1.0 / 2.0);
     BmpReal x = BmpReal(-0.1), I, I_kostya, I_precise;
-    BmpReal t = 0, a = 0;
+    BmpReal t = 0;
 #if 0
-    I = fdsf::richardson_method(x, t, k, a);
+    I = fdsf::richardson_method(x, t, k);
     I_kostya = fdsf::fd_half(x);
     I_precise = get_series_value(x, k);
     std::cout << "x = -0.1" << std::endl;
@@ -85,7 +85,7 @@ TEST_CASE("comp_kostya_and_precise") {
 
     x = 30.0;// +10E-8;
     std::cout << "x = " << x << std::endl;
-    I = fdsf::richardson_method(x, t, k, a);
+    I = fdsf::richardson_method(x, t, k);
     //I_kostya = fdsf::fd_half(x);
     I_precise = get_assympt_value(x, k);
     std::cout << "I_quadrature: " << I << std::endl;
@@ -109,14 +109,14 @@ TEST_CASE("check_negative_quadrature_values") {
 TEST_CASE("calculate_asimpt_value") {
     BmpVector X, Y;
     const BmpReal k = BmpReal(1.0 / 2.0);
-    BmpReal t = 0, a = 0, h = 0.1;
+    BmpReal t = 0, h = 0.1;
     BmpVector I, I_minus, series_part;
 
     //проверка на идиота при х = 30
     X.push_back(30.0);
     //X.push_back(log(exp(Y[0]) - 1));
     series_part = calculate_series_part(k, X);
-    I_minus.push_back(fdsf::richardson_method(-X[0], t, k, a));
+    I_minus.push_back(fdsf::richardson_method(-X[0], t, k));
     I.push_back(I_minus[0] + series_part[0]);
     I.push_back(series_part[0]);
 #if 0
@@ -137,7 +137,7 @@ TEST_CASE("calculate_asimpt_value") {
 
     series_part = calculate_series_part(k, X);
     for (size_t i = 0; i < X.size(); i++) {
-        I_minus.push_back(fdsf::richardson_method(-X[i], t, k, a));
+        I_minus.push_back(fdsf::richardson_method(-X[i], t, k));
         I.push_back(I_minus[i] + series_part[i]);
     }
 #endif
@@ -171,8 +171,8 @@ TEST_CASE("calc_k_12") {
     for (const auto& it : N_base) {
         Grid grid(it);
         //grid.setLinearGrid();
-        //grid.setLinearTrigonometricGrid();
-        grid.setLinearTrigonometricGridRight();
+        grid.setLinearTrigonometricGrid();
+        //grid.setLinearTrigonometricGridRight();
         BmpVector y0 = grid.base();
         BmpVector Y = grid.additional();
         BmpVector x0 = grid.xByY(y0);
@@ -182,7 +182,9 @@ TEST_CASE("calc_k_12") {
         BmpVector I_base = computeIntegral(x0, k);
         BmpVector I_additional = computeIntegral(X, k);
 
-        std::string absFilename = filesys::createDirectory(12, it, "test/");
+        //std::string absFilename = filesys::createDirectory(12, it, "test/");
+        std::string absFilename = filesys::createDirectory(12, it, "test_x5_left/");
+        //std::string absFilename = filesys::createDirectory(12, it, "test_x5/");
         filesys::writeFile(absFilename + "y0.txt", y0);
         filesys::writeFile(absFilename + "I_base.txt", I_base);
         filesys::writeFile(absFilename + "I_add.txt", I_additional);

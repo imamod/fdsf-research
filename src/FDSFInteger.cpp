@@ -20,12 +20,9 @@ namespace fdsf {
             if (i > 3) {
                 break;
             }
-            if (k == 0) {
-                I_approximate = y;
-            }
-            else {
-                I_approximate = factorial(k)*y*pow(1 + a1*y, k);
-            }
+
+            I_approximate = !k ? y : factorial(k)*y*pow(1 + a1*y, k);
+
             // Итерационное вычисление Tmax
             T = X - log(epsilon) + log(pow(T + 1, k) / I_approximate);
             i++;
@@ -102,12 +99,12 @@ namespace fdsf {
     BmpReal gauss_christoffel_method(BmpReal(*f)(BmpReal, BmpReal, BmpReal),
                                  BmpReal x, BmpReal T, BmpReal k, int N) {
         // Определяем вспомогательные числа, чтобы не скатится до точности 16 знаков
-        BmpReal half = BmpReal(1.0) / 2;
-        BmpReal num35 = BmpReal(35);
-        BmpReal num63 = BmpReal(63);
-        BmpReal num70 = BmpReal(70);
-        BmpReal num322 = BmpReal(322);
-        BmpReal num1800 = BmpReal(1800);
+        const BmpReal half = BmpReal(1.0) / 2;
+        const BmpReal num35 = BmpReal(35);
+        const BmpReal num63 = BmpReal(63);
+        const BmpReal num70 = BmpReal(70);
+        const BmpReal num322 = BmpReal(322);
+        const BmpReal num1800 = BmpReal(1800);
 
         // Веса формул Гаусса-Кристоффеля с N=5
         const BmpReal gamma_1_5 = (num322 - BmpReal(13)*sqrt(num70)) / num1800;
@@ -143,12 +140,8 @@ namespace fdsf {
         BmpReal I_n, I_2n;
 
         bool isHalfInteger = hasFractionalPart(k);
-        if (isHalfInteger) {
-            I_n = euler_maclaurin_method(x, k, N, a);
-        }
-        else {
-            I_n = gauss_christoffel_method(&fermi_dirak_integer, x, t, k, N);
-        }
+        I_n = isHalfInteger ? euler_maclaurin_method(x, k, N, a) :
+                              gauss_christoffel_method(&fermi_dirak_integer, x, t, k, N);
         //std::ofstream fout;
         //fout.open("check_a_x.txt");
         //std::cout << "x = " << x << std::endl;

@@ -1,6 +1,6 @@
 #include "TestCommon.h"
 #include "Fdsf.h"
-#include <unordered_map>
+#include <array>
 
 namespace {
     // Для целых
@@ -10,17 +10,12 @@ namespace {
          * Соответствие значений t для каждого k, подобрано экспериментально
          * BmpReal t = fdsf::get_T_max(X.at(i), k);
          */
-        std::unordered_map<size_t, BmpReal> K_T_MAP = {
-            { 1, 60 },
-            { 2, 75 },
-            { 3, 100 },
-            { 4, 120 }
-        };
+        std::array<BmpReal, 4> T_VALUES = { 60, 75, 100, 120 };
         // Точка, до которой считаем по схеме Горнера
         BmpReal x_div = BmpReal(-0.1);
         BmpVector I;
         for (int i = 0; i < x.size(); i++) {
-            auto value = x[i] > x_div ? fdsf::richardson_method(x[i], K_T_MAP[k], k)
+            auto value = x[i] > x_div ? fdsf::richardson_method(x[i], T_VALUES[k-1], k)
                                          : fdsf::Gorner(x[i], k);
                 //I.push_back(GornerSchemeForPrecesionY( x0[i], N));
             I.push_back(value);
@@ -35,14 +30,11 @@ namespace {
                     BmpVector x0,
                     BmpVector Y,
                     BmpVector X, BmpReal k) {
-        BmpReal y;
         for (size_t i = 0; i < I_base.size(); i++) {
-            y = log(1 + exp(x0[i]));
             I_base[i] = pow((I_base[i] * exp(x0[i]) / y0[i]), 1.0 / k);
         }
 
         for (size_t i = 0; i < I_additional.size(); i++) {
-            y = log(1 + exp(X[i]));
             I_additional[i] = pow((I_additional[i] * exp(X[i]) / Y[i]), 1 / k);
         }
     }
