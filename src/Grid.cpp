@@ -6,60 +6,8 @@ Grid::Grid(size_t N_base, size_t addNCount)
     , m_base(0)
     , m_additional(0) {}
 
-// Установить сетку базовых узлов по линейному закону (справа)
-void Grid::setLinearGrid() {
-    const BmpReal x_star = BmpReal(3);
-    const BmpReal y_star = BmpReal(log(1 + exp(x_star))); // if half-integer
-    BmpReal baseSize = BmpReal(2 * m_N_base); // if half-integer & fixed a(N+1)
-    const BmpReal y_star_inv = 1 / y_star;
-
-    // Задаются базовые узлы интерполяции
-    for (size_t j = 1; j <= baseSize; j++) {
-        m_base.push_back(j*y_star_inv / baseSize);
-    }
-
-    // Задаются дополнительные точки
-    m_additional.push_back(m_base.front() / m_additionalNCount);
-
-    for (size_t i = 1; i < m_additionalNCount; i++) {
-        m_additional.push_back(m_additional[i - 1] + m_base.front() / m_additionalNCount);
-    }
-
-    for (size_t index = 1; index < m_base.size(); index++) {
-        for (size_t i = 0; i < m_additionalNCount; i++) {
-            m_additional.push_back(m_additional.back() + (m_base[index] - m_base[index - 1]) / m_additionalNCount);
-        }
-    }
-
-    // Разворачиваем y
-    std::reverse(m_base.begin(), m_base.end());
-    for (auto& item : m_base) {
-        item = 1.0 / item;
-    }
-
-    std::reverse(m_additional.begin(), m_additional.end());
-    //std::cout << Y.size() << std::endl;
-    for (auto& item : m_additional) {
-        item = 1.0 / item;
-    }
-}
-
-// Установить сетку базовых узлов по линейно-тригонометрическому закону
-void Grid::setLinearTrigonometricGrid() {
-    const BmpReal alpha = 2 / (2 + fdsf::PI);
-    const BmpReal one = BmpReal(1);
-    const BmpReal num2 = BmpReal(2); //if integer
-    const BmpReal x_star = BmpReal(3);
-    const BmpReal y_star = BmpReal(log(1 + exp(x_star))); // if half-integer
-    BmpReal baseSize = BmpReal(2 * m_N_base + 1); // if integer || half-integer & !fixed a(N+1)
-    //BmpReal baseSize = BmpReal(2 * N_base ); // if half-integer & fixed a(N+1)
-
-    // Задаются базовые узлы интерполяции
-    for (size_t j = 1; j <= baseSize; j++) {
-        m_base.push_back(y_star / num2*(num2 * alpha*j / baseSize
-            + (one - alpha)*(one - cos(fdsf::PI*j / baseSize))));
-    }
-
+/* Заполнить сетку дополнительными точками */
+void Grid::setAdditionalDots() {
     m_additional.push_back(m_base.front() / m_additionalNCount);
 
     for (size_t i = 1; i < m_additionalNCount; ++i) {
@@ -73,6 +21,55 @@ void Grid::setLinearTrigonometricGrid() {
     }
 }
 
+/* выполнить замену переменных y = 1/ksi */
+void Grid::changeGrid(BmpVector& v) {
+    for (auto& item : v) {
+        item = 1 / item;
+    }
+}
+
+// Установить сетку базовых узлов по линейному закону (справа)
+void Grid::setLinearGrid() {
+    const BmpReal x_star = BmpReal(3);
+    const BmpReal y_star = BmpReal(log(1 + exp(x_star))); // if half-integer
+    BmpReal baseSize = BmpReal(2 * m_N_base); // if half-integer & fixed a(N+1)
+    const BmpReal y_star_inv = 1 / y_star;
+
+    // Задаются базовые узлы интерполяции
+    for (size_t j = 1; j <= baseSize; j++) {
+        m_base.push_back(j*y_star_inv / baseSize);
+    }
+
+    // Задаются дополнительные точки
+    setAdditionalDots();
+
+    // Разворачиваем y
+    std::reverse(m_base.begin(), m_base.end());
+    changeGrid(m_base);
+    std::reverse(m_additional.begin(), m_additional.end());
+    changeGrid(m_additional);
+}
+
+// Установить сетку базовых узлов по линейно-тригонометрическому закону
+void Grid::setLinearTrigonometricGrid() {
+    const BmpReal alpha = 2 / (2 + fdsf::PI);
+    const BmpReal one = BmpReal(1);
+    const BmpReal num2 = BmpReal(2); //if integer
+    const BmpReal x_star = BmpReal(5);
+    const BmpReal y_star = BmpReal(log(1 + exp(x_star))); // if half-integer
+    BmpReal baseSize = BmpReal(2 * m_N_base + 1); // if integer || half-integer & !fixed a(N+1)
+    //BmpReal baseSize = BmpReal(2 * N_base ); // if half-integer & fixed a(N+1)
+
+    // Задаются базовые узлы интерполяции
+    for (size_t j = 1; j <= baseSize; j++) {
+        m_base.push_back(y_star / num2*(num2 * alpha*j / baseSize
+            + (one - alpha)*(one - cos(fdsf::PI*j / baseSize))));
+    }
+
+    // Задаются дополнительные точки
+    setAdditionalDots();
+}
+
 /**
 * Задает правую линейно-тригонометрическую сетку базовых узлов справа, плюс 10(?)
 * дополнительных точек между каждой парой базовых узлов. Актуально только для полуцелых индексов
@@ -80,8 +77,8 @@ void Grid::setLinearTrigonometricGrid() {
 void Grid::setLinearTrigonometricGridRight() {
     m_additional.clear();
     m_base.clear();
-    //const BmpReal alpha = 2 / (2 + PI);
-    const BmpReal alpha = 0.7;
+    const BmpReal alpha = 2 / (2 + fdsf::PI);
+    //const BmpReal alpha = 0.7;
     const BmpReal one = BmpReal(1);
     const BmpReal num2 = BmpReal(2); //if integer
     const BmpReal x_star = BmpReal(3);
@@ -92,48 +89,66 @@ void Grid::setLinearTrigonometricGridRight() {
 
     //const BmpReal y_star_inv = 1 / (y_star * y_star);
     const BmpReal y_star_inv = 1 / y_star;
-    //const BmpReal y_star_inv = 1 / pow(y_star, 0.5);
-    //const BmpReal y_star_inv = 1 / pow(y_star, 0.25 );
-    //const BmpReal y_star_inv = 1 / pow(y_star, 3.0 / 2);
 
     // Задаются базовые узлы интерполяции
     for (size_t j = 1; j <= baseSize; j++) {
-        m_base.push_back(y_star_inv / num2*(num2 * alpha*j / baseSize
-            + (one - alpha)*(one - cos(fdsf::PI*j / baseSize))));
+        //m_base.push_back(y_star_inv / num2*(num2 * alpha*j / baseSize
+        //    + (one - alpha)*(one - cos(fdsf::PI*j / baseSize))));
+        m_base.push_back(y_star_inv / num2*(num2 * (one - alpha)*j / baseSize
+            + alpha*(one - cos(fdsf::PI*j / baseSize))));
     }
 
     // Задаются дополнительные точки
-    m_additional.push_back(m_base.front() / m_additionalNCount);
-
-    for (size_t i = 1; i < m_additionalNCount; i++) {
-        m_additional.push_back(m_additional[i - 1] + m_base.front() / m_additionalNCount);
-    }
-
-    for (size_t index = 1; index < m_base.size(); index++) {
-        for (size_t i = 0; i < m_additionalNCount; i++) {
-            m_additional.push_back(m_additional.back() + (m_base[index] - m_base[index - 1]) / m_additionalNCount);
-        }
-    }
+    setAdditionalDots();
 
     // Разворачиваем y
     std::reverse(m_base.begin(), m_base.end());
-    for (auto& item : m_base) {
-        //y_base[j] = 1.0 / pow(y_base[j], 0.5);
-        item = 1.0 / item;
-        //y_base[j] = 1.0 / (y_base[j] * y_base[j]);
-        //y_base[j] = 1.0 / (pow(y_base[j], 4));
-        //y_base[j] = 1.0 / (pow(y_base[j], 2.0 / 3));
-    }
-
+    changeGrid(m_base);
     std::reverse(m_additional.begin(), m_additional.end());
-    //std::cout << Y.size() << std::endl;
-    for (auto& item : m_additional) {
-        //Y[j] = 1.0 / pow(Y[j], 0.5);
-        item = 1.0 / item;
-        //Y[j] = 1.0 / (Y[j] * Y[j]);
-        //Y[j] = 1.0 / pow(Y[j], 4);
-        //Y[j] = 1.0 / pow(Y[j], 2.0 / 3);
+    changeGrid(m_additional);
+}
+
+/**
+ * Замена переменных. Исследование сетки с автоматическим выравниванием экстремумов.
+ * ksi = 1/y; delta - экстремумы, полученные на сетке с ksi.
+ * eta(i) = ksi(i) + 0.5*(ksi(i+1)-ksi(i-1))*tau*(1+sqrt(delta(i-0.5)/delta(i+0.5)))/(1-sqrt(delta(i-0.5)/delta(i+0.5)))
+ * tau = 0.5
+ */
+void Grid::shiftLinTrigGrid(const BmpVector& delta) {
+    // Пошло смещение базовыхs узлов
+    BmpVector ksi;//(m_base);
+    for (auto const& it : m_base) {
+        ksi.push_back(1 / it);
     }
+    std::reverse(ksi.begin(), ksi.end());
+
+    //const BmpReal tau(0.5);
+    //const BmpReal tau(1);
+    const BmpReal tau(0.75);
+    BmpVector eta;
+    eta.push_back(ksi.front());
+    for (auto i = 1; i < ksi.size() - 1; ++i) {
+        auto distance = (ksi[i + 1] - ksi[i - 1]) / 2;
+        auto num = 1 - sqrt((delta[i - 1] / delta[i]));
+        auto denom = (1 + sqrt(delta[i - 1] / delta[i]));
+        eta.push_back(ksi[i] + tau*distance*num / denom);
+    }
+    eta.push_back(ksi.back());
+
+    // Magic for correct filling
+    m_base.clear();
+    m_base = eta;
+
+    // Очищаем вектор перед заполнением
+    m_additional.clear();
+
+    // Устанавливаем дополнительные точки
+    setAdditionalDots();
+
+    changeGrid(m_base);
+    std::reverse(m_base.begin(), m_base.end());
+    changeGrid(m_additional);
+    std::reverse(m_additional.begin(), m_additional.end());
 }
 
 // Получить массив базовых точек

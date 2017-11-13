@@ -62,8 +62,8 @@ BmpVector computeIntegral(BmpVector x, BmpReal k) {
     BmpReal t = 0;
     BmpVector I;
     for (size_t i = 0; i < x.size(); ++i) {
-        I.push_back(fdsf::richardson_method(x.at(i), t, k));
-        //std::cout << "x0: " << x0.at(i) << " I_base: " << I_base.at(i) << std::endl;
+        I.push_back(fdsf::richardson_method(x[i], t, k));
+        //std::cout << "x0: " << x[i] << " I: " << I[i] << std::endl;
     }
     return I;
 }
@@ -185,6 +185,51 @@ TEST_CASE("calc_k_12") {
         //std::string absFilename = filesys::createDirectory(12, it, "test/");
         std::string absFilename = filesys::createDirectory(12, it, "test_x5_left/");
         //std::string absFilename = filesys::createDirectory(12, it, "test_x5/");
+        filesys::writeFile(absFilename + "y0.txt", y0);
+        filesys::writeFile(absFilename + "I_base.txt", I_base);
+        filesys::writeFile(absFilename + "I_add.txt", I_additional);
+        filesys::writeFile(absFilename + "Y.txt", Y);
+    }
+}
+
+TEST_CASE("checkShiftGrid") {
+    const BmpReal k = BmpReal(1.0 / 2.0);
+    //const std::vector<size_t> N_base = { 3, 5, 7, 9 };
+    const std::vector<size_t> N_base{ 9 };
+    // Расчет значения интеграла в базовых узлах
+    for (const auto& it : N_base) {
+        Grid grid(it);
+        grid.setLinearTrigonometricGridRight();
+        BmpVector delta = { 3.996803e-015,
+                            1.554312e-015,
+                            9.992007e-016,
+                            6.661338e-016,
+                            5.551115e-016,
+                            1.110223e-015,
+                            1.554312e-015,
+                            2.442491e-015,
+                            2.886580e-015,
+                            1.088019e-014,
+                            1.136868e-013,
+                            2.143841e-013,
+                            1.398881e-012,
+                            3.310685e-012,
+                            5.213607e-012,
+                            2.875700e-012,
+                            6.026291e-013,
+                            4.263256e-014
+                        };
+        grid.shiftLinTrigGrid(delta);
+        BmpVector y0 = grid.base();
+        BmpVector Y = grid.additional();
+        BmpVector x0 = grid.xByY(y0);
+        BmpVector X = grid.xByY(Y);
+
+        // Расчет интеграла
+        BmpVector I_base = computeIntegral(x0, k);
+        BmpVector I_additional = computeIntegral(X, k);
+
+        std::string absFilename = filesys::createDirectory(12, it, "testShift/");
         filesys::writeFile(absFilename + "y0.txt", y0);
         filesys::writeFile(absFilename + "I_base.txt", I_base);
         filesys::writeFile(absFilename + "I_add.txt", I_additional);
