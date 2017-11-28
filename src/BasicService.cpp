@@ -56,9 +56,19 @@ namespace filesys {
 }
 
 namespace test {
-    void printVector(const BmpVector& v) {
+    void printVector(const BmpVector& v, bool printInColumn) {
+        std::cout << std::setprecision(std::numeric_limits<BmpReal>::digits10 + 2) << std::endl;
+        auto escapeSymbol = printInColumn ? "\n" : " ";
         for (auto const& it : v) {
-            std::cout << it << " ";
+            std::cout << it << escapeSymbol;
+        }
+        std::cout << std::endl;
+    }
+
+    void printMatrix(const BmpMatrix& m) {
+        std::cout << std::setprecision(std::numeric_limits<BmpReal>::digits10 + 2) << std::endl;
+        for (auto it : m) {
+            printVector(it);
         }
         std::cout << std::endl;
     }

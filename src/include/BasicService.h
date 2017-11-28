@@ -4,7 +4,10 @@
 #include <functional>
 
 namespace test {
-    void printVector(const BmpVector& v);
+    // Распечатать вектор
+    void printVector(const BmpVector& v, bool printInColumn = false);
+    // Распечатать матрицу
+    void printMatrix(const BmpMatrix& m);
 }
 
 namespace filesys {

@@ -13,21 +13,18 @@
 using BmpReal = boost::multiprecision::cpp_dec_float_50;
 namespace fdsf {
     // Желаемая точность расчета
-    //const BmpReal epsilon = 1e-45;
-    const BmpReal epsilon = 1e-17;
+    const BmpReal epsilon50 = 1e-45;
 }
 #else
 using BmpReal = double;
-namespace fdsf {
-    // Желаемая точность расчета
-    const BmpReal epsilon = 1e-17;
-}
 #endif
 
 using BmpVector = std::vector<BmpReal>;
 using BmpMatrix = std::vector<BmpVector>;
 
 namespace fdsf {
+    // Желаемая точность расчета
+    const BmpReal epsilon = 1e-17;
     // Значение pi
     const BmpReal PI = boost::math::constants::pi<BmpReal>();
 }
