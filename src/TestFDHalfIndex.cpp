@@ -237,6 +237,31 @@ TEST_CASE("checkShiftGrid") {
     }
 }
 
+TEST_CASE("SolveSystem") {
+    const BmpReal k = BmpReal(1.0 / 2.0);
+    const std::vector<size_t> N_base{ 2 };
+    for (const auto& it : N_base) {
+        Grid grid(it);
+        grid.setLinearTrigonometricGridRight();
+        BmpVector y0 = grid.base();
+        BmpVector Y = grid.additional();
+        BmpVector x0 = grid.xByY(y0);
+        BmpVector X = grid.xByY(Y);
+
+        // Расчет интеграла
+        BmpVector I_base = computeIntegral(x0, k);
+        //filesys::writeFile("I_base.txt", I_base);
+        BmpVector I_additional = computeIntegral(X, k);
+        //filesys::writeFile("I_add.txt", I_additional);
+        //BmpVector I_base = filesys::readFile("I_base.txt");
+        //test::printVector(I_base, true);
+        //BmpVector I_additional = filesys::readFile("I_add.txt");
+        solveRightApproximationSystem(k, it, y0, I_base);
+        getchar();
+    }
+}
+
+
 void chebyshevBaseNodes(BmpVector &y_base,
                         BmpVector &x_base,
                         BmpVector &Y,

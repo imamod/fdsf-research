@@ -1,4 +1,5 @@
 ﻿#include "MatrixUtils.h"
+#include "BasicService.h"
 #include <math.h>
 #include <limits>
 #include <iomanip>
@@ -6,6 +7,16 @@
 CMatrix::CMatrix(const BmpMatrix& matrix)
     : m_matrix(matrix) {}
 
+/**
+ * Сформировать единичную матрицу
+ */
+BmpMatrix CMatrix::eye(const size_t N) {
+    BmpMatrix eyeMatrix(N, BmpVector(N, 0));
+    for (size_t i = 0; i < N; ++i) {
+        eyeMatrix[i][i] = 1.0;
+    }
+    return eyeMatrix;
+}
 
 void GetApproxomateValues(BmpVector &a,
                           BmpVector &b,
@@ -54,48 +65,52 @@ void GetApproxomateValues(BmpVector &a,
     }
 }
 
-// Получить обратную матрицу
+/**
+ * Получить обратную квадратную матрицу методом Гаусса
+ */
 BmpMatrix CMatrix::inverse() {
     size_t n = m_matrix.size();
-    BmpMatrix ans(n, BmpVector(n, 0));
-    for (size_t i = 0; i < n; i++) {
-        ans.at(i).at(i) = 1.0;
-    }
-    for (size_t i = 0; i < n; i++) {
-        size_t row = i;
-        BmpReal mx = m_matrix.at(i).at(i);
-        for (size_t k = i + 1; k < n; k++) {
-            if ((abs(m_matrix.at(k).at(i)) - mx) > fdsf::epsilon) {
-                row = k;
-                mx = abs(m_matrix.at(k).at(i));
+    // Формируем единичную матрицу
+    BmpMatrix inversedMatrix = eye(n);
+    // Прямой ход
+    for (size_t i = 0; i < n; ++i) {
+        BmpReal mx = m_matrix[i][i];
+        // Что делает этот проход???...
+        for (size_t k = i + 1; k < n; ++k) {
+            // Что за условие???...
+            if ((abs(m_matrix[k][i]) - mx) > fdsf::epsilon) {
+                mx = abs(m_matrix[k][i]);
             }
         }
+        // Приведение матрицы к треугольному виду
+        for (size_t j = i + 1; j < n; ++j) {
+            // Делим каждый элемент строки на диагональный элемент
+            BmpReal e = m_matrix[j][i] / m_matrix[i][i];
+            // Пробегаем по столбцу и зануляем все под диагональным элементом
+            for (size_t k = 0; k < n; ++k) {
+                m_matrix[j][k] -= e*m_matrix[i][k];
+                inversedMatrix[j][k] -= e*inversedMatrix[i][k];
+            }
+        }
+    }
 
-        for (size_t j = i + 1; j < n; j++) {
-            BmpReal e = m_matrix.at(j).at(i) / m_matrix.at(i).at(i);
-            for (size_t k = 0; k < n; k++){
-                m_matrix.at(j).at(k) -= e*m_matrix.at(i).at(k);
-                ans.at(j).at(k) -= e*ans.at(i).at(k);
+    // Обратный ход
+    for (int i = n - 1; i >= 0; i--) {
+        for (int j = i - 1; j >= 0; j--) {
+            BmpReal e = m_matrix[j][i] / m_matrix[i][i];
+            for (size_t k = 0; k < n; ++k) {
+                m_matrix[j][k] -= e*m_matrix[i][k];
+                inversedMatrix[j][k] -= e*inversedMatrix[i][k];
             }
         }
-    }
-    for (size_t i = n - 1; i >= 0; i--) {
-        for (size_t j = i - 1; j >= 0; j--) {
-            BmpReal e = m_matrix.at(j).at(i) / m_matrix.at(i).at(i);
-            for (size_t k = 0; k < n; k++) {
-                m_matrix.at(j).at(k) -= e*m_matrix.at(i).at(k);
-                ans.at(j).at(k) -= e*ans.at(i).at(k);
-            }
+        for (size_t j = 0; j < n; ++j) {
+            inversedMatrix[i][j] /= m_matrix[i][i];
         }
-        for (size_t j = 0; j < n; j++) {
-            ans.at(i).at(j) /= m_matrix.at(i).at(i);
-            //std::cout << std::setprecision(std::numeric_limits<BmpReal>::digits10 + 2) << ans.at(i).at(i) << " ";
-        }
-        //std::cout << std::endl;
     }
-    return ans;
+
+    return inversedMatrix;
 }
-
+// TODO: Унифицировать. Использовалось для целых
 void CMatrix::fill_matrix(const size_t N_base, BmpVector z,
                           BmpVector y0,
                           BmpVector &B, BmpMatrix &A) {
@@ -118,7 +133,7 @@ void CMatrix::fill_matrix(const size_t N_base, BmpVector z,
         }
     }
 }
-
+// TODO: Унифицировать. Использовалось для целых
 void CMatrix::find_coefficients(BmpMatrix A_inv, BmpVector B,
                                 BmpVector &a, BmpVector &b, size_t N) {
     BmpVector ksi;
@@ -149,12 +164,51 @@ std::ostream& operator << (std::ostream& output, CMatrix& a) {
     return output;
 }
 
-// Распечатать матрицу
-void CMatrix::print(const BmpMatrix& matrix) {
-    for (const auto& row : matrix) {
-        for (const auto& item : row) {
-            std::cout << std::setw(8) << std::setfill(' ') << item << " ";
-        }
-        std::cout << std::endl;
+/*****************************************************************************
+ * Solver for right system of half integer *
+ *****************************************************************************/
+
+void solveRightApproximationSystem(BmpReal k, size_t N, const BmpVector& y0, const BmpVector& I_base) {
+    const auto baseSize = 2 * N;
+    const BmpReal C1 = (k + 1)*k*fdsf::PI*fdsf::PI / 6;
+    // Вычисляем матрицы z и B
+    BmpVector B(baseSize, 0);
+    BmpVector z(baseSize, 0);
+    for (auto i = 0; i < baseSize; ++i) {
+        auto y0_i = y0[i];
+        auto underPow = I_base[i] * (k + 1) / pow(y0_i, k + 1);
+        z[i] = (pow(underPow, 2 / k) - 1)*y0_i*y0_i*k / (2 * C1);
+        B[i] = z[i] - 1;
     }
+
+    // Задаем А
+    BmpMatrix A = BmpMatrix(baseSize, BmpVector(baseSize, 0));
+    for (int i = 0; i < baseSize; ++i) {
+        for (int j = 0; j < baseSize; ++j) {
+            A[i][j] = j < N ? pow(y0[i], -2 * (j + 1))
+                            : -z[i] * pow(y0[i], 2 * ((int)N - j + 1));
+        }
+    }
+
+    // Берем обратную матрицу
+    BmpMatrix A_inv = CMatrix(A).inverse();
+
+    // Решаем СЛАУ A*E = B
+    BmpVector E(baseSize, 0);
+    for (size_t i = 0; i < baseSize; ++i) {
+        for (size_t j = 0; j < baseSize; ++j) {
+            E[i] += A_inv[i][j]*B[j];
+        }
+    }
+
+    // Раскладываем вектор Е в коэффициенты a b аппроксимации
+    BmpVector a(E.begin(), E.begin() + N);
+    BmpVector b(E.begin() + N, E.end());
+
+    // Вывод результата
+    // ТODO: возвращать вектор решения и раскладывать по коэффициентам вне
+    std::cout << "-----a-----" << std::endl;
+    test::printVector(a, true);
+    std::cout << "-----b-----" << std::endl;
+    test::printVector(b, true);
 }

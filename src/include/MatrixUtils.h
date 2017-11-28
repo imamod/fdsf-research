@@ -6,6 +6,7 @@
 
 class CMatrix {
     public:
+        CMatrix() {}
         CMatrix(const BmpMatrix& matrix);
 
         // Заполнение матриц... Переделать
@@ -18,11 +19,13 @@ class CMatrix {
                                BmpVector &a, BmpVector &b,
                                size_t N);
 
-        // Получить обратную матрицу
-        BmpMatrix inverse();
+        /**
+         * Сформировать единичную матрицу
+         */
+        BmpMatrix eye(const size_t N);
 
-        // Распечатать матрицу
-        void print(const BmpMatrix& matrix);
+        // Получить обратную матрицу методом Гаусса
+        BmpMatrix inverse();
 
     private:
         BmpMatrix m_matrix;
@@ -38,3 +41,8 @@ void GetApproxomateValues(BmpVector &a,
     BmpVector &z,
     BmpVector &delta_base,
     BmpVector &delta_additional, const size_t N_base);
+
+/**
+ * Решить систему для правой аппроксимации
+ */
+void solveRightApproximationSystem(BmpReal k, size_t N, const BmpVector& y0, const BmpVector& I_base);
