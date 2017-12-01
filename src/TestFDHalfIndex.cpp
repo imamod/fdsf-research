@@ -256,7 +256,18 @@ TEST_CASE("SolveSystem") {
         //BmpVector I_base = filesys::readFile("I_base.txt");
         //test::printVector(I_base, true);
         //BmpVector I_additional = filesys::readFile("I_add.txt");
-        solveRightApproximationSystem(k, it, y0, I_base);
+        BmpVector E = solveRightApproximationSystem(k, it, y0, I_base);
+        // Раскладываем вектор Е в коэффициенты a b аппроксимации
+        BmpVector a(E.begin(), E.begin() + it);
+        BmpVector b(E.begin() + it, E.end());
+
+        // Вывод результата
+        std::cout << "-----a-----" << std::endl;
+        test::printVector(a, true);
+        std::cout << "-----b-----" << std::endl;
+        test::printVector(b, true);
+        filesys::writeFile("a.txt", a);
+        filesys::writeFile("b.txt", b);
         getchar();
     }
 }

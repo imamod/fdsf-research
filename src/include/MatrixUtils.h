@@ -43,6 +43,6 @@ void GetApproxomateValues(BmpVector &a,
     BmpVector &delta_additional, const size_t N_base);
 
 /**
- * Решить систему для правой аппроксимации
+ * Решить систему для правой аппроксимации полуцелых индексов
  */
-void solveRightApproximationSystem(BmpReal k, size_t N, const BmpVector& y0, const BmpVector& I_base);
+BmpVector solveRightApproximationSystem(BmpReal k, size_t N, const BmpVector& y0, const BmpVector& I_base);

@@ -17,7 +17,10 @@ BmpMatrix CMatrix::eye(const size_t N) {
     }
     return eyeMatrix;
 }
-
+/**
+ * Функция получения аппроксимированный значений z. Использовалось для целых
+ * TODO: причесать.
+*/
 void GetApproxomateValues(BmpVector &a,
                           BmpVector &b,
                           BmpVector &y0,
@@ -168,25 +171,22 @@ std::ostream& operator << (std::ostream& output, CMatrix& a) {
  * Solver for right system of half integer *
  *****************************************************************************/
 
-void solveRightApproximationSystem(BmpReal k, size_t N, const BmpVector& y0, const BmpVector& I_base) {
+BmpVector solveRightApproximationSystem(BmpReal k, size_t N, const BmpVector& y0, const BmpVector& I_base) {
     const auto baseSize = 2 * N;
     const BmpReal C1 = (k + 1)*k*fdsf::PI*fdsf::PI / 6;
-    // Вычисляем матрицы z и B
+    // Задаем Матрицы А, B и z
     BmpVector B(baseSize, 0);
     BmpVector z(baseSize, 0);
-    for (auto i = 0; i < baseSize; ++i) {
+    BmpMatrix A = BmpMatrix(baseSize, BmpVector(baseSize, 0));
+    // Вычисляем матрицы А, B и z
+    for (int i = 0; i < baseSize; ++i) {
         auto y0_i = y0[i];
         auto underPow = I_base[i] * (k + 1) / pow(y0_i, k + 1);
         z[i] = (pow(underPow, 2 / k) - 1)*y0_i*y0_i*k / (2 * C1);
         B[i] = z[i] - 1;
-    }
-
-    // Задаем А
-    BmpMatrix A = BmpMatrix(baseSize, BmpVector(baseSize, 0));
-    for (int i = 0; i < baseSize; ++i) {
         for (int j = 0; j < baseSize; ++j) {
-            A[i][j] = j < N ? pow(y0[i], -2 * (j + 1))
-                            : -z[i] * pow(y0[i], 2 * ((int)N - j + 1));
+            A[i][j] = j < N ? pow(y0_i, -2 * (j + 1))
+                            : -z[i] * pow(y0_i, 2 * ((int)N - j + 1));
         }
     }
 
@@ -200,15 +200,5 @@ void solveRightApproximationSystem(BmpReal k, size_t N, const BmpVector& y0, con
             E[i] += A_inv[i][j]*B[j];
         }
     }
-
-    // Раскладываем вектор Е в коэффициенты a b аппроксимации
-    BmpVector a(E.begin(), E.begin() + N);
-    BmpVector b(E.begin() + N, E.end());
-
-    // Вывод результата
-    // ТODO: возвращать вектор решения и раскладывать по коэффициентам вне
-    std::cout << "-----a-----" << std::endl;
-    test::printVector(a, true);
-    std::cout << "-----b-----" << std::endl;
-    test::printVector(b, true);
+    return E;
 }
