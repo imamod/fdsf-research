@@ -35,9 +35,8 @@ BmpVector calculate_series_part(BmpReal k, BmpVector& X) {
 
 static BmpReal get_assympt_value(BmpReal x, BmpReal k) {
     BmpVector I_minus, I, series_part, X = { x };
-    BmpReal t = 0;
     series_part = calculate_series_part(k, X);
-    I_minus.push_back(fdsf::richardson_method(-x, t, k));
+    I_minus.push_back(fdsf::richardson_method(-x, k));
     I.push_back(I_minus[0] + series_part[0]);
     //return I[0];
     return series_part[0];
@@ -59,10 +58,9 @@ static BmpReal get_series_value(BmpReal x, BmpReal k) {
 // Функции работы с прецизионными аппроксимациями
 // *****************************************************************************
 BmpVector computeIntegral(BmpVector x, BmpReal k) {
-    BmpReal t = 0;
     BmpVector I;
     for (size_t i = 0; i < x.size(); ++i) {
-        I.push_back(fdsf::richardson_method(x[i], t, k));
+        I.push_back(fdsf::richardson_method(x[i], k));
         //std::cout << "x0: " << x[i] << " I: " << I[i] << std::endl;
     }
     return I;
@@ -71,9 +69,8 @@ BmpVector computeIntegral(BmpVector x, BmpReal k) {
 TEST_CASE("comp_kostya_and_precise") {
     const BmpReal k = BmpReal(1.0 / 2.0);
     BmpReal x = BmpReal(-0.1), I, I_kostya, I_precise;
-    BmpReal t = 0;
 #if 0
-    I = fdsf::richardson_method(x, t, k);
+    I = fdsf::richardson_method(x, k);
     I_kostya = fdsf::fd_half(x);
     I_precise = get_series_value(x, k);
     std::cout << "x = -0.1" << std::endl;
@@ -85,7 +82,7 @@ TEST_CASE("comp_kostya_and_precise") {
 
     x = 30.0;// +10E-8;
     std::cout << "x = " << x << std::endl;
-    I = fdsf::richardson_method(x, t, k);
+    I = fdsf::richardson_method(x, k);
     //I_kostya = fdsf::fd_half(x);
     I_precise = get_assympt_value(x, k);
     std::cout << "I_quadrature: " << I << std::endl;
@@ -98,8 +95,7 @@ TEST_CASE("check_negative_quadrature_values") {
     std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
     const BmpReal k = BmpReal(1.0 / 2.0);
     BmpReal x = BmpReal(-0.1), I, I_precise;
-    BmpReal t = 0;
-    I = fdsf::richardson_method(x, t, k);
+    I = fdsf::richardson_method(x, k);
     I_precise = get_series_value(x, k);
     filesys::writeFile("../../test/test.txt", {I, I_precise});
     // TODO: добавить точность отдельно для double и mp
@@ -109,14 +105,14 @@ TEST_CASE("check_negative_quadrature_values") {
 TEST_CASE("calculate_asimpt_value") {
     BmpVector X, Y;
     const BmpReal k = BmpReal(1.0 / 2.0);
-    BmpReal t = 0, h = 0.1;
+    BmpReal h = 0.1;
     BmpVector I, I_minus, series_part;
 
     //проверка на идиота при х = 30
     X.push_back(30.0);
     //X.push_back(log(exp(Y[0]) - 1));
     series_part = calculate_series_part(k, X);
-    I_minus.push_back(fdsf::richardson_method(-X[0], t, k));
+    I_minus.push_back(fdsf::richardson_method(-X[0], k));
     I.push_back(I_minus[0] + series_part[0]);
     I.push_back(series_part[0]);
 #if 0
@@ -137,7 +133,7 @@ TEST_CASE("calculate_asimpt_value") {
 
     series_part = calculate_series_part(k, X);
     for (size_t i = 0; i < X.size(); i++) {
-        I_minus.push_back(fdsf::richardson_method(-X[i], t, k));
+        I_minus.push_back(fdsf::richardson_method(-X[i], k));
         I.push_back(I_minus[i] + series_part[i]);
     }
 #endif
@@ -354,14 +350,12 @@ TEST_CASE("calculate_all_k") {
     for (auto index : k) {
         BmpVector I_left;
         for (auto item : x_left) {
-            BmpReal t = 0;
-            I_left.push_back(fdsf::richardson_method(item, t, index));
+            I_left.push_back(fdsf::richardson_method(item, index));
             //filesys::writeFile("I", I_left);
         }
         BmpVector I_right;
         for (auto item : x_right) {
-            BmpReal t = 0;
-            I_right.push_back(fdsf::richardson_method(item, t, index));
+            I_right.push_back(fdsf::richardson_method(item, index));
             //filesys::writeFile("I_right", I_right);
         }
         //std::cout << I.size() << std::endl;

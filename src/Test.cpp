@@ -26,7 +26,7 @@ TEST_CASE("GornerVsTrapz") {
     std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
     BmpReal k = 1.0 / 2;
     BmpReal x = -1;
-    BmpReal I_base = fdsf::richardson_method(x, 0, k);
+    BmpReal I_base = fdsf::richardson_method(x, k);
     BmpReal I_prec = fdsf::Gorner(x, k);
     std::cout << I_base << std::endl;
     std::cout << I_prec << std::endl;

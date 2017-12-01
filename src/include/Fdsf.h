@@ -42,7 +42,7 @@ namespace fdsf {
                  BmpReal x, BmpReal T, BmpReal k, int N);
 
     // Сгущение по Ричардсону результата работы функции gauss_christoffel_method
-    BmpReal richardson_method(BmpReal x, BmpReal t, BmpReal k, BmpReal a = 0);
+    BmpReal richardson_method(BmpReal x, BmpReal k, BmpReal t = 0, BmpReal a = 0);
 
     struct integration_segment_values {
         size_t n; // Текущий отрезок интегрирования

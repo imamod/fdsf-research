@@ -134,7 +134,7 @@ namespace fdsf {
     }
 
     // Сгущение по Ричардсону по сеточно-Гауссову методу
-    BmpReal richardson_method(BmpReal x, BmpReal t, BmpReal k, BmpReal a) {
+    BmpReal richardson_method(BmpReal x, BmpReal k, BmpReal t, BmpReal a) {
         int N = 2;
         BmpReal stop_criteria;
         BmpReal I_n, I_2n;
@@ -144,7 +144,7 @@ namespace fdsf {
                               gauss_christoffel_method(&fermi_dirak_integer, x, t, k, N);
         //std::ofstream fout;
         //fout.open("check_a_x.txt");
-        //std::cout << "x = " << x << std::endl;
+        std::cout << "x = " << x << std::endl;
         //fout << (I_n) << std::fixed <<
         //    std::setprecision(std::numeric_limits<BmpReal>::max_digits10) << std::endl;
         //std::cout << "N = " << N << ": I = " << I_n << std::endl;
@@ -167,9 +167,9 @@ namespace fdsf {
             //std::cout << "N = " << N << ": I = " << I_n << std::endl;
         } while (abs(stop_criteria) > 1e-11);
         //while (abs(stop_criteria) > epsilon*100);
-        //std::cout << "N = " << N << ": I = ";
-        //std::cout << I_2n << std::fixed <<
-        //    std::setprecision(std::numeric_limits<BmpReal>::max_digits10) << std::endl;
+        std::cout << "N = " << N << ": I = ";
+        std::cout << I_2n << std::fixed <<
+            std::setprecision(std::numeric_limits<BmpReal>::max_digits10) << std::endl;
 
         //fout.close();
         return I_n;

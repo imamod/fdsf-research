@@ -15,7 +15,7 @@ namespace {
         BmpReal x_div = BmpReal(-0.1);
         BmpVector I;
         for (int i = 0; i < x.size(); i++) {
-            auto value = x[i] > x_div ? fdsf::richardson_method(x[i], T_VALUES[k-1], k)
+            auto value = x[i] > x_div ? fdsf::richardson_method(x[i], k, T_VALUES[k-1])
                                          : fdsf::Gorner(x[i], k);
                 //I.push_back(GornerSchemeForPrecesionY( x0[i], N));
             I.push_back(value);
