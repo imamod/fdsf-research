@@ -4,13 +4,13 @@
 #include <limits>
 #include <iomanip>
 
-CMatrix::CMatrix(const BmpMatrix& matrix)
+MatrixUtils::MatrixUtils(const BmpMatrix& matrix)
     : m_matrix(matrix) {}
 
 /**
  * Сформировать единичную матрицу
  */
-BmpMatrix CMatrix::eye(const size_t N) {
+BmpMatrix MatrixUtils::eye(const size_t N) {
     BmpMatrix eyeMatrix(N, BmpVector(N, 0));
     for (size_t i = 0; i < N; ++i) {
         eyeMatrix[i][i] = 1.0;
@@ -71,7 +71,7 @@ void GetApproxomateValues(BmpVector &a,
 /**
  * Получить обратную квадратную матрицу методом Гаусса
  */
-BmpMatrix CMatrix::inverse() {
+BmpMatrix MatrixUtils::inverse() {
     size_t n = m_matrix.size();
     // Формируем единичную матрицу
     BmpMatrix inversedMatrix = eye(n);
@@ -114,7 +114,7 @@ BmpMatrix CMatrix::inverse() {
     return inversedMatrix;
 }
 // TODO: Унифицировать. Использовалось для целых
-void CMatrix::fill_matrix(const size_t N_base, BmpVector z,
+void MatrixUtils::fill_matrix(const size_t N_base, BmpVector z,
                           BmpVector y0,
                           BmpVector &B, BmpMatrix &A) {
     for (size_t i = 0; i < 2 * N_base + 1; i++) {
@@ -137,7 +137,7 @@ void CMatrix::fill_matrix(const size_t N_base, BmpVector z,
     }
 }
 // TODO: Унифицировать. Использовалось для целых
-void CMatrix::find_coefficients(BmpMatrix A_inv, BmpVector B,
+void MatrixUtils::find_coefficients(BmpMatrix A_inv, BmpVector B,
                                 BmpVector &a, BmpVector &b, size_t N) {
     BmpVector ksi;
     for (size_t i = 0; i < B.size(); i++) {
@@ -162,7 +162,7 @@ void CMatrix::find_coefficients(BmpMatrix A_inv, BmpVector B,
 }
 
 // Вывод объекта СMatrix
-std::ostream& operator << (std::ostream& output, CMatrix& a) {
+std::ostream& operator << (std::ostream& output, MatrixUtils& a) {
     output << a << " ";
     return output;
 }
@@ -185,13 +185,21 @@ BmpVector solveRightApproximationSystem(BmpReal k, size_t N, const BmpVector& y0
         z[i] = (pow(underPow, 2 / k) - 1)*y0_i*y0_i*k / (2 * C1);
         B[i] = z[i] - 1;
         for (int j = 0; j < baseSize; ++j) {
+#ifdef HIGH_PRECISION
+            if (j < N ) {
+                A[i][j] = pow(y0_i, -2 * (j + 1));
+            } else {
+                A[i][j] = -z[i] * pow(y0_i, 2 * ((int)N - j + 1));
+            }
+#else
             A[i][j] = j < N ? pow(y0_i, -2 * (j + 1))
-                            : -z[i] * pow(y0_i, 2 * ((int)N - j + 1));
+                : -z[i] * pow(y0_i, 2 * ((int)N - j + 1));
+#endif
         }
     }
 
     // Берем обратную матрицу
-    BmpMatrix A_inv = CMatrix(A).inverse();
+    BmpMatrix A_inv = MatrixUtils(A).inverse();
 
     // Решаем СЛАУ A*E = B
     BmpVector E(baseSize, 0);
@@ -201,4 +209,24 @@ BmpVector solveRightApproximationSystem(BmpReal k, size_t N, const BmpVector& y0
         }
     }
     return E;
+}
+
+/**
+* Получить вектор приближенных значений в точках у для полуцелых индексов k, правая аппроксимация
+*/
+BmpVector approximateValueRight(const BmpVector& a, const BmpVector& b, const BmpVector& y, BmpReal k) {
+    auto N = y.size() / 2;
+    const BmpReal C1 = (k + 1)*k*pow(fdsf::PI, 2) / 6;
+    BmpVector I;
+    for (auto it : y) {
+        BmpReal S1 = 1, S2 = 1;
+        for (auto n = 1; n < N + 1; ++n) {
+            auto y_pow = pow(it, (-2 * n));
+            S1 += a[n-1]*y_pow;
+            S2 += b[n-1]*y_pow;
+        }
+        auto F_z_base = S1 / S2;
+        I.push_back(pow(((F_z_base * 2 * C1 / (k*it*it)) + 1), (k / 2))*pow(it, k + 1) / (k + 1));
+    }
+    return I;
 }

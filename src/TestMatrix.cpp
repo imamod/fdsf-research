@@ -15,7 +15,7 @@ TEST_CASE("MatrixTests") {
     };
 
     for (const auto& item : TESTS) {
-        auto inversedMatrix = CMatrix(item.first).inverse();
+        auto inversedMatrix = MatrixUtils(item.first).inverse();
         //REQUIRE(item.second == inversedMatrix);
         test::printMatrix(inversedMatrix);
     }

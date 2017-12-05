@@ -4,10 +4,10 @@
 #include "Fdsf.h"
 #include <iostream>
 
-class CMatrix {
+class MatrixUtils {
     public:
-        CMatrix() {}
-        CMatrix(const BmpMatrix& matrix);
+        MatrixUtils() {}
+        MatrixUtils(const BmpMatrix& matrix);
 
         // Заполнение матриц... Переделать
         void fill_matrix(const size_t N_base, BmpVector z,
@@ -30,7 +30,7 @@ class CMatrix {
     private:
         BmpMatrix m_matrix;
         // Оператор потокового вывода
-        friend std::ostream& operator << (std::ostream&, CMatrix& a);
+        friend std::ostream& operator << (std::ostream&, MatrixUtils& a);
 };
 
 void GetApproxomateValues(BmpVector &a,
@@ -46,3 +46,8 @@ void GetApproxomateValues(BmpVector &a,
  * Решить систему для правой аппроксимации полуцелых индексов
  */
 BmpVector solveRightApproximationSystem(BmpReal k, size_t N, const BmpVector& y0, const BmpVector& I_base);
+
+/**
+ * Получить вектор приближенных значений в точках у для полуцелых индексов k, правая аппроксимация
+ */
+BmpVector approximateValueRight(const BmpVector& a, const BmpVector& b, const BmpVector& y, BmpReal k);
