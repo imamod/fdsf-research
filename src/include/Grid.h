@@ -6,6 +6,15 @@ class Grid {
     public:
         Grid(size_t N, size_t addNCount = 11);
 
+        // Получить массив базовых точек
+        BmpVector base() const;
+
+        // Получить массив дополнительных точек (вместе с базовыми)
+        BmpVector additional() const;
+
+        // Получить x по y
+        BmpVector xByY(const BmpVector& y);
+
         // Установить сетку базовых узлов по линейному закону
         void setLinearGrid();
 
@@ -31,14 +40,12 @@ class Grid {
          */
         void shiftLinTrigGrid(const BmpVector& delta);
 
-        // Получить массив базовых точек
-        BmpVector base() const;
-
-        // Получить массив дополнительных точек (вместе с базовыми)
-        BmpVector additional() const;
-
-        // Получить x по y
-        BmpVector xByY(const BmpVector& y);
+        /**
+        * Получить вектор максимумов погрешности на интервалах базовых узлов.
+        * Чисто вспомогательная функция для исследования смещения узлов для выравнивания погрешности.
+        * Используется после получения погрешности, перед shiftLinTrigGrid()
+        */
+        BmpVector intervalMaximums();
 
     private:
         // Число базовых точек

@@ -6,6 +6,25 @@ Grid::Grid(size_t N_base, size_t addNCount)
     , m_base(0)
     , m_additional(0) {}
 
+/* Получить массив базовых точек */
+BmpVector Grid::base() const {
+    return m_base;
+}
+
+/* Получить массив дополнительных точек (вместе с базовыми) */
+BmpVector Grid::additional() const {
+    return m_additional;
+}
+
+/* Получить x по y */
+BmpVector Grid::xByY(const BmpVector& y) {
+    BmpVector x;
+    for (const auto& it : y) {
+        x.push_back(log(exp(it) - 1));
+    }
+    return x;
+}
+
 /* Заполнить сетку дополнительными точками */
 void Grid::setAdditionalDots() {
     m_additional.push_back(m_base.front() / m_additionalNCount);
@@ -151,21 +170,18 @@ void Grid::shiftLinTrigGrid(const BmpVector& delta) {
     std::reverse(m_additional.begin(), m_additional.end());
 }
 
-// Получить массив базовых точек
-BmpVector Grid::base() const {
-    return m_base;
-}
-
-// Получить массив дополнительных точек (вместе с базовыми)
-BmpVector Grid::additional() const {
-    return m_additional;
-}
-
-// Получить x по y
-BmpVector Grid::xByY(const BmpVector& y) {
-    BmpVector x;
-    for (const auto& it : y) {
-        x.push_back(log(exp(it) - 1));
+/**
+* Получить вектор максимумов погрешности на интервалах базовых узлов.
+* Чисто вспомогательная функция для исследования смещения узлов для выравнивания погрешности.
+* Используется после получения погрешности, перед shiftLinTrigGrid()
+*/
+BmpVector Grid::intervalMaximums() {
+    BmpVector maximums;
+    for (auto i = 0; i < m_N_base; ++i) {
+        auto last = i == m_N_base - 1 ? m_additional.end() : m_additional.begin() + (i + 1)*m_additionalNCount;
+        BmpReal maxElement = *std::max_element(m_additional.begin() + i*m_additionalNCount, last);
+        maximums.push_back(maxElement);
     }
-    return x;
+    return maximums;
 }
+
