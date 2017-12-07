@@ -9,16 +9,6 @@ class MatrixUtils {
         MatrixUtils() {}
         MatrixUtils(const BmpMatrix& matrix);
 
-        // Заполнение матриц... Переделать
-        void fill_matrix(const size_t N_base, BmpVector z,
-                         BmpVector y0, BmpVector &B,
-                         BmpMatrix &A);
-
-        // Получить аппроксимирующие коэффициенты
-        void find_coefficients(BmpMatrix A_inv, BmpVector B,
-                               BmpVector &a, BmpVector &b,
-                               size_t N);
-
         /**
          * Сформировать единичную матрицу
          */
@@ -33,14 +23,24 @@ class MatrixUtils {
         friend std::ostream& operator << (std::ostream&, MatrixUtils& a);
 };
 
-void GetApproxomateValues(BmpVector &a,
-    BmpVector &b,
-    BmpVector &y0,
-    BmpVector &Y,
-    BmpVector &I,
-    BmpVector &z,
-    BmpVector &delta_base,
-    BmpVector &delta_additional, const size_t N_base);
+/**
+* Решить систему для аппроксимации функций целых индексов.
+*/
+BmpVector solveSystemForIntegerIndex(const BmpVector& z, const BmpVector& y0, size_t N);
+
+/**
+* Функция получения аппроксимированныx значений I. Использовалось для целых
+*/
+BmpVector approximateFunctionValueIntegerIndex(const BmpVector& a, const BmpVector& b, const BmpVector& y, size_t N_base);
+
+/**
+* Получить погрешноть
+*/
+BmpVector relativeApproximationError(const BmpVector& precisionF, const BmpVector& approximateF);
+
+/********************************************************
+ *                 Полуцелые индексы                    *
+ ********************************************************/
 
 /**
  * Решить систему для правой аппроксимации полуцелых индексов
