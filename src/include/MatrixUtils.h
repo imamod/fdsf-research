@@ -4,24 +4,13 @@
 #include "Fdsf.h"
 #include <iostream>
 
-class MatrixUtils {
-    public:
-        MatrixUtils() {}
-        MatrixUtils(const BmpMatrix& matrix);
+/**
+ * Сформировать единичную матрицу
+ */
+BmpMatrix eye(const size_t N);
 
-        /**
-         * Сформировать единичную матрицу
-         */
-        BmpMatrix eye(const size_t N);
-
-        // Получить обратную матрицу методом Гаусса
-        BmpMatrix inverse();
-
-    private:
-        BmpMatrix m_matrix;
-        // Оператор потокового вывода
-        friend std::ostream& operator << (std::ostream&, MatrixUtils& a);
-};
+// Получить обратную матрицу методом Гаусса
+BmpMatrix inverse(const BmpMatrix& A);
 
 /**
 * Решить систему для аппроксимации функций целых индексов.

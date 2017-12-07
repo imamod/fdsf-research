@@ -4,13 +4,10 @@
 #include <limits>
 #include <iomanip>
 
-MatrixUtils::MatrixUtils(const BmpMatrix& matrix)
-    : m_matrix(matrix) {}
-
 /**
  * Сформировать единичную матрицу
  */
-BmpMatrix MatrixUtils::eye(const size_t N) {
+BmpMatrix eye(const size_t N) {
     BmpMatrix eyeMatrix(N, BmpVector(N, 0));
     for (size_t i = 0; i < N; ++i) {
         eyeMatrix[i][i] = 1.0;
@@ -58,27 +55,28 @@ BmpVector relativeApproximationError(const BmpVector& precisionF, const BmpVecto
 /**
  * Получить обратную квадратную матрицу методом Гаусса
  */
-BmpMatrix MatrixUtils::inverse() {
-    size_t n = m_matrix.size();
+BmpMatrix inverse(const BmpMatrix& A) {
+    BmpMatrix matrix(A);
+    size_t n = matrix.size();
     // Формируем единичную матрицу
     BmpMatrix inversedMatrix = eye(n);
     // Прямой ход
     for (size_t i = 0; i < n; ++i) {
-        BmpReal mx = m_matrix[i][i];
+        BmpReal mx = matrix[i][i];
         // Что делает этот проход???...
         for (size_t k = i + 1; k < n; ++k) {
             // Что за условие???...
-            if ((abs(m_matrix[k][i]) - mx) > fdsf::epsilon) {
-                mx = abs(m_matrix[k][i]);
+            if ((abs(matrix[k][i]) - mx) > fdsf::epsilon) {
+                mx = abs(matrix[k][i]);
             }
         }
         // Приведение матрицы к треугольному виду
         for (size_t j = i + 1; j < n; ++j) {
             // Делим каждый элемент строки на диагональный элемент
-            BmpReal e = m_matrix[j][i] / m_matrix[i][i];
+            BmpReal e = matrix[j][i] / matrix[i][i];
             // Пробегаем по столбцу и зануляем все под диагональным элементом
             for (size_t k = 0; k < n; ++k) {
-                m_matrix[j][k] -= e*m_matrix[i][k];
+                matrix[j][k] -= e*matrix[i][k];
                 inversedMatrix[j][k] -= e*inversedMatrix[i][k];
             }
         }
@@ -87,14 +85,14 @@ BmpMatrix MatrixUtils::inverse() {
     // Обратный ход
     for (int i = n - 1; i >= 0; i--) {
         for (int j = i - 1; j >= 0; j--) {
-            BmpReal e = m_matrix[j][i] / m_matrix[i][i];
+            BmpReal e = matrix[j][i] / matrix[i][i];
             for (size_t k = 0; k < n; ++k) {
-                m_matrix[j][k] -= e*m_matrix[i][k];
+                matrix[j][k] -= e*matrix[i][k];
                 inversedMatrix[j][k] -= e*inversedMatrix[i][k];
             }
         }
         for (size_t j = 0; j < n; ++j) {
-            inversedMatrix[i][j] /= m_matrix[i][i];
+            inversedMatrix[i][j] /= matrix[i][i];
         }
     }
 
@@ -121,7 +119,7 @@ BmpVector solveSystemForIntegerIndex(const BmpVector& z, const BmpVector& y0, si
         }
     }
 
-    BmpMatrix A_inv = MatrixUtils(A).inverse();
+    BmpMatrix A_inv = inverse(A);
     BmpVector ksi(baseSize, 0);
     for (size_t i = 0; i < baseSize; ++i) {
         for (size_t j = 0; j < baseSize; ++j) {
@@ -141,12 +139,6 @@ BmpVector solveSystemForIntegerIndex(const BmpVector& z, const BmpVector& y0, si
     //        b.at(j - N - 1) = ksi.at(j);
     //    }
     //}
-}
-
-// Вывод объекта СMatrix
-std::ostream& operator << (std::ostream& output, MatrixUtils& a) {
-    output << a << " ";
-    return output;
 }
 
 /*****************************************************************************
@@ -181,7 +173,7 @@ BmpVector solveRightApproximationSystem(BmpReal k, size_t N, const BmpVector& y0
     }
 
     // Берем обратную матрицу
-    BmpMatrix A_inv = MatrixUtils(A).inverse();
+    BmpMatrix A_inv = inverse(A);
 
     // Решаем СЛАУ A*E = B
     BmpVector E(baseSize, 0);

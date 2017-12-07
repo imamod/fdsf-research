@@ -19,7 +19,7 @@ TEST_CASE("Matrix") {
         SECTION("m2x2") {
             BmpMatrix m2x2 = { { 3, 4 },{ 5, 7 } };
             const BmpMatrix expected = { { 7, -4 },{ -5, 3 } };
-            auto inversedMatrix = MatrixUtils(m2x2).inverse();
+            auto inversedMatrix = inverse(m2x2);
             REQUIRE(true == areMatrixEqual(inversedMatrix, expected));
             test::printMatrix(inversedMatrix);
         }
@@ -27,7 +27,7 @@ TEST_CASE("Matrix") {
         SECTION("m3x3") {
             BmpMatrix m3x3 = { { 2, 5, 7 },{ 6, 3, 4 },{ 5, -2, -3 } };
             const BmpMatrix expected = { { 1, -1, 1 },{ -38, 41, -34 },{ 27, -29, 24 } };
-            auto inversedMatrix = MatrixUtils(m3x3).inverse();
+            auto inversedMatrix = inverse(m3x3);
             REQUIRE(true == areMatrixEqual(inversedMatrix, expected));
             test::printMatrix(inversedMatrix);
         }
@@ -35,7 +35,7 @@ TEST_CASE("Matrix") {
         SECTION("m4x4") {
             BmpMatrix m4x4 = { { 2, 1, 0, 0 },{ 3, 2, 0, 0 },{ 1, 1, 3, 4 },{ 2, -1, 2, 3 } };
             const BmpMatrix expected = { { 2, -1, 0, 0 },{ -3, 2, 0, 0 },{ 31, -19, 3, -4 },{ -23, 14, -2, 3 } };
-            auto inversedMatrix = MatrixUtils(m4x4).inverse();
+            auto inversedMatrix = inverse(m4x4);
             REQUIRE(true == areMatrixEqual(inversedMatrix, expected));
             test::printMatrix(inversedMatrix);
         }
