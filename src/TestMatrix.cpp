@@ -1,46 +1,43 @@
 #include "TestCommon.h"
 
-TEST_CASE("MatrixTests") {
-    // map { data: expected }
-    const std::map<BmpMatrix, BmpMatrix> TESTS = {
-        { { { 3, 4 }, { 5, 7 } },
-          { { 7, -4 }, { -5, 3 } }
-        },
-        { { { 2, 5, 7 }, { 6, 3, 4 }, { 5, -2, -3 } },
-          { { 1, -1, 1 }, { -38, 41, -34 }, { 27, -29, 24 } }
-        },
-        { { { 2, 1, 0, 0 }, { 3, 2, 0, 0 }, { 1, 1, 3, 4 }, { 2, -1, 2, 3 } },
-          { { 2, -1, 0, 0 }, { -3, 2, 0, 0 }, { 31, -19, 3, -4 }, { -23, 14, -2, 3 } }
-        },
-    };
-
-    for (const auto& item : TESTS) {
-        auto inversedMatrix = MatrixUtils(item.first).inverse();
-        //REQUIRE(item.second == inversedMatrix);
-        test::printMatrix(inversedMatrix);
+bool areMatrixEqual(const BmpMatrix& a, const BmpMatrix& b) {
+    BmpReal eps = 10e-12;
+    CHECK(a.size() == b.size());
+    auto n = a.size();
+    for (auto i = 0; i < n; ++i) {
+        for (auto j = 0; j < n; ++j) {
+            CHECK(round(a[i][j]) == b[i][j]);
+            CHECK(abs(a[i][j] - b[i][j]) < eps);
+        }
     }
-    // TODO: move to integer tests
-    BmpMatrix A, A_inv;
-    // BmpVector B, x, delta_base(y0.size(), 0), delta_add(Y.size(), 0);
-    BmpVector a, b;
-    //object.fill_matrix(N_base, I_base, y0, B, A);
-
-    //A_inv = inverse(A);
-    //object.find_coefficients(A_inv, B, a, b, N_base);
-    //printResultToFile(a, k, "a"); printResultToFile(b, k, "b");
-
-    //GetApproxomateValues(a, b, y0, Y, I_additional, I_base, delta_base, delta_add, N_base);
-    //printResultToFile(delta_base, k, "delta_base"); printResultToFile(delta_add, k, "delta_add");
+    return true;
 }
 
-TEST_CASE("ExampleGrid") {
-    size_t N = 5;
-    Grid grid(N);
-    grid.setLinearGrid();
-    auto base = grid.base();
-    auto additional = grid.additional();
-    std::cout << "Base: ";
-    test::printVector(base);
-    std::cout << "Additional: ";
-    test::printVector(additional);
+TEST_CASE("Matrix") {
+    std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
+    SECTION("inverse") {
+        SECTION("m2x2") {
+            BmpMatrix m2x2 = { { 3, 4 },{ 5, 7 } };
+            const BmpMatrix expected = { { 7, -4 },{ -5, 3 } };
+            auto inversedMatrix = MatrixUtils(m2x2).inverse();
+            REQUIRE(true == areMatrixEqual(inversedMatrix, expected));
+            test::printMatrix(inversedMatrix);
+        }
+
+        SECTION("m3x3") {
+            BmpMatrix m3x3 = { { 2, 5, 7 },{ 6, 3, 4 },{ 5, -2, -3 } };
+            const BmpMatrix expected = { { 1, -1, 1 },{ -38, 41, -34 },{ 27, -29, 24 } };
+            auto inversedMatrix = MatrixUtils(m3x3).inverse();
+            REQUIRE(true == areMatrixEqual(inversedMatrix, expected));
+            test::printMatrix(inversedMatrix);
+        }
+
+        SECTION("m4x4") {
+            BmpMatrix m4x4 = { { 2, 1, 0, 0 },{ 3, 2, 0, 0 },{ 1, 1, 3, 4 },{ 2, -1, 2, 3 } };
+            const BmpMatrix expected = { { 2, -1, 0, 0 },{ -3, 2, 0, 0 },{ 31, -19, 3, -4 },{ -23, 14, -2, 3 } };
+            auto inversedMatrix = MatrixUtils(m4x4).inverse();
+            REQUIRE(true == areMatrixEqual(inversedMatrix, expected));
+            test::printMatrix(inversedMatrix);
+        }
+    }
 }
