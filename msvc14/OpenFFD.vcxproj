@@ -370,6 +370,7 @@
     <ClInclude Include="..\src\include\Fdsf.h" />
     <ClInclude Include="..\src\include\Grid.h" />
     <ClInclude Include="..\src\include\MatrixUtils.h" />
+    <ClInclude Include="..\src\include\Tables.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

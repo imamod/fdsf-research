@@ -53,5 +53,8 @@
     <ClInclude Include="..\src\include\Grid.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\include\Tables.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
