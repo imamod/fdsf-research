@@ -111,9 +111,9 @@ BmpVector solveSystemForIntegerIndex(const BmpVector& z, const BmpVector& y0, si
     for (size_t i = 0; i < baseSize; ++i) {
         B[i] = z[i] - 1;
         for (size_t j = 0; j < baseSize; ++j) {
-            if (j >= 0 && j <= N) {
+            if (j < N + 1) {
                 A[i][j] = pow(y0[i], j + 1);
-            } else if (j >= N + 1 && j <= 2 * N) {
+            } else {
                 A[i][j] = -z[i]*pow(y0[i], j - N);
             }
         }
