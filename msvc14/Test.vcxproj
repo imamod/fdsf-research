@@ -285,20 +285,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\Test.cpp">
+    <ClCompile Include="..\src\unit.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_HIGH_PRECISION|Win32'">
       </ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\src\TestFDHalfIndex.cpp" />
-    <ClCompile Include="..\src\TestFDIntegerIndex.cpp">
+    <ClCompile Include="..\src\unit-fd-half-integer.cpp" />
+    <ClCompile Include="..\src\unit-fd-integer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_HIGH_PRECISION|Win32'">
       </ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\src\TestMatrix.cpp" />
+    <ClCompile Include="..\src\unit-matrixes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\3dparty\catch.hpp" />

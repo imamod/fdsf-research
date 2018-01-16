@@ -15,16 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\Test.cpp">
+    <ClCompile Include="..\src\unit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\TestFDIntegerIndex.cpp">
+    <ClCompile Include="..\src\unit-fd-half-integer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\TestFDHalfIndex.cpp">
+    <ClCompile Include="..\src\unit-matrixes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\TestMatrix.cpp">
+    <ClCompile Include="..\src\unit-fd-integer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
