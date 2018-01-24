@@ -57,7 +57,7 @@ namespace fdsf {
     BmpReal fermi_dirak_half_integer(BmpReal ksi, BmpReal x,
         BmpReal k, BmpReal a, integration_segment_values isv);
 
-    // Formula Euler-Maclaurin 
+    // Formula Euler-Maclaurin
     BmpReal euler_maclaurin_method(BmpReal x, const BmpReal k, int N, BmpReal& a);
 
 } // namespace fdsf

@@ -133,7 +133,7 @@ void Grid::setLinearTrigonometricGridRight() {
  * eta(i) = ksi(i) + 0.5*(ksi(i+1)-ksi(i-1))*tau*(1+sqrt(delta(i-0.5)/delta(i+0.5)))/(1-sqrt(delta(i-0.5)/delta(i+0.5)))
  * tau = 0.5
  */
-void Grid::shiftLinTrigGrid(const BmpVector& delta) {
+void Grid::shiftLinTrigGrid(const BmpVector& delta, BmpReal tau) {
     // Пошло смещение базовыхs узлов
     BmpVector ksi;//(m_base);
     for (auto const& it : m_base) {
@@ -143,7 +143,7 @@ void Grid::shiftLinTrigGrid(const BmpVector& delta) {
 
     //const BmpReal tau(0.5);
     //const BmpReal tau(1);
-    const BmpReal tau(0.75);
+    //const BmpReal tau(0.75);
     BmpVector eta;
     eta.push_back(ksi.front());
     for (auto i = 1; i < ksi.size() - 1; ++i) {

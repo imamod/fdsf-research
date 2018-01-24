@@ -38,7 +38,7 @@ class Grid {
          * eta(i) = ksi(i) + 0.5*(ksi(i+1)-ksi(i-1))*tau*(1+sqrt(delta(i-0.5)/delta(i+0.5)))/(1-sqrt(delta(i-0.5)/delta(i+0.5)))
          * tau = 0.5
          */
-        void shiftLinTrigGrid(const BmpVector& delta);
+        void shiftLinTrigGrid(const BmpVector& delta, BmpReal tau);
 
         /**
         * Получить вектор максимумов погрешности на интервалах базовых узлов.

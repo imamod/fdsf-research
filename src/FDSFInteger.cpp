@@ -163,6 +163,9 @@ namespace fdsf {
             //stop_criteria = (I_n / 0.52115038310799122 - 1); //k=-0.5
             I_n = I_2n;
             N = 2 * N;
+            if (N >= 2048) {
+                std::cout << "N = " << N << ": I = " << I_2n;
+            }
             //std::cout << "N = " << N << ": d = "<< abs(stop_criteria) << std::endl; 
             //std::cout << "N = " << N << ": I = " << I_n << std::endl;
         } while (abs(stop_criteria) > 1e-11);

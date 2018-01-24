@@ -4,6 +4,14 @@
 #include "Tables.h"
 #endif
 
+/**
+ * TODO:
+ *   * TEST_CASES : halfinteger, quadratures, approximations
+ *   * unnamed namespace for static functions
+ *   * problem with creating data, think about useful logic of folder creation with experimental data
+ *   * common constants (to uppercase and to one place)
+ */
+
 BmpVector calculate_series_part(BmpReal k, BmpVector& X) {
     using namespace fdsf;
     BmpVector coeff_A = { pow(PI, 2) / 6.0,
@@ -73,8 +81,8 @@ void calculateTableForK(const BmpReal k, const size_t N) {
     // Расчет значения интеграла в базовых узлах
     Grid grid(N);
     //grid.setLinearGrid();
-    grid.setLinearTrigonometricGrid();
-    //grid.setLinearTrigonometricGridRight();
+    //grid.setLinearTrigonometricGrid();
+    grid.setLinearTrigonometricGridRight();
     BmpVector y0 = grid.base();
     BmpVector Y = grid.additional();
 
@@ -83,7 +91,8 @@ void calculateTableForK(const BmpReal k, const size_t N) {
     BmpVector I_additional = computeIntegral(grid.xByY(Y), k);
 
     //std::string absFilename = filesys::createDirectory(12, it, "test/");
-    std::string absFilename = filesys::createDirectory(12, N, "test_x5_left/");
+    //std::string absFilename = filesys::createDirectory(12, N, "test_x5_left/");
+    std::string absFilename = filesys::createDirectory(12, N, "test/");
     //std::string absFilename = filesys::createDirectory(12, it, "test_x5/");
     filesys::writeFile(absFilename + "y0.txt", y0);
     filesys::writeFile(absFilename + "I_base.txt", I_base);
@@ -91,7 +100,7 @@ void calculateTableForK(const BmpReal k, const size_t N) {
     filesys::writeFile(absFilename + "Y.txt", Y);
 }
 
-TEST_CASE("HalfInteger") {
+TEST_CASE("halfint") {
     SECTION("comp_kostya_and_precise") {
         const BmpReal k = BmpReal(1.0 / 2.0);
         BmpReal x = BmpReal(-0.1), I, I_kostya, I_precise;
@@ -166,93 +175,47 @@ TEST_CASE("HalfInteger") {
         //printResultToFile(I, k, "Asimpt_check");
     }
 
-    SECTION("calculateK") {
-        SECTION("m32") {
-            const BmpReal k = BmpReal(-3.0 / 2.0);
-            const std::vector<size_t> N_base = { 3, 5, 7, 9 };
-            // Расчет значения интеграла в базовых узлах
-            for (const auto& it : N_base) {
-                calculateTableForK(k, it);
-            }
-        }
-
-        SECTION("m12") {
-            const BmpReal k = BmpReal(-1.0 / 2.0);
-            const std::vector<size_t> N_base = { 3, 5, 7, 9 };
-            // Расчет значения интеграла в базовых узлах
-            for (const auto& it : N_base) {
-                calculateTableForK(k, it);
-            }
-        }
-
-        SECTION("12") {
-            const BmpReal k = BmpReal(1.0 / 2.0);
-            const std::vector<size_t> N_base = { 3, 5, 7, 9 };
-            // Расчет значения интеграла в базовых узлах
-            for (const auto& it : N_base) {
-                calculateTableForK(k, it);
-            }
-        }
-
-        SECTION("32") {
-            const BmpReal k = BmpReal(3.0 / 2.0);
-            const std::vector<size_t> N_base = { 3, 5, 7, 9 };
-            // Расчет значения интеграла в базовых узлах
-            for (const auto& it : N_base) {
-                calculateTableForK(k, it);
-            }
-        }
-
-        SECTION("52") {
-            const BmpReal k = BmpReal(5.0 / 2.0);
-            const std::vector<size_t> N_base = { 3, 5, 7, 9 };
-            // Расчет значения интеграла в базовых узлах
-            for (const auto& it : N_base) {
-                calculateTableForK(k, it);
-            }
-        }
-
-        SECTION("72") {
-            const BmpReal k = BmpReal(7.0 / 2.0);
-            const std::vector<size_t> N_base = { 3, 5, 7, 9 };
-            // Расчет значения интеграла в базовых узлах
-            for (const auto& it : N_base) {
-                calculateTableForK(k, it);
-            }
-        }
-    }
-
-
-    SECTION("checkShiftGrid") {
+    SECTION("shiftgrid") {
         const BmpReal k = BmpReal(1.0 / 2.0);
         //const std::vector<size_t> N_base = { 3, 5, 7, 9 };
-        const std::vector<size_t> N_base{ 3 };
+        //const std::vector<size_t> N_base{ 3 };
+        const std::vector<size_t> N_base{ 9 };
         // Расчет значения интеграла в базовых узлах
         for (const auto& it : N_base) {
             Grid grid(it);
             grid.setLinearTrigonometricGridRight();
             // BmpVector delta = ;
              /* для N = 9 лин-триг сетка, не удалять !!!!!*/
-             //BmpVector delta = { 3.996803e-015,
-             //                    1.554312e-015,
-             //                    9.992007e-016,
-             //                    6.661338e-016,
-             //                    5.551115e-016,
-             //                    1.110223e-015,
-             //                    1.554312e-015,
-             //                    2.442491e-015,
-             //                    2.886580e-015,
-             //                    1.088019e-014,
-             //                    1.136868e-013,
-             //                    2.143841e-013,
-             //                    1.398881e-012,
-             //                    3.310685e-012,
-             //                    5.213607e-012,
-             //                    2.875700e-012,
-             //                    6.026291e-013,
-             //                    4.263256e-014
-             //                };
-             //grid.shiftLinTrigGrid(delta);
+             /*BmpVector delta = { 3.996803e-015,
+                                 1.554312e-015,
+                                 9.992007e-016,
+                                 6.661338e-016,
+                                 5.551115e-016,
+                                 1.110223e-015,
+                                 1.554312e-015,
+                                 2.442491e-015,
+                                 2.886580e-015,
+                                 1.088019e-014,
+                                 1.136868e-013,
+                                 2.143841e-013,
+                                 1.398881e-012,
+                                 3.310685e-012,
+                                 5.213607e-012,
+                                 2.875700e-012,
+                                 6.026291e-013,
+                                 4.263256e-014
+                             };*/
+            // TAU = 0.75
+            BmpVector delta = { 3.996803e-15, 1.554312e-15, 9.992007e-16, 5.551115e-16,
+                6.661338e-16, 6.661338e-16, 1.443290e-15, 3.552714e-15,
+                7.327472e-15, 2.431388e-14, 4.773959e-14, 3.599343e-13,
+                1.252554e-12, 3.502754e-12, 5.019984e-12, 2.974954e-12,
+                5.715428e-13, 3.841372e-14,
+            };
+            //const BmpReal TAU(0.5);
+            //const BmpReal TAU(1);
+            const BmpReal TAU(0.75);
+            grid.shiftLinTrigGrid(delta, TAU);
             BmpVector y0 = grid.base();
             BmpVector Y = grid.additional();
             BmpVector x0 = grid.xByY(y0);
@@ -267,11 +230,12 @@ TEST_CASE("HalfInteger") {
 #endif
 
             std::string absFilename = filesys::createDirectory(12, it, "testShift/");
-            //filesys::writeFile(absFilename + "y0.txt", y0);
-            //filesys::writeFile(absFilename + "I_base.txt", I_base);
-            //filesys::writeFile(absFilename + "I_add.txt", I_additional);
-            //filesys::writeFile(absFilename + "Y.txt", Y);
+            filesys::writeFile(absFilename + "y0.txt", y0);
+            filesys::writeFile(absFilename + "I_base.txt", I_base);
+            filesys::writeFile(absFilename + "I_add.txt", I_additional);
+            filesys::writeFile(absFilename + "Y.txt", Y);
             //getchar();
+#if 0
             BmpVector E = solveRightApproximationSystem(k, it, y0, I_base);
             // Раскладываем вектор Е в коэффициенты a b аппроксимации
             BmpVector a(E.begin(), E.begin() + it);
@@ -283,7 +247,7 @@ TEST_CASE("HalfInteger") {
             filesys::writeFile(absFilename + "I_app.txt", I_app);
             BmpVector I_app_add = approximateValueRight(a, b, Y, k);
             filesys::writeFile(absFilename + "I_app_add.txt", I_app_add);
-
+#endif
         }
     }
 
@@ -300,12 +264,13 @@ TEST_CASE("HalfInteger") {
 
             // Расчет интеграла
             BmpVector I_base = computeIntegral(x0, k);
-            //filesys::writeFile("I_base.txt", I_base);
-            BmpVector I_additional = computeIntegral(X, k);
+            filesys::writeFile("I_base.txt", I_base);
+            //BmpVector I_additional = computeIntegral(X, k);
             //filesys::writeFile("I_add.txt", I_additional);
             //BmpVector I_base = filesys::readFile("I_base.txt");
             //test::printVector(I_base, true);
-            //BmpVector I_additional = filesys::readFile("I_add.txt");
+            BmpVector I_additional = filesys::readFile("I_add.txt");
+#if 0
             BmpVector E = solveRightApproximationSystem(k, it, y0, I_base);
             // Раскладываем вектор Е в коэффициенты a b аппроксимации
             BmpVector a(E.begin(), E.begin() + it);
@@ -319,10 +284,70 @@ TEST_CASE("HalfInteger") {
             filesys::writeFile("a.txt", a);
             filesys::writeFile("b.txt", b);
             getchar();
+#endif
         }
     }
 }
 
+TEST_CASE("quadrature") {
+    SECTION("m32") {
+        const BmpReal k = BmpReal(-3.0 / 2.0);
+        const std::vector<size_t> N_base = { 3, 5, 7, 9 };
+        // Расчет значения интеграла в базовых узлах
+        for (const auto& it : N_base) {
+            calculateTableForK(k, it);
+        }
+    }
+
+    SECTION("m12") {
+        const BmpReal k = BmpReal(-1.0 / 2.0);
+        const std::vector<size_t> N_base = { 3, 5, 7, 9 };
+        // Расчет значения интеграла в базовых узлах
+        for (const auto& it : N_base) {
+            calculateTableForK(k, it);
+        }
+    }
+
+    SECTION("12") {
+        const BmpReal k = BmpReal(1.0 / 2.0);
+        const std::vector<size_t> N_base = { 3, 5, 7, 9 };
+        // Расчет значения интеграла в базовых узлах
+        for (const auto& it : N_base) {
+            calculateTableForK(k, it);
+        }
+    }
+
+    SECTION("32") {
+        const BmpReal k = BmpReal(3.0 / 2.0);
+        const std::vector<size_t> N_base = { 3, 5, 7, 9 };
+        // Расчет значения интеграла в базовых узлах
+        for (const auto& it : N_base) {
+            calculateTableForK(k, it);
+        }
+    }
+
+    SECTION("52") {
+        const BmpReal k = BmpReal(5.0 / 2.0);
+        const std::vector<size_t> N_base = { 3, 5, 7, 9 };
+        // Расчет значения интеграла в базовых узлах
+        for (const auto& it : N_base) {
+            calculateTableForK(k, it);
+        }
+    }
+
+    SECTION("72") {
+        const BmpReal k = BmpReal(7.0 / 2.0);
+        const std::vector<size_t> N_base = { 3, 5, 7, 9 };
+        // Расчет значения интеграла в базовых узлах
+        for (const auto& it : N_base) {
+            calculateTableForK(k, it);
+        }
+    }
+}
+
+/*******************************************************************************
+ * Проверялась чебышевская сетка, пока не удалять
+ *******************************************************************************/
 void chebyshevBaseNodes(BmpVector &y_base,
                         BmpVector &x_base,
                         BmpVector &Y,
@@ -415,15 +440,15 @@ TEST_CASE("calculate_all_k") {
         //std::cout << I.size() << std::endl;
     }
 
-    BmpVector I_m32;
+   /* BmpVector I_m32;
     for (auto item : x_left) {
-        //I_m32.push_back(fdsf::fd_3mhalf(item));
+        I_m32.push_back(fdsf::fd_3mhalf(item));
     }
-    //filesys::writeFile("I_m32", I_m32);
+    filesys::writeFile("I_m32", I_m32);
 
     BmpVector I_m32_right;
     for (auto item : x_right) {
-        //I_m32_right.push_back(fdsf::fd_3mhalf(item));
+        I_m32_right.push_back(fdsf::fd_3mhalf(item));
     }
-    //filesys::writeFile("I_right_m32", I_m32_right);
+    filesys::writeFile("I_right_m32", I_m32_right);*/
 }
