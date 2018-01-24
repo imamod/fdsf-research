@@ -1,0 +1,46 @@
+%% Проверка глобальной аппроксимации из статьи
+clc
+clear all
+close all
+
+format long
+
+k = 3/2;
+
+x = 0:0.1:50;
+y = log(1 + exp(x));
+
+x_minus = 0:-0.1:-50;
+y_minus = log(1 + exp(x_minus));
+a1 = 0.7:0.01:1;
+I_precesion_minus = zeros(length(a1),length(y));
+I_precesion = zeros(length(a1),length(y));
+I_approximate = zeros(length(a1),length(y));
+I_approximate_minus = zeros(length(a1),length(y));
+max_d = zeros(1,length(a1));
+for j = 1:length(a1)
+    for i = 1:length(y)
+        I_precesion_minus(j,i) = gamma(k+1)*y_minus(i).*(sum(a.*(y_minus(i).^n))/sum(b.*(y_minus(i).^m))).^k;
+        I_precesion(j,i) = x(i)^3/3 + x(i)*pi^2/3 + I_precesion_minus(j,i);
+        I_approximate(j,i) = gamma(k+1)*y(i).*(1+a1(j)*y(i)+y(i)^3/(gamma(k+2))^(3/k))^(k/3);
+        I_approximate_minus(j,i) = gamma(k+1)*y_minus(i).*(1+a1(j)*y_minus(i)+y_minus(i)^3/(gamma(k+2))^(3/k))^(k/3);
+    end
+    delta = log10(abs(I_approximate(j,:)./I_precesion(j,:)));
+    delta_minus = log10(abs(I_approximate_minus(j,:)./I_precesion_minus(j,:)));
+    
+    d = [delta_minus, delta];
+    plot([x_minus, x], d, 'k', 'linewidth', 2)
+    axis([-10 30 -0.015 0.015]),grid on
+    
+%     title(['Подгоночный коэффициент: ' sprintf('%f', a1(j))])
+    pause(10^-6);
+    if (a1(j) > 0.76) % a1 = 1.05, mb 1.06
+        break;
+    end
+   
+    max_d(j) = max(abs(d));
+end
+hold on
+xlabel('x'); ylabel('lg(I_п_р_и_б_л/I_т_о_ч_н)')
+plot([-10,0;30,0],[0,-0.015;0,0.015],'k','linewidth',1.4);
+disp(max_d');
