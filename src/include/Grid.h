@@ -2,6 +2,14 @@
 
 #include "BasicTypes.h"
 
+enum class GRID_TYPE {
+    LINEAR,
+    TRIGONOMETRIC,
+    LIN_TRIG_LEFT,
+    LIN_TRIG_RIGHT,
+    SHIFTED
+};
+
 class Grid {
     public:
         Grid(size_t N, size_t addNCount = 11);

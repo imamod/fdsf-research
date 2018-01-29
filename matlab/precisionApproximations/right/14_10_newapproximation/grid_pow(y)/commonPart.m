@@ -47,15 +47,16 @@ function max_max_delta = commonPart(y0, Y, I_base, I_add, k, N)
 
     prefix = strcat('extremN', num2str(N));
     filename = strcat(prefix, '.txt');
+%     writeFile(filename, '%s\n', num2str(log10(max_delta)));
     f = fopen(filename , 'w');
     fprintf(f, '%e\n', max_delta);
     fclose(f);
 
-    tau = 0.75;
-    disp(y0);
-    disp('-----eta--------');
-    eta = shiftGrid(y0, max_delta, tau);
-    disp(1./eta);
+%     tau = 0.75;
+%     disp(y0);
+%     disp('-----eta--------');
+%     eta = shiftGrid(y0, max_delta, tau);
+%     disp(1./eta);
     
     max_max_delta = max(max_delta);
 end

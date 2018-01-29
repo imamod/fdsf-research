@@ -141,15 +141,12 @@ void Grid::shiftLinTrigGrid(const BmpVector& delta, BmpReal tau) {
     }
     std::reverse(ksi.begin(), ksi.end());
 
-    //const BmpReal tau(0.5);
-    //const BmpReal tau(1);
-    //const BmpReal tau(0.75);
     BmpVector eta;
     eta.push_back(ksi.front());
     for (auto i = 1; i < ksi.size() - 1; ++i) {
         auto distance = (ksi[i + 1] - ksi[i - 1]) / 2;
-        auto num = 1 - sqrt((delta[i - 1] / delta[i]));
-        auto denom = (1 + sqrt(delta[i - 1] / delta[i]));
+        auto num = 1 - sqrt(delta[i - 1] / delta[i]);
+        auto denom = 1 + sqrt(delta[i - 1] / delta[i]);
         eta.push_back(ksi[i] + tau*distance*num / denom);
     }
     eta.push_back(ksi.back());

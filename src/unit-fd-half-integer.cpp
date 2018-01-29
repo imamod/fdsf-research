@@ -77,12 +77,28 @@ BmpVector computeIntegral(BmpVector x, BmpReal k) {
     return I;
 }
 
-void calculateTableForK(const BmpReal k, const size_t N) {
+void calculateTableForK(BmpReal k, size_t N, const std::string& prefix = "test/", GRID_TYPE gridType = GRID_TYPE::LIN_TRIG_RIGHT) {
     // –асчет значени€ интеграла в базовых узлах
     Grid grid(N);
-    //grid.setLinearGrid();
-    //grid.setLinearTrigonometricGrid();
-    grid.setLinearTrigonometricGridRight();
+    //TODO: to GRID class
+    switch (gridType) {
+        case GRID_TYPE::LINEAR:
+            grid.setLinearGrid();
+            break;
+        case GRID_TYPE::TRIGONOMETRIC:
+            break;
+        case GRID_TYPE::LIN_TRIG_LEFT:
+            grid.setLinearTrigonometricGrid();
+            break;
+        case GRID_TYPE::LIN_TRIG_RIGHT:
+            grid.setLinearTrigonometricGridRight();
+            break;
+        case GRID_TYPE::SHIFTED:
+            break;
+        default:
+            break;
+    }
+
     BmpVector y0 = grid.base();
     BmpVector Y = grid.additional();
 
@@ -92,8 +108,9 @@ void calculateTableForK(const BmpReal k, const size_t N) {
 
     //std::string absFilename = filesys::createDirectory(12, it, "test/");
     //std::string absFilename = filesys::createDirectory(12, N, "test_x5_left/");
-    std::string absFilename = filesys::createDirectory(12, N, "test/");
+    //std::string absFilename = filesys::createDirectory(12, N, "test/");
     //std::string absFilename = filesys::createDirectory(12, it, "test_x5/");
+    std::string absFilename = filesys::createDirectory(12, N, prefix);
     filesys::writeFile(absFilename + "y0.txt", y0);
     filesys::writeFile(absFilename + "I_base.txt", I_base);
     filesys::writeFile(absFilename + "I_add.txt", I_additional);
@@ -179,6 +196,8 @@ TEST_CASE("halfint") {
         const BmpReal k = BmpReal(1.0 / 2.0);
         //const std::vector<size_t> N_base = { 3, 5, 7, 9 };
         //const std::vector<size_t> N_base{ 3 };
+        //const std::vector<size_t> N_base{ 5 };
+        //const std::vector<size_t> N_base{ 7 };
         const std::vector<size_t> N_base{ 9 };
         // –асчет значени€ интеграла в базовых узлах
         for (const auto& it : N_base) {
@@ -212,10 +231,29 @@ TEST_CASE("halfint") {
                 1.252554e-12, 3.502754e-12, 5.019984e-12, 2.974954e-12,
                 5.715428e-13, 3.841372e-14,
             };
-            //const BmpReal TAU(0.5);
+            const BmpReal TAU(0.5);
+            // N = 3
+            const BmpVector DELTA_K12_N3 = { 9.438492e-06, 6.092994e-06, 5.484654e-06,
+                                             3.481478e-06, 6.460857e-07, 2.988557e-08 };
+            const BmpVector DELTA_K12_N5 = { 3.815749e-09, 2.141089e-09, 2.207771e-09,
+                                             3.366675e-09, 6.286565e-09, 1.155590e-08,
+                                             1.381581e-08, 5.660865e-09, 4.789431e-10,
+                                             4.265144e-12
+            };
+            const BmpVector DELTA_K12_N7 = { 5.360046e-12, 2.032152e-12, 1.448508e-12,
+                                             1.552092e-12, 2.300937e-12, 4.358069e-12,
+                                             1.000855e-11, 2.630696e-11, 7.034207e-11,
+                                             1.614167e-10, 2.371363e-10, 1.542799e-10,
+                                             3.149425e-11, 2.248868e-12 };
+            const BmpVector DELTA_K12_N9 = { 3.996803e-15, 1.554312e-15, 9.992007e-16,
+                                             5.551115e-16, 6.661338e-16, 6.661338e-16,
+                                             1.443290e-15, 3.552714e-15, 7.327472e-15,
+                                             2.431388e-14, 4.773959e-14, 3.599343e-13,
+                                             1.252554e-12, 3.502754e-12, 5.019984e-12,
+                                             2.974954e-12, 5.715428e-13, 3.841372e-14 };
             //const BmpReal TAU(1);
-            const BmpReal TAU(0.75);
-            grid.shiftLinTrigGrid(delta, TAU);
+            //const BmpReal TAU(0.75);
+            grid.shiftLinTrigGrid(DELTA_K12_N9, TAU);
             BmpVector y0 = grid.base();
             BmpVector Y = grid.additional();
             BmpVector x0 = grid.xByY(y0);

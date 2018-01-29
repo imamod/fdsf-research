@@ -2,6 +2,8 @@ clc
 clear all
 close all
 
+format long
+
 k = 1/2;
 
 x_star = 3;
@@ -10,7 +12,8 @@ y_star = log(1+exp(x_star));
 y_star_inv = 1/(y_star);
 
 % N = [3, 5, 7, 9]; %, 10, 11, 13];
-N = [9];
+N = [3];
+% N = [9];
 
 max_max_delta = [];
 for j = 1:length(N)
@@ -27,7 +30,7 @@ for j = 1:length(N)
     % x0 = log(exp(y0)-1);
 
     %% Read before shift calculated values
-%     prefix = strcat('testShift/tau075/nonshifted/k12/n', num2str(N));
+%     prefix = strcat('testShift/nonshifted/k12/n', num2str(N));
   
     % prefix = strcat('k12/n', num2str(N));
     % prefix = strcat('linearGrid/k12/n', num2str(N));
@@ -35,12 +38,16 @@ for j = 1:length(N)
     % prefix = strcat('changedWeights/k12/n', num2str(N));
     % prefix = strcat('testShift/k12/n', num2str(N));
     %% Read after shift recalculated values
-    prefix = strcat('testShift/tau1/k12/n', num2str(N));
-    % prefix = strcat('x5linTrig/k12/n', num2str(N));
+%     prefix = strcat('testShift/tau1/k12/n', num2str(N));
+%     prefix = strcat('testShift/tau075/shifted/k12/n', num2str(N));
+    prefix = strcat('testShift/tau05/k12/n', num2str(N));
+%     prefix = strcat('x5linTrig/k12/n', num2str(N));
 
     filename = strcat(prefix, '/y0.txt');
     disp(filename)
     y0 = readFile(filename);
+    disp('Базовые узлы:');
+    disp(y0');
 
     filename = strcat(prefix, '/Y.txt');
     Y = readFile(filename);
