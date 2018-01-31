@@ -76,9 +76,8 @@ namespace fdsf {
         return I;
     }
 
-    BmpReal euler_maclaurin_method(BmpReal x, const BmpReal k, int N, BmpReal& a) {
-        //BmpReal a = NewtonsMethod(x, k);
-        a = NewtonsMethod(x, k);
+    BmpReal euler_maclaurin_method(BmpReal x, const BmpReal k, int N) {
+        BmpReal a = NewtonsMethod(x, k);
         FermiFunction f = (k == -3.0 / 2) ? fermi_dirak_m3half :
                           fermi_dirak_half_integer;
         return trapz(f, x, k, N, a);

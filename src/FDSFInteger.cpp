@@ -134,26 +134,27 @@ namespace fdsf {
     }
 
     // Сгущение по Ричардсону по сеточно-Гауссову методу
-    BmpReal richardson_method(BmpReal x, BmpReal k, BmpReal t, BmpReal a) {
+    BmpReal richardson_method(BmpReal x, BmpReal k, BmpReal t) {
         int N = 2;
         BmpReal stop_criteria;
         BmpReal I_n, I_2n;
 
         bool isHalfInteger = hasFractionalPart(k);
-        I_n = isHalfInteger ? euler_maclaurin_method(x, k, N, a) :
+        I_n = isHalfInteger ? euler_maclaurin_method(x, k, N) :
                               gauss_christoffel_method(&fermi_dirak_integer, x, t, k, N);
         //std::ofstream fout;
         //fout.open("check_a_x.txt");
-        std::cout << "x = " << x << std::endl;
         //fout << (I_n) << std::fixed <<
         //    std::setprecision(std::numeric_limits<BmpReal>::max_digits10) << std::endl;
+#ifdef LOGGING
+        std::cout << "x = " << x << std::endl;
         //std::cout << "N = " << N << ": I = " << I_n << std::endl;
+#endif
         do {
             if (isHalfInteger) {
-                I_2n = euler_maclaurin_method(x, k, 2 * N, a);
+                I_2n = euler_maclaurin_method(x, k, 2 * N);
                 //I_2n += I_n / 2; // для трапеции если сетки по удвоенной
-            }
-            else {
+            } else {
                 I_2n = gauss_christoffel_method(&fermi_dirak_integer, x, t, k, 2 * N);
             }
             //fout << I_2n << std::fixed <<
@@ -170,10 +171,11 @@ namespace fdsf {
             //std::cout << "N = " << N << ": I = " << I_n << std::endl;
         } while (abs(stop_criteria) > 1e-11);
         //while (abs(stop_criteria) > epsilon*100);
+#ifdef LOGGING
         std::cout << "N = " << N << ": I = ";
         std::cout << I_2n << std::fixed <<
             std::setprecision(std::numeric_limits<BmpReal>::max_digits10) << std::endl;
-
+#endif
         //fout.close();
         return I_n;
     }

@@ -100,21 +100,32 @@ void Grid::setLinearTrigonometricGridRight() {
     //const BmpReal alpha = 0.7;
     const BmpReal one = BmpReal(1);
     const BmpReal num2 = BmpReal(2); //if integer
-    const BmpReal x_star = BmpReal(3);
+    //const BmpReal x_star = BmpReal(3);
+    //const BmpReal x_star = BmpReal(5);
+    const BmpReal x_star = BmpReal(7);
     const BmpReal y_star = BmpReal(log(1 + exp(x_star))); // if half-integer
     //BmpReal baseSize = BmpReal(2 * m_N_base + 1); // if integer || half-integer & !fixed a(N+1)
     BmpReal baseSize = BmpReal(2 * m_N_base); // if half-integer & fixed a(N+1)
     //BmpReal baseSize = BmpReal(m_N_base); // if poly approximation
 
     //const BmpReal y_star_inv = 1 / (y_star * y_star);
-    const BmpReal y_star_inv = 1 / y_star;
+    //const BmpReal y_star_inv = 1 / y_star;
+    const BmpReal P(1);
+    //const BmpReal P(0.9);
+    //const BmpReal P(0.95);
+    const BmpReal y_star_new = 1 / pow(y_star, P);
 
     // Задаются базовые узлы интерполяции
     for (size_t j = 1; j <= baseSize; j++) {
         //m_base.push_back(y_star_inv / num2*(num2 * alpha*j / baseSize
         //    + (one - alpha)*(one - cos(fdsf::PI*j / baseSize))));
-        m_base.push_back(y_star_inv / num2*(num2 * (one - alpha)*j / baseSize
-            + alpha*(one - cos(fdsf::PI*j / baseSize))));
+        /* Оставим этот исходный вариант от 10.02.2018 */
+        /*m_base.push_back(y_star_inv / num2*(num2 * (one - alpha)*j / baseSize
+            + alpha*(one - cos(fdsf::PI*j / baseSize))));*/
+        /* Здесь формула со степенью p*/
+        BmpReal linearPart = num2 * (one - alpha)*j / baseSize;
+        BmpReal trigonometricPart = alpha*(one - cos(fdsf::PI*j / baseSize));
+        m_base.push_back(pow(y_star_new / num2*(linearPart + trigonometricPart), 1 / P));
     }
 
     // Задаются дополнительные точки
