@@ -11,6 +11,14 @@ namespace enter {
         return expected;
     }
 
+    // —читать число
+    BmpReal number(const std::string& description) {
+        std::cout << "Enter " << description << " : ";
+        BmpReal x;
+        std::cin >> x;
+        return x;
+    }
+
     // —читать строку
     std::string string(const std::string& description) {
         std::cout << "Enter " << description << ":" << std::endl;
@@ -29,11 +37,4 @@ namespace enter {
         return ALL_INDICES[selected];
     }
 
-    // —читать число
-    BmpReal number(const std::string& description) {
-        std::cout << "Enter " << description << " :" << std::endl;
-        BmpReal x;
-        std::cin >> x;
-        return x;
-    }
 }

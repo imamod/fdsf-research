@@ -40,6 +40,10 @@ target_include_directories(Utils PRIVATE ${CATCH_INCLUDE_DIR})
 target_include_directories(Utils PUBLIC "../../boost_1_60_0")
 target_include_directories(Utils PRIVATE "../src/include")
 target_include_directories(Utils PRIVATE "src/include")
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "DebugMP")
+   add_definitions(-DHIGH_PRECISION)
+endif ()
+
 
 #############################################################################
 # one executable for each unit test file
@@ -49,6 +53,7 @@ set(FDSF_RESEARCH_LIB ${CMAKE_CURRENT_SOURCE_DIR}/../build/${CMAKE_GENERATOR_PLA
 set(UTILS_LIB ${CMAKE_CURRENT_SOURCE_DIR}/build/Debug)
 
 file(GLOB projects "src/example-*.cpp"
+                   "src/test-*.cpp"
                    "src/unit-*.cpp"
                    "src/util-*.cpp")
 foreach(project ${projects})

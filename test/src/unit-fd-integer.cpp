@@ -3,26 +3,6 @@
 #include <array>
 
 namespace {
-    // Для целых
-    BmpVector computeIntegral(const BmpVector& x, size_t k) {
-        // std::cout << "      I1(0) : " << fdsf::PI*fdsf::PI / 12 << std::endl;
-        /**
-         * Соответствие значений t для каждого k, подобрано экспериментально
-         * BmpReal t = fdsf::get_T_max(X.at(i), k);
-         */
-        std::array<BmpReal, 4> T_VALUES = { 60, 75, 100, 120 };
-        // Точка, до которой считаем по схеме Горнера
-        BmpReal x_div = BmpReal(-0.1);
-        BmpVector I;
-        for (int i = 0; i < x.size(); i++) {
-            auto value = x[i] > x_div ? fdsf::richardson_method(x[i], k, T_VALUES[k-1])
-                                         : fdsf::Gorner(x[i], k);
-                //I.push_back(GornerSchemeForPrecesionY( x0[i], N));
-            I.push_back(value);
-            std::cout << "x0: " << x[i] << " I_base: " << I[i] << std::endl;
-        }
-        return I;
-    }
 
     void GetValue_w(BmpVector &I_base,
                     BmpVector &I_additional,
@@ -54,7 +34,7 @@ TEST_CASE("k_1") {
     BmpVector Y = grid.additional();
 
     // Расчет схемы Горнера и подсчета интеграла на Гауссовой сетке
-    BmpVector I_base = computeIntegral(grid.xByY(y0), k);
-    BmpVector I_additional = computeIntegral(grid.xByY(Y), k);
+    BmpVector I_base = compute::integer(grid.xByY(y0), k);
+    BmpVector I_additional = compute::integer(grid.xByY(Y), k);
     //GetValue_w(I_base, I_additional, y0, x0, Y, X, k);
 }
