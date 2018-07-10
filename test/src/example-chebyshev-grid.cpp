@@ -20,7 +20,7 @@ namespace {
 
         // Задаются базовые узлы интерполяции
         for (size_t j = 1; j <= baseSize; j++) {
-            y_base.push_back(y_star_inv*pow(sin(PI*j / (2 * baseSize)), 2));
+            y_base.push_back(y_star_inv*pow(sin(pi()*j / (2 * baseSize)), 2));
             std::cout << y_base[j - 1] << " ";
         }
 

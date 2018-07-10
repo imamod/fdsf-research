@@ -1,4 +1,6 @@
 #include "Common.h"
+#include "SeriesLogNDivSqrN.h"
+#include "Gamma.h"
 
 /**
  * всюду сходящийся ряд, расчет b_n_k
@@ -32,7 +34,7 @@ namespace {
             P0 *= 2;
             stopCriteria = abs(I2n - In);
         } while (stopCriteria > 1e-14);
-        return I2n / fdsf::factorial(k);
+        return I2n / factorial(k);
     }
 
     // Вычисление для индекса k = 0
@@ -676,4 +678,84 @@ TEST_CASE("k4") {
 
     BmpVector bk4 = calculateBk(BK3);
     filesys::writeFile("bk4.txt", bk4);
+}
+/**
+ * Интегральная ФФД
+ */
+
+namespace {
+
+    // TODO: расчет коэффициентов при x<0
+
+    // Всюду сходящийся ряд
+    BmpVector calculateCk(size_t N) {
+        BmpVector ck = { 1.0 / 2 };
+        BmpVector bm12;
+        for (size_t n = 0; n <= N; ++n) {
+            bm12.push_back(calculateBm12(n));
+        }
+        for (size_t n = 1; n < N; ++n) {
+            BmpReal sum = 0;
+            for (size_t p = 0; p <= n; ++p) {
+                sum += bm12.at(p)*bm12.at(n - p);
+            }
+            BmpReal result = ((n + 1)*ck.at(n - 1) + sum) / (n + 2);
+            ck.push_back(result);
+        }
+        return ck;
+    }
+
+    // Константа j
+    inline const BmpReal calculateConstj() {
+        SeriesLogNDivSqrN example;
+        BmpReal value = (1 - 2 * log(2) / 3 - eilerConst() / 3);
+        BmpReal jConst = pow(pi(), 2)*value / 2 - example.get();
+        return jConst;
+    }
+
+    void piPowerCheck(const BmpReal& value) {
+        BmpReal piPower = 0.5;
+        BmpReal upperBound = enter::number(UINT32_MAX);
+        std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
+        while (piPower < upperBound) {
+            std::cout << " power = " << piPower << ": " << pow(pi(), piPower) / value << std::endl;
+            piPower += 0.5;
+        }
+    }
+}
+
+TEST_CASE("seriesCheck") {
+    SECTION("convergence") {
+        std::cout << "N=100: " << SeriesLogNDivSqrN(100).get() << std::endl;
+        std::cout << "N=200: " << SeriesLogNDivSqrN(200).get() << std::endl;
+        std::cout << "N=300: " << SeriesLogNDivSqrN().get() << std::endl;
+        std::cout << "N=10^5 " << SeriesLogNDivSqrN(100000).get() << std::endl;
+    }
+    SECTION("pi-power") {
+        SeriesLogNDivSqrN series;
+        piPowerCheck(series.get());
+    }
+    SECTION("check-eiler-plus-sum") {
+        SeriesLogNDivSqrN series;
+        std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
+        BmpReal eilerPlusSeriesSum = pow(pi(), 2)*eilerConst() / 6 + series.get();
+        std::cout << eilerPlusSeriesSum << std::endl;
+        piPowerCheck(eilerPlusSeriesSum);
+    }
+}
+
+TEST_CASE("iffd") {
+    // x<0
+    SECTION("left") {
+    }
+    SECTION("conv") {
+        BmpVector C = calculateCk(67);
+        filesys::writeFile("iffdC.txt", C);
+    }
+    // x>0
+    SECTION("right") {
+        const BmpReal j = calculateConstj();
+        std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
+        std::cout << "jConst = " << j << std::endl;
+    }
 }

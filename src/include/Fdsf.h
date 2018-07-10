@@ -5,14 +5,11 @@
 namespace fdsf {
 
     // Значение Ik(0) для индекса k = 0,1,2,3
-    const static BmpReal I_k_0[] = { log(BmpReal(2)),
-                                      PI*PI / 12.0, 
+   /* const static BmpReal I_k_0[] = { log(BmpReal(2)),
+                                      pow(pi(), 2) / 12.0, 
                                       1.8030853547393952,// значение из статьи
-                                      7.0*PI*PI*PI*PI / 120.0 
-                                    };
-
-    // Вычисление Г-функции
-    BmpReal factorial(BmpReal k);
+                                      7.0*pow(pi (), 4)/ 120.0 
+                                    };*/
 
     // Вычисляет значение функции ФД индекса k = 1, 2, 3 в точке x при заданном
     // значении t. Функция представлена в виде t^k /(exp(x)+exp(t))

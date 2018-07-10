@@ -1,5 +1,6 @@
 ﻿#include "MatrixUtils.h"
 #include "BasicService.h"
+#include "Constants.h"
 #include <math.h>
 #include <limits>
 #include <iomanip>
@@ -147,7 +148,7 @@ BmpVector solveSystemForIntegerIndex(const BmpVector& z, const BmpVector& y0, si
 
 BmpVector solveRightApproximationSystem(BmpReal k, size_t N, const BmpVector& y0, const BmpVector& I_base) {
     const auto baseSize = 2 * N;
-    const BmpReal C1 = (k + 1)*k*fdsf::PI*fdsf::PI / 6;
+    const BmpReal C1 = (k + 1)*k*pi()*pi() / 6;
     // Задаем Матрицы А, B и z
     BmpVector B(baseSize, 0);
     BmpVector z(baseSize, 0);
@@ -190,7 +191,7 @@ BmpVector solveRightApproximationSystem(BmpReal k, size_t N, const BmpVector& y0
 */
 BmpVector approximateValueRight(const BmpVector& a, const BmpVector& b, const BmpVector& y, BmpReal k) {
     auto N = y.size() / 2;
-    const BmpReal C1 = (k + 1)*k*pow(fdsf::PI, 2) / 6;
+    const BmpReal C1 = (k + 1)*k*pow(pi(), 2) / 6;
     BmpVector I;
     for (auto it : y) {
         BmpReal S1 = 1, S2 = 1;

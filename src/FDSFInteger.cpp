@@ -1,9 +1,10 @@
 #include "Fdsf.h"
+#include "Constants.h"
+#include "Gamma.h"
 #include <iomanip>
 #include <limits>
 #include <iostream>
 #include <fstream>
-#include <unordered_map>
 
 namespace fdsf {
 
@@ -74,26 +75,6 @@ namespace fdsf {
         }
 
         return sum * factorial(k) * exp(x);
-    }
-
-    // TODO: rename as gamma
-    BmpReal factorial(BmpReal _k) {
-        auto k = static_cast<double>(_k);
-        std::unordered_map<double, BmpReal> SUPPORTED_HALFINTEGER_INDICES = {
-            { -1.5, -2 * sqrt(PI) },
-            { -0.5, sqrt(PI) },
-            { 0.5, sqrt(PI) / 2 },
-            { 1.5, 3 * sqrt(PI) / 4 },
-            { 2.5, 15 * sqrt(PI) / 8 },
-            { 3.5, 105 * sqrt(PI) / 16 }
-        };
-
-        auto it = SUPPORTED_HALFINTEGER_INDICES.find(k);
-        if (it != SUPPORTED_HALFINTEGER_INDICES.end()) {
-            return SUPPORTED_HALFINTEGER_INDICES[k];
-        }
-
-        return !k ? 1 : BmpReal(k*factorial(k - 1));
     }
 
     BmpReal gauss_christoffel_method(BmpReal(*f)(BmpReal, BmpReal, BmpReal),

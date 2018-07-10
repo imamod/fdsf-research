@@ -2,6 +2,7 @@
 
 #include "catch.hpp"
 #include "BasicService.h"
+#include "Constants.h"
 #include "Fdsf.h"
 #include "Grid.h"
 #include "MatrixUtils.h"

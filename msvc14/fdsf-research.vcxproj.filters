@@ -36,6 +36,15 @@
     <ClCompile Include="..\src\Grid.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\IntegralFDSF.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SeriesLogNDivSqrN.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gamma.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\MatrixUtils.h">
@@ -54,6 +63,15 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\include\Tables.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\SeriesLogNDivSqrN.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Constants.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gamma.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

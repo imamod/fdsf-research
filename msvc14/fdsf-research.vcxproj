@@ -149,6 +149,7 @@
     <TargetExt>.lib</TargetExt>
     <OutDir>..\build\$(Platform)\</OutDir>
     <IntDir>..\build\$(Platform)\$(IntDir)</IntDir>
+    <TargetName>$(ProjectName)MP</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetExt>.lib</TargetExt>
@@ -159,6 +160,7 @@
     <TargetExt>.lib</TargetExt>
     <OutDir>..\build\$(Platform)\</OutDir>
     <IntDir>..\build\$(Platform)\$(IntDir)</IntDir>
+    <TargetName>$(ProjectName)MP</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -360,16 +362,22 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\FDSFInteger.cpp" />
+    <ClCompile Include="..\src\Gamma.cpp" />
     <ClCompile Include="..\src\Grid.cpp" />
+    <ClCompile Include="..\src\IntegralFDSF.cpp" />
     <ClCompile Include="..\src\MatrixUtils.cpp" />
     <ClCompile Include="..\src\Newton.cpp" />
+    <ClCompile Include="..\src\SeriesLogNDivSqrN.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\BasicService.h" />
     <ClInclude Include="..\src\include\BasicTypes.h" />
+    <ClInclude Include="..\src\include\Constants.h" />
     <ClInclude Include="..\src\include\Fdsf.h" />
+    <ClInclude Include="..\src\include\Gamma.h" />
     <ClInclude Include="..\src\include\Grid.h" />
     <ClInclude Include="..\src\include\MatrixUtils.h" />
+    <ClInclude Include="..\src\include\SeriesLogNDivSqrN.h" />
     <ClInclude Include="..\src\include\Tables.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

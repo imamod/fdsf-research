@@ -25,6 +25,4 @@ using BmpMatrix = std::vector<BmpVector>;
 namespace fdsf {
     // Желаемая точность расчета
     const BmpReal epsilon = 1e-17;
-    // Значение pi
-    const BmpReal PI = boost::math::constants::pi<BmpReal>();
 }

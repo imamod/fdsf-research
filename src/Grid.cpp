@@ -1,4 +1,5 @@
 #include "Grid.h"
+#include "Constants.h"
 
 Grid::Grid(size_t N_base, size_t addNCount)
     : m_N_base(N_base)
@@ -71,7 +72,7 @@ void Grid::setLinearGrid() {
 
 // Установить сетку базовых узлов по линейно-тригонометрическому закону
 void Grid::setLinearTrigonometricGrid() {
-    const BmpReal alpha = 2 / (2 + fdsf::PI);
+    const BmpReal alpha = 2 / (2 + pi());
     const BmpReal one = BmpReal(1);
     const BmpReal num2 = BmpReal(2); //if integer
     const BmpReal x_star = BmpReal(5);
@@ -82,7 +83,7 @@ void Grid::setLinearTrigonometricGrid() {
     // Задаются базовые узлы интерполяции
     for (size_t j = 1; j <= baseSize; j++) {
         m_base.push_back(y_star / num2*(num2 * alpha*j / baseSize
-            + (one - alpha)*(one - cos(fdsf::PI*j / baseSize))));
+            + (one - alpha)*(one - cos(pi()*j / baseSize))));
     }
 
     // Задаются дополнительные точки
@@ -96,7 +97,7 @@ void Grid::setLinearTrigonometricGrid() {
 void Grid::setLinearTrigonometricGridRight() {
     m_additional.clear();
     m_base.clear();
-    const BmpReal alpha = 2 / (2 + fdsf::PI);
+    const BmpReal alpha = 2 / (2 + pi());
     //const BmpReal alpha = 0.7;
     const BmpReal one = BmpReal(1);
     const BmpReal num2 = BmpReal(2); //if integer
@@ -118,13 +119,13 @@ void Grid::setLinearTrigonometricGridRight() {
     // Задаются базовые узлы интерполяции
     for (size_t j = 1; j <= baseSize; j++) {
         //m_base.push_back(y_star_inv / num2*(num2 * alpha*j / baseSize
-        //    + (one - alpha)*(one - cos(fdsf::PI*j / baseSize))));
+        //    + (one - alpha)*(one - cos(pi()*j / baseSize))));
         /* Оставим этот исходный вариант от 10.02.2018 */
         /*m_base.push_back(y_star_inv / num2*(num2 * (one - alpha)*j / baseSize
-            + alpha*(one - cos(fdsf::PI*j / baseSize))));*/
+            + alpha*(one - cos(pi()*j / baseSize))));*/
         /* Здесь формула со степенью p*/
         BmpReal linearPart = num2 * (one - alpha)*j / baseSize;
-        BmpReal trigonometricPart = alpha*(one - cos(fdsf::PI*j / baseSize));
+        BmpReal trigonometricPart = alpha*(one - cos(pi()*j / baseSize));
         m_base.push_back(pow(y_star_new / num2*(linearPart + trigonometricPart), 1 / P));
     }
 

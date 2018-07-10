@@ -25,7 +25,7 @@ namespace compute {
      * Вычислить функцию целого индекса на векторе значений
      */
     BmpVector integer(const BmpVector& x, size_t k) {
-        // std::cout << "      I1(0) : " << fdsf::PI*fdsf::PI / 12 << std::endl;
+        // std::cout << "      I1(0) : " << pow(pi(), 2) / 12 << std::endl;
         /**
         * Соответствие значений t для каждого k, подобрано экспериментально
         * BmpReal t = fdsf::get_T_max(X.at(i), k);

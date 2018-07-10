@@ -36,9 +36,9 @@ namespace epc {
         BmpReal I = trapz(f, a, b, N);
         //BmpReal a_ = 1.75;
         //size_t n = 0;
-        //BmpReal I_prec = pow(a_, n)*fdsf::PI / (1 - a_*a_ );
-        //BmpReal I_prec = fdsf::PI / ((a_*a_ - 1)*pow(a_, n));
-        //BmpReal I_prec = fdsf::PI;
+        //BmpReal I_prec = pow(a_, n)*pi() / (1 - a_*a_ );
+        //BmpReal I_prec = pi() / ((a_*a_ - 1)*pow(a_, n));
+        //BmpReal I_prec = pi();
         std::cout << "N = " << N << ": I = " << I << std::endl;
         std::ofstream fout("demo.txt");
         //fout.precision(std::numeric_limits<BmpReal>::max_digits10);

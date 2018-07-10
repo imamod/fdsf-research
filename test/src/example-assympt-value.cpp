@@ -1,15 +1,16 @@
 #include "Common.h"
+#include "Gamma.h"
 
 namespace {
     // TODO: эти функции в библиотеку
     BmpVector calculate_series_part(BmpReal k, BmpVector& X) {
-        using namespace fdsf;
-        BmpVector coeff_A = { pow(PI, 2) / 6.0,
-            pow(PI, 4) / 90.0,
-            pow(PI, 6) / 945.0,
-            pow(PI, 8) / 9450.0,
-            pow(PI, 10) / 93555.0,
-            691.0 * pow(PI, 12) / 638512875.0
+        BmpVector coeff_A = {
+            pow(pi(), 2) / 6.0,
+            pow(pi(), 4) / 90.0,
+            pow(pi(), 6) / 945.0,
+            pow(pi(), 8) / 9450.0,
+            pow(pi(), 10) / 93555.0,
+            691.0 * pow(pi(), 12) / 638512875.0
         };
 
         BmpVector series_value;
@@ -29,7 +30,7 @@ namespace {
             series_value.push_back(series_sum);
         }
 
-        std::cout << PI*PI*PI*PI*PI*PI / 945.0 << std::endl;
+        std::cout << pow(pi(), 6) / 945.0 << std::endl;
 
         return series_value;
     }
@@ -52,7 +53,7 @@ namespace {
             //std::cout << series_value << std::endl;
         }
 
-        return fdsf::factorial(k)*series_value;
+        return factorial(k)*series_value;
     }
 }
 
