@@ -45,6 +45,12 @@
     <ClCompile Include="..\src\Gamma.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\AsymptoticSeries.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Utils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\MatrixUtils.h">
@@ -72,6 +78,12 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\include\Gamma.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\AsymptoticSeries.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\IntegralFDSF.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

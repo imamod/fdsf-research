@@ -353,6 +353,7 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\AsymptoticSeries.cpp" />
     <ClCompile Include="..\src\BasicService.cpp" />
     <ClCompile Include="..\src\ExponentialConvergence.cpp" />
     <ClCompile Include="..\src\FDSFHalf.cpp">
@@ -368,14 +369,17 @@
     <ClCompile Include="..\src\MatrixUtils.cpp" />
     <ClCompile Include="..\src\Newton.cpp" />
     <ClCompile Include="..\src\SeriesLogNDivSqrN.cpp" />
+    <ClCompile Include="..\src\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\include\AsymptoticSeries.h" />
     <ClInclude Include="..\src\include\BasicService.h" />
     <ClInclude Include="..\src\include\BasicTypes.h" />
     <ClInclude Include="..\src\include\Constants.h" />
     <ClInclude Include="..\src\include\Fdsf.h" />
     <ClInclude Include="..\src\include\Gamma.h" />
     <ClInclude Include="..\src\include\Grid.h" />
+    <ClInclude Include="..\src\include\IntegralFDSF.h" />
     <ClInclude Include="..\src\include\MatrixUtils.h" />
     <ClInclude Include="..\src\include\SeriesLogNDivSqrN.h" />
     <ClInclude Include="..\src\include\Tables.h" />

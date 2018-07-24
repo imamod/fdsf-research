@@ -1,47 +1,18 @@
 #include "Common.h"
 #include "Gamma.h"
+#include "AsymptoticSeries.h"
+#include <iostream>
 
 namespace {
-    // TODO: эти функции в библиотеку
-    BmpVector calculate_series_part(BmpReal k, BmpVector& X) {
-        BmpVector coeff_A = {
-            pow(pi(), 2) / 6.0,
-            pow(pi(), 4) / 90.0,
-            pow(pi(), 6) / 945.0,
-            pow(pi(), 8) / 9450.0,
-            pow(pi(), 10) / 93555.0,
-            691.0 * pow(pi(), 12) / 638512875.0
-        };
-
-        BmpVector series_value;
-        std::cout << std::setprecision(std::numeric_limits<BmpReal>::max_digits10);
-        for (size_t i = 0; i < X.size(); i++) {
-            BmpReal coeff_C = 1;
-            BmpReal nom = k + 1;
-            BmpReal series_sum = BmpReal(1.0);
-            for (size_t j = 0; j < coeff_A.size(); j++) {
-                coeff_C *= nom*(nom - 1); // По асимптотической формуле парное добавление множителей, поэтому далее отнимаем 2
-                series_sum += 2.0 * (1.0 - pow(2.0, 1.0 - 2 * (j + 1))) * pow(X[i], (-2.0)*(j + 1))*coeff_A[j] * coeff_C;
-                //std::cout << "A(j) = " << coeff_A[j] << ": series_sum = " << series_sum << std::endl;
-                std::cout << "C(" << j + 1 << ") = " << 2.0 * (1.0 - pow(2.0, 1.0 - 2 * (j + 1))) * coeff_A[j] * coeff_C << std::endl;
-                nom -= 2;
-            }
-            series_sum *= pow(X[i], k + 1) / (k + 1);
-            series_value.push_back(series_sum);
-        }
-
-        std::cout << pow(pi(), 6) / 945.0 << std::endl;
-
-        return series_value;
-    }
 
     BmpReal get_assympt_value(BmpReal x, BmpReal k) {
-        BmpVector I_minus, I, series_part, X = { x };
-        series_part = calculate_series_part(k, X);
+        BmpVector I_minus, I, X = { x };
+        AsymptoticSeries series(k, x);
+        std::cout << "new " << series.get() << std::endl;
         I_minus.push_back(fdsf::richardson_method(-x, k));
-        I.push_back(I_minus[0] + series_part[0]);
+        I.push_back(I_minus[0] + series.get());
         //return I[0];
-        return series_part[0];
+        return series.get();
     }
 
     BmpReal get_series_value(BmpReal x, BmpReal k) {
@@ -61,15 +32,15 @@ TEST_CASE("calculate_asimpt_value") {
     BmpVector X, Y;
     const BmpReal k = BmpReal(1.0 / 2.0);
     BmpReal h = 0.1;
-    BmpVector I, I_minus, series_part;
+    BmpVector I, I_minus;
 
     //проверка на идиота при х = 30
     X.push_back(30.0);
     //X.push_back(log(exp(Y[0]) - 1));
-    series_part = calculate_series_part(k, X);
+    AsymptoticSeries series(k, X.front());
     I_minus.push_back(fdsf::richardson_method(-X[0], k));
-    I.push_back(I_minus[0] + series_part[0]);
-    I.push_back(series_part[0]);
+    I.push_back(I_minus[0] + series.get());
+    I.push_back(series.get());
 #if 0
     Y.push_back(3.0);
     X.push_back(log(exp(Y[0]) - 1));
@@ -86,10 +57,10 @@ TEST_CASE("calculate_asimpt_value") {
         i++;
     }
 
-    series_part = calculate_series_part(k, X);
     for (size_t i = 0; i < X.size(); i++) {
+        AsymptoticSeries series(k, X.at(i));
         I_minus.push_back(fdsf::richardson_method(-X[i], k));
-        I.push_back(I_minus[i] + series_part[i]);
+        I.push_back(I_minus[i] + series.get(i));
     }
 #endif
     //printResultToFile(I, k, "Asimpt_check");
