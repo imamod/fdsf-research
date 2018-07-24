@@ -67,7 +67,7 @@ TEST_CASE("calculate_asimpt_value") {
 }
 
 TEST_CASE("check_negative_quadrature_values") {
-    std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
+    setPreciseOutput();
     const BmpReal k = BmpReal(1.0 / 2.0);
     BmpReal x = BmpReal(-0.1), I, I_precise;
     I = fdsf::richardson_method(x, k);

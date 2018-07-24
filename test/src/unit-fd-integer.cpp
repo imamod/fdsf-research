@@ -21,7 +21,7 @@ namespace {
 }
 
 TEST_CASE("k_1") {
-    std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
+    setPreciseOutput();
     //int N_gorner = 260, k = 1;
     //int N_gorner = 214, k = 2;
     //int N_gorner = 165, k = 3;

@@ -1,6 +1,7 @@
 #include "Common.h"
 #include "SeriesLogNDivSqrN.h"
 #include "Gamma.h"
+#include "AsymptoticSeries.h"
 
 /**
  * всюду сходящийся ряд, расчет b_n_k
@@ -685,7 +686,18 @@ TEST_CASE("k4") {
 
 namespace {
 
-    // TODO: расчет коэффициентов при x<0
+    // Расчет коэффициентов при x<0
+    BmpVector calculateAk(size_t N) {
+        BmpVector a;
+        for (size_t n = 2; n < N; ++n) {
+            BmpReal value = 0;
+            for (size_t p = 1; p < n; ++p) {
+                value += pow(p*(n-p), -0.5);
+            }
+            a.push_back(value/n);
+        }
+        return a;
+    }
 
     // Всюду сходящийся ряд
     BmpVector calculateCk(size_t N) {
@@ -705,7 +717,7 @@ namespace {
         return ck;
     }
 
-    // Константа j
+    // Вычисление константы j
     inline const BmpReal calculateConstj() {
         SeriesLogNDivSqrN example;
         BmpReal value = (1 - 2 * log(2) / 3 - eilerConst() / 3);
@@ -716,11 +728,30 @@ namespace {
     void piPowerCheck(const BmpReal& value) {
         BmpReal piPower = 0.5;
         BmpReal upperBound = enter::number(UINT32_MAX);
-        std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
+        setPreciseOutput();
         while (piPower < upperBound) {
             std::cout << " power = " << piPower << ": " << pow(pi(), piPower) / value << std::endl;
             piPower += 0.5;
         }
+    }
+
+    // Вычисление Ck x-> +inf
+    BmpVector calculateCRight(int N) {
+        BmpReal k(-_1 / 2);
+        BmpReal kPairsProd = (k + 1)*k;
+        BmpVector result, A = { 1, -pi()*pi() / 24 };
+        for (int q = 2; q < N; ++q) {
+            BmpReal mul = 2 * (_1 - pow(2, _1 - 2 * q));
+            kPairsProd *= (k - q)*(k - q - 1);
+            A.push_back(mul*dzetaFunction(2*q)*kPairsProd);
+        }
+        print::vector(A);
+        BmpReal sum = 0;
+        for (int q = 0; q < N; ++q) {
+            sum += A.at(q)*A.at(N - q - 1);
+            result.push_back(sum);
+        }
+        return result;
     }
 }
 
@@ -737,7 +768,7 @@ TEST_CASE("seriesCheck") {
     }
     SECTION("check-eiler-plus-sum") {
         SeriesLogNDivSqrN series;
-        std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
+        setPreciseOutput();
         BmpReal eilerPlusSeriesSum = pow(pi(), 2)*eilerConst() / 6 + series.get();
         std::cout << eilerPlusSeriesSum << std::endl;
         piPowerCheck(eilerPlusSeriesSum);
@@ -747,6 +778,8 @@ TEST_CASE("seriesCheck") {
 TEST_CASE("iffd") {
     // x<0
     SECTION("left") {
+        BmpVector a = calculateAk(34);
+        filesys::writeFile("iffdLeft.txt", a);
     }
     SECTION("conv") {
         BmpVector C = calculateCk(67);
@@ -754,8 +787,10 @@ TEST_CASE("iffd") {
     }
     // x>0
     SECTION("right") {
-        const BmpReal j = calculateConstj();
-        std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
-        std::cout << "jConst = " << j << std::endl;
+        BmpVector coeff = calculateCRight(12);
+        setPreciseOutput();
+        filesys::writeFile("iffdRight.txt", coeff);
+        std::cout << -pi()*pi() / 12 << std::endl;
+        std::cout << -pi()*pi() / 24 << std::endl;
     }
 }

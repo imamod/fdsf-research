@@ -3,7 +3,7 @@
 
 TEST_CASE("calc-half-integer") {
     auto k = enter::index();
-    std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
+    setPreciseOutput();
     std::cout << "Calculate: " << std::endl
               << "¹0 : single value" << std::endl
               << "¹1 : range" << std::endl;

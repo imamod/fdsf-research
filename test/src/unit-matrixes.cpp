@@ -14,7 +14,7 @@ bool areMatrixEqual(const BmpMatrix& a, const BmpMatrix& b) {
 }
 
 TEST_CASE("Matrix") {
-    std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
+    setPreciseOutput();
     SECTION("inverse") {
         SECTION("m2x2") {
             BmpMatrix m2x2 = { { 3, 4 },{ 5, 7 } };

@@ -30,3 +30,8 @@ namespace print {
         std::cout << std::endl;
     }
 }
+
+/* Установить расширенный потоковый вывод на 16 знаков */
+void setPreciseOutput() {
+    std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
+}

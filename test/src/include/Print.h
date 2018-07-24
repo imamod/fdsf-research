@@ -10,3 +10,6 @@ namespace print {
     // Распечатать мапу (удобно для пар x, f(x))
     void map(const std::map<BmpReal, BmpReal>& m);
 }
+
+/* Установить расширенный потоковый вывод на 16 знаков */
+void setPreciseOutput();
