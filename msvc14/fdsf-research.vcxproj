@@ -380,6 +380,7 @@
     <ClInclude Include="..\src\include\Gamma.h" />
     <ClInclude Include="..\src\include\Grid.h" />
     <ClInclude Include="..\src\include\IntegralFDSF.h" />
+    <ClInclude Include="..\src\include\Logger.h" />
     <ClInclude Include="..\src\include\MatrixUtils.h" />
     <ClInclude Include="..\src\include\SeriesLogNDivSqrN.h" />
     <ClInclude Include="..\src\include\Tables.h" />
