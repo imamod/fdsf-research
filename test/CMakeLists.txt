@@ -22,6 +22,7 @@ endif()
 # Prepare "Catch" library for other executables
 # https://github.com/catchorg/Catch2/blob/master/docs/build-systems.md
 set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../3dparty)
+message(STATUS "CATCH_INCLUDE_DIR: " ${CATCH_INCLUDE_DIR})
 #add_library(Catch INTERFACE)
 #target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 
@@ -36,6 +37,9 @@ set(UTILS_SOURCES src/Common.cpp
                   src/Print.cpp)
 set(UTILS_FILES ${UTILS_SOURCES} ${UTILS_HEADERS})
 add_library(Utils STATIC ${UTILS_FILES})
+if (NOT MSVC)
+    set_target_properties(Utils PROPERTIES COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wno-deprecated -Wno-float-equal")
+endif()
 target_include_directories(Utils PRIVATE ${CATCH_INCLUDE_DIR})
 target_include_directories(Utils PUBLIC "../../boost_1_60_0")
 target_include_directories(Utils PRIVATE "../src/include")
@@ -50,7 +54,13 @@ endif ()
 #############################################################################
 
 set(FDSF_RESEARCH_LIB ${CMAKE_CURRENT_SOURCE_DIR}/../build/${CMAKE_GENERATOR_PLATFORM})
-set(UTILS_LIB ${CMAKE_CURRENT_SOURCE_DIR}/build/Debug)
+message(STATUS "FDSF_RESEARCH_LIB: " ${FDSF_RESEARCH_LIB})
+if (MCVC)
+    set(UTILS_LIB ${CMAKE_CURRENT_SOURCE_DIR}/build/Debug)
+else ()
+    set(UTILS_LIB ${CMAKE_CURRENT_SOURCE_DIR}/build)
+endif()
+message(STATUS "UTILS_LIB: " ${UTILS_LIB})
 
 file(GLOB projects "src/example-*.cpp"
                    "src/test-*.cpp"
@@ -62,28 +72,34 @@ foreach(project ${projects})
     link_directories(${FDSF_RESEARCH_LIB} ${UTILS_LIB})
 
     add_executable(${testcase} ${project})
-    set(CMAKE_CONFIGURATION_TYPES Debug Release DebugMP ReleaseMP)
-    set(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING
-        "Reset the configurations to what we need"
-        FORCE)
-    cmake_policy(SET CMP0043 NEW)
-    set_target_properties(${testcase} PROPERTIES
-        CXX_STANDARD 14
-        CXX_STANDARD_REQUIRED ON
-        COMPILE_DEFINITIONS "$<$<CXX_COMPILER_ID:MSVC>:_SCL_SECURE_NO_WARNINGS>"
-        COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:MSVC>:/EHsc;$<$<CONFIG:Release>:/Od>>"
-        COMPILE_DEFINITIONS_DEBUGMP "$<$<CXX_COMPILER_ID:MSVC>:HIGH_PRECISION>"
-        COMPILE_DEFINITIONS_RELEASEMP "$<$<CXX_COMPILER_ID:MSVC>:HIGH_PRECISION>"
-    )
+    add_dependencies(${testcase} Utils)
+    if (MSVC)
+        set(CMAKE_CONFIGURATION_TYPES Debug Release DebugMP ReleaseMP)
+        set(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING
+            "Reset the configurations to what we need"
+            FORCE)
+        cmake_policy(SET CMP0043 NEW)
+        set_target_properties(${testcase} PROPERTIES
+            CXX_STANDARD 14
+            CXX_STANDARD_REQUIRED ON
+            COMPILE_DEFINITIONS "$<$<CXX_COMPILER_ID:MSVC>:_SCL_SECURE_NO_WARNINGS>"
+            COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:MSVC>:/EHsc;$<$<CONFIG:Release>:/Od>>"
+            COMPILE_DEFINITIONS_DEBUGMP "$<$<CXX_COMPILER_ID:MSVC>:HIGH_PRECISION>"
+            COMPILE_DEFINITIONS_RELEASEMP "$<$<CXX_COMPILER_ID:MSVC>:HIGH_PRECISION>"
+        )
+    else()
+        set_target_properties(${testcase} PROPERTIES COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wno-deprecated -Wno-float-equal")
+    endif()
 
     target_compile_definitions(${testcase} PRIVATE CATCH_CONFIG_FAST_COMPILE)
     target_include_directories(${testcase} PRIVATE ${CATCH_INCLUDE_DIR})
     target_include_directories(${testcase} PRIVATE "src/include")
     target_include_directories(${testcase} PRIVATE "../src/include")
     target_include_directories(${testcase} PUBLIC "../../boost_1_60_0")
-    target_link_libraries(${testcase} fdsf-research.lib Utils.lib)
-
-    if(NOT MSVC)
-        set_target_properties(${testcase} PROPERTIES COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-float-equal")
+    if (MSVC)
+        target_link_libraries(${testcase} fdsf-research.lib Utils.lib)
+    else()
+        target_link_libraries(${testcase} Utils.a fdsf-research.a stdc++fs)
     endif()
+
 endforeach()
