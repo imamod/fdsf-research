@@ -22,20 +22,20 @@ class Logger {
 #endif
         }
 
-        // Записать в лог информацию
+        // Р—Р°РїРёСЃР°С‚СЊ РІ Р»РѕРі РёРЅС„РѕСЂРјР°С†РёСЋ
         void info(const std::string& text) {
             write("INFO", text);
         }
 
-        // Записать в лог сведения об ошибке
+        // Р—Р°РїРёСЃР°С‚СЊ РІ Р»РѕРі СЃРІРµРґРµРЅРёСЏ РѕР± РѕС€РёР±РєРµ
         void error(const std::string& text) {
             write("ERROR", text);
         }
 
     private:
-        // Текст
+        // РўРµРєСЃС‚
         std::string m_text;
-        // Файл
+        // Р¤Р°Р№Р»
         std::fstream m_file;
 
         void write(const std::string& tag, const std::string& text) {

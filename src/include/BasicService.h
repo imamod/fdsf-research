@@ -4,20 +4,20 @@
 #include <functional>
 
 namespace filesys {
-    // Считать вектор данных из файла
+    // РЎС‡РёС‚Р°С‚СЊ РІРµРєС‚РѕСЂ РґР°РЅРЅС‹С… РёР· С„Р°Р№Р»Р°
     BmpVector readFile(const std::string& filename);
-    // Записать данные в файл
+    // Р—Р°РїРёСЃР°С‚СЊ РґР°РЅРЅС‹Рµ РІ С„Р°Р№Р»
     void writeFile(const std::string& filename, const BmpVector& data);
-    // Создать папку
+    // РЎРѕР·РґР°С‚СЊ РїР°РїРєСѓ
     std::string createDirectory(BmpReal k, size_t n, const std::string& prefix = "");
 }
 
-// Сверхстепенная сходимость
+// РЎРІРµСЂС…СЃС‚РµРїРµРЅРЅР°СЏ СЃС…РѕРґРёРјРѕСЃС‚СЊ
 namespace epc {
     BmpReal Richardson(std::function<BmpReal(const BmpReal&)> f, BmpReal a, BmpReal b, bool countEvery = false);
 }
 
 namespace fdsf {
-    // Метод Ньютона
+    // РњРµС‚РѕРґ РќСЊСЋС‚РѕРЅР°
     BmpReal NewtonsMethod(BmpReal x, BmpReal k);
 }

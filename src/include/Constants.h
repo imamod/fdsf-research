@@ -3,7 +3,7 @@
 #include "BasicService.h"
 #include <array>
 
-// Некоторые числовые константы
+// РќРµРєРѕС‚РѕСЂС‹Рµ С‡РёСЃР»РѕРІС‹Рµ РєРѕРЅСЃС‚Р°РЅС‚С‹
 const BmpReal _1 = BmpReal(1);
 const BmpReal _2 = BmpReal(2);
 const BmpReal _5 = BmpReal(5);
@@ -16,28 +16,28 @@ const BmpReal _174611 = BmpReal(174611);
 const BmpReal _854513 = BmpReal(854513);
 const BmpReal _236364091 = BmpReal(236364091);
 
-// Значение pi
+// Р—РЅР°С‡РµРЅРёРµ pi
 inline const BmpReal pi() {
     return boost::math::constants::pi<BmpReal>();
 }
 
-// Константа Эйлера
+// РљРѕРЅСЃС‚Р°РЅС‚Р° Р­Р№Р»РµСЂР°
 inline const BmpReal eilerConst() {
     return 0.5772156649015325;
 }
 
-// Константа j
+// РљРѕРЅСЃС‚Р°РЅС‚Р° j
 inline const BmpReal j() {
     return 0.76740941382814898;
 }
 
-// Кузьмина дисер чек
+// РљСѓР·СЊРјРёРЅР° РґРёСЃРµСЂ С‡РµРє
 inline const BmpReal jFromKuzmina() {
     return 0.95024075;
 }
 
-// Числа Бернулли
+// Р§РёСЃР»Р° Р‘РµСЂРЅСѓР»Р»Рё
 BmpReal bernulli(int n);
 
-// Дзета-функция
+// Р”Р·РµС‚Р°-С„СѓРЅРєС†РёСЏ
 BmpReal dzetaFunction(int n);

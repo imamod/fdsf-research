@@ -1,11 +1,11 @@
 #include "Constants.h"
 
-// Нечетное число
+// РќРµС‡РµС‚РЅРѕРµ С‡РёСЃР»Рѕ
 bool isOdd(int n) {
     return n % 2 != 0;
 }
 
-// Числа Бернулли
+// Р§РёСЃР»Р° Р‘РµСЂРЅСѓР»Р»Рё
 BmpReal bernulli(int n) {
     if (isOdd(n)) {
         return 0;
@@ -30,7 +30,7 @@ BmpReal bernulli(int n) {
     return BERNULLI.at(n / 2 - 1);
 }
 
-// Дзета-функция / pi^2n
+// Р”Р·РµС‚Р°-С„СѓРЅРєС†РёСЏ / pi^2n
 BmpReal dzetaFunction(int n) {
     if (isOdd(n)) {
         return 0;

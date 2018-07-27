@@ -2,5 +2,5 @@
 
 #include "BasicTypes.h"
 
-// Вычисление Г-функции
+// Р’С‹С‡РёСЃР»РµРЅРёРµ Р“-С„СѓРЅРєС†РёРё
 BmpReal factorial(BmpReal k);

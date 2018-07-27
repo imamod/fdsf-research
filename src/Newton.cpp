@@ -3,7 +3,7 @@
 namespace fdsf {
     using Function = std::function<BmpReal(BmpReal x, BmpReal a, BmpReal k)>;
 
-    // Целевая функция
+    // Р¦РµР»РµРІР°СЏ С„СѓРЅРєС†РёСЏ
     static BmpReal F(BmpReal x, BmpReal a, BmpReal k) {
         //return a - 3 * (x + log((8 * a + 9.0) / (8 * a - 9.0)));
         BmpReal f = (k == -3.0 / 2) ? BmpReal(a - (x + log((a + 3.0 / 8) / (a - 3.0 / 8))))
@@ -11,7 +11,7 @@ namespace fdsf {
         return f;
     }
 
-    //Первая производная
+    //РџРµСЂРІР°СЏ РїСЂРѕРёР·РІРѕРґРЅР°СЏ
     static BmpReal FirstDerivative(BmpReal x, BmpReal a, BmpReal k) {
         //return 1 + 432.0 / (64 * a * a - 81);
         BmpReal df = (k == -3.0 / 2) ? BmpReal(1 + 3.0 / (4 * a * a - 9.0 / 16))
@@ -19,7 +19,7 @@ namespace fdsf {
         return df;
     }
 
-    // Метод Ньютона 
+    // РњРµС‚РѕРґ РќСЊСЋС‚РѕРЅР° 
     static BmpReal NewtonInternal(Function f, Function df,
                                   BmpReal x, BmpReal a0,
                                   BmpReal k, BmpReal eps) {
@@ -32,7 +32,7 @@ namespace fdsf {
     }
 
     BmpReal NewtonsMethod(BmpReal x, BmpReal k) {
-        BmpReal a0 = (k == -3.0 / 2) ? 1.13 : BmpReal(3*(k + 7.0 / 8)); // Начальное приближение
+        BmpReal a0 = (k == -3.0 / 2) ? 1.13 : BmpReal(3*(k + 7.0 / 8)); // РќР°С‡Р°Р»СЊРЅРѕРµ РїСЂРёР±Р»РёР¶РµРЅРёРµ
         return NewtonInternal(F, FirstDerivative, x, a0, k, 0.001);
     }
 

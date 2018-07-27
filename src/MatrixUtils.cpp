@@ -1,4 +1,4 @@
-﻿#include "MatrixUtils.h"
+#include "MatrixUtils.h"
 #include "BasicService.h"
 #include "Constants.h"
 #include <math.h>
@@ -43,7 +43,7 @@ BmpVector approximateFunctionValueIntegerIndex(const BmpVector& a, const BmpVect
 */
 BmpVector relativeApproximationError(const BmpVector& precisionF, const BmpVector& approximateF) {
     if (precisionF.size() != approximateF.size()) {
-        throw std::exception("Vectors must be the same length.");
+        throw std::domain_error("Vectors must be the same length.");
     }
     const size_t n = precisionF.size();
     BmpVector delta(n, 0);

@@ -6,7 +6,7 @@
 
 
 namespace filesys {
-    // Считать вектор данных из файла
+    // РЎС‡РёС‚Р°С‚СЊ РІРµРєС‚РѕСЂ РґР°РЅРЅС‹С… РёР· С„Р°Р№Р»Р°
     BmpVector readFile(const std::string& filename) {
         std::ifstream file(filename, std::ios::binary);
         file.precision(std::numeric_limits<BmpReal>::max_digits10);
@@ -23,7 +23,7 @@ namespace filesys {
         return data;
     }
 
-    // Вывод значений в файл
+    // Р’С‹РІРѕРґ Р·РЅР°С‡РµРЅРёР№ РІ С„Р°Р№Р»
     void writeFile(const std::string& filename, const BmpVector& data) {
         std::ofstream file(filename);
         file.precision(std::numeric_limits<BmpReal>::max_digits10);

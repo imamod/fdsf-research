@@ -7,17 +7,17 @@ SeriesLogNDivSqrN::SeriesLogNDivSqrN(size_t optimal_N)
     : m_N(optimal_N)
     , m_seriesSum(sum()) {}
 
-// Получение значения суммы ряда
+// РџРѕР»СѓС‡РµРЅРёРµ Р·РЅР°С‡РµРЅРёСЏ СЃСѓРјРјС‹ СЂСЏРґР°
 BmpReal SeriesLogNDivSqrN::get() const {
     return m_seriesSum;
 }
 
-// Число членов, по которому обрезают сумму
+// Р§РёСЃР»Рѕ С‡Р»РµРЅРѕРІ, РїРѕ РєРѕС‚РѕСЂРѕРјСѓ РѕР±СЂРµР·Р°СЋС‚ СЃСѓРјРјСѓ
 size_t SeriesLogNDivSqrN::upperBound() const {
     return m_N;
 }
 
-// Расчет суммы 2<=n<=N-1
+// Р Р°СЃС‡РµС‚ СЃСѓРјРјС‹ 2<=n<=N-1
 BmpReal SeriesLogNDivSqrN::limitedSum() const {
     size_t N = upperBound();
     BmpReal sumValue = log(N) / (2 * pow(N, 2));
@@ -31,24 +31,24 @@ BmpReal SeriesLogNDivSqrN::limitedSum() const {
 *                                  PRIVATE
 *******************************************************************************/
 
-// Интегральная часть
+// РРЅС‚РµРіСЂР°Р»СЊРЅР°СЏ С‡Р°СЃС‚СЊ
 BmpReal SeriesLogNDivSqrN::integralPart() const {
     size_t N = upperBound();
     return (1 + log(N)) / N;
 };
 
-// Вычислить сумму ряда
+// Р’С‹С‡РёСЃР»РёС‚СЊ СЃСѓРјРјСѓ СЂСЏРґР°
 BmpReal SeriesLogNDivSqrN::sum() const {
     return limitedSum() + integralPart() + first() + second();
 }
 
-// Расчет первой поправки
+// Р Р°СЃС‡РµС‚ РїРµСЂРІРѕР№ РїРѕРїСЂР°РІРєРё
 BmpReal SeriesLogNDivSqrN::first() const {
     size_t N = upperBound();
     return (2 * log(N) - 1) / (12 * pow(N, 3));
 }
 
-// Расчет второй поправки
+// Р Р°СЃС‡РµС‚ РІС‚РѕСЂРѕР№ РїРѕРїСЂР°РІРєРё
 BmpReal SeriesLogNDivSqrN::second() const {
     size_t N = upperBound();
     return (26 - 24 * log(N)) / (720.0 * pow(N, 5));

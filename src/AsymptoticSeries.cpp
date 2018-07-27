@@ -5,7 +5,7 @@ AsymptoticSeries::AsymptoticSeries(BmpReal k, BmpReal x)
     : m_seriesSum(sum(k, x)) {
 }
 
-// ПОлучить вычисленное значение суммы для конкретного х
+// РџРћР»СѓС‡РёС‚СЊ РІС‹С‡РёСЃР»РµРЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ СЃСѓРјРјС‹ РґР»СЏ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ С…
 BmpReal AsymptoticSeries::get() const {
     return m_seriesSum;
 }
@@ -14,13 +14,13 @@ BmpReal AsymptoticSeries::get() const {
  *                                  PRIVATE
  ******************************************************************************/
 
-// Рассчитать коэффициенты С
+// Р Р°СЃСЃС‡РёС‚Р°С‚СЊ РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ РЎ
 BmpVector AsymptoticSeries::getC(BmpReal k, BmpReal x) {
     BmpVector coefficients;
     BmpReal prod = 1;
     BmpReal kPairsProd = k + 1;
     for (size_t j = 0; j < m_A.size(); ++j) {
-        // По асимптотической формуле парное добавление множителей, поэтому далее отнимаем 2
+        // РџРѕ Р°СЃРёРјРїС‚РѕС‚РёС‡РµСЃРєРѕР№ С„РѕСЂРјСѓР»Рµ РїР°СЂРЅРѕРµ РґРѕР±Р°РІР»РµРЅРёРµ РјРЅРѕР¶РёС‚РµР»РµР№, РїРѕСЌС‚РѕРјСѓ РґР°Р»РµРµ РѕС‚РЅРёРјР°РµРј 2
         prod *= kPairsProd*(kPairsProd - 1);
         kPairsProd -= 2;
         coefficients.push_back(2 * (1.0 - pow(2, 1.0 - 2 * (j + 1))) * m_A.at(j) * prod);
@@ -28,7 +28,7 @@ BmpVector AsymptoticSeries::getC(BmpReal k, BmpReal x) {
     return coefficients;
 }
 
-// Вычислить сумму асимптотического ряда
+// Р’С‹С‡РёСЃР»РёС‚СЊ СЃСѓРјРјСѓ Р°СЃРёРјРїС‚РѕС‚РёС‡РµСЃРєРѕРіРѕ СЂСЏРґР°
 BmpReal AsymptoticSeries::sum(BmpReal k, BmpReal x) {
     BmpVector C = getC(k, x);
     BmpReal seriesSum(1);

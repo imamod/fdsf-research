@@ -17,14 +17,14 @@ namespace fdsf {
         BmpReal y = log(1 + exp(X));
         BmpReal T = X - log(epsilon), I_approximate;
         while (true) {
-            // 3-х итераций вполне достаточно для определения Tmax
+            // 3-С… РёС‚РµСЂР°С†РёР№ РІРїРѕР»РЅРµ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ Tmax
             if (i > 3) {
                 break;
             }
 
             I_approximate = !k ? y : factorial(k)*y*pow(1 + a1*y, k);
 
-            // Итерационное вычисление Tmax
+            // РС‚РµСЂР°С†РёРѕРЅРЅРѕРµ РІС‹С‡РёСЃР»РµРЅРёРµ Tmax
             T = X - log(epsilon) + log(pow(T + 1, k) / I_approximate);
             i++;
         }
@@ -32,7 +32,7 @@ namespace fdsf {
         return sqrt(T);
     }
 
-    // Новая схема Горнера для прецизионного вычисления y
+    // РќРѕРІР°СЏ СЃС…РµРјР° Р“РѕСЂРЅРµСЂР° РґР»СЏ РїСЂРµС†РёР·РёРѕРЅРЅРѕРіРѕ РІС‹С‡РёСЃР»РµРЅРёСЏ y
     static BmpReal GornerSchemeForPrecesionY(int N, BmpReal x) {
         //BmpReal alpha = x < epsilon ? exp(x) : exp(-x);
         const BmpReal alpha = exp(x);
@@ -53,13 +53,13 @@ namespace fdsf {
 #if 0
     BmpReal fermi_dirak_half_integer(BmpReal t, BmpReal x, BmpReal k)
     {
-        // для полуцелых
+        // РґР»СЏ РїРѕР»СѓС†РµР»С‹С…
         return 2 * pow(t, 2 * k + 1) / (1 + exp(t*t - x));
     }
 #endif
 
-    // Получение необходимого числа членов для схемы Горнера произвольной 
-    // заданной точности
+    // РџРѕР»СѓС‡РµРЅРёРµ РЅРµРѕР±С…РѕРґРёРјРѕРіРѕ С‡РёСЃР»Р° С‡Р»РµРЅРѕРІ РґР»СЏ СЃС…РµРјС‹ Р“РѕСЂРЅРµСЂР° РїСЂРѕРёР·РІРѕР»СЊРЅРѕР№ 
+    // Р·Р°РґР°РЅРЅРѕР№ С‚РѕС‡РЅРѕСЃС‚Рё
     static BmpReal get_N_for_Gorner(BmpReal x, BmpReal k) {
         return log(fdsf::epsilon) / x;
     }
@@ -79,7 +79,7 @@ namespace fdsf {
 
     BmpReal gauss_christoffel_method(BmpReal(*f)(BmpReal, BmpReal, BmpReal),
                                  BmpReal x, BmpReal T, BmpReal k, int N) {
-        // Определяем вспомогательные числа, чтобы не скатится до точности 16 знаков
+        // РћРїСЂРµРґРµР»СЏРµРј РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С‡РёСЃР»Р°, С‡С‚РѕР±С‹ РЅРµ СЃРєР°С‚РёС‚СЃСЏ РґРѕ С‚РѕС‡РЅРѕСЃС‚Рё 16 Р·РЅР°РєРѕРІ
         const BmpReal half = BmpReal(1.0) / 2;
         const BmpReal num35 = BmpReal(35);
         const BmpReal num63 = BmpReal(63);
@@ -87,7 +87,7 @@ namespace fdsf {
         const BmpReal num322 = BmpReal(322);
         const BmpReal num1800 = BmpReal(1800);
 
-        // Веса формул Гаусса-Кристоффеля с N=5
+        // Р’РµСЃР° С„РѕСЂРјСѓР» Р“Р°СѓСЃСЃР°-РљСЂРёСЃС‚РѕС„С„РµР»СЏ СЃ N=5
         const BmpReal gamma_1_5 = (num322 - BmpReal(13)*sqrt(num70)) / num1800;
         const BmpReal gamma_2_4 = (num322 + BmpReal(13)*sqrt(num70)) / num1800;
         const BmpReal gamma_3 = BmpReal(64) / BmpReal(225);
@@ -96,7 +96,7 @@ namespace fdsf {
         BmpReal U = 0;
 
         for (int n = N - 1; n >= 0; n--) {
-            // Расчет дополнительных узлов
+            // Р Р°СЃС‡РµС‚ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹С… СѓР·Р»РѕРІ
             t[0] = T * (n + half - half * sqrt((num35 + 2 * sqrt(num70)) / num63)) / N;
             t[1] = T * (n + half - half * sqrt((num35 - 2 * sqrt(num70)) / num63)) / N;
             t[2] = T * (n + half) / N;
@@ -114,7 +114,7 @@ namespace fdsf {
         return value - floor(value) > 0;
     }
 
-    // Сгущение по Ричардсону по сеточно-Гауссову методу
+    // РЎРіСѓС‰РµРЅРёРµ РїРѕ Р РёС‡Р°СЂРґСЃРѕРЅСѓ РїРѕ СЃРµС‚РѕС‡РЅРѕ-Р“Р°СѓСЃСЃРѕРІСѓ РјРµС‚РѕРґСѓ
     BmpReal richardson_method(BmpReal x, BmpReal k, BmpReal t) {
         int N = 2;
         BmpReal stop_criteria;
@@ -134,7 +134,7 @@ namespace fdsf {
         do {
             if (isHalfInteger) {
                 I_2n = euler_maclaurin_method(x, k, 2 * N);
-                //I_2n += I_n / 2; // для трапеции если сетки по удвоенной
+                //I_2n += I_n / 2; // РґР»СЏ С‚СЂР°РїРµС†РёРё РµСЃР»Рё СЃРµС‚РєРё РїРѕ СѓРґРІРѕРµРЅРЅРѕР№
             } else {
                 I_2n = gauss_christoffel_method(&fermi_dirak_integer, x, t, k, 2 * N);
             }
