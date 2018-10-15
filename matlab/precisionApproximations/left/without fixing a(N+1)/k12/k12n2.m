@@ -215,7 +215,10 @@ for j = 1:length(Y)
     delta_additional(j) = F(j)/I(j)-1;
 end
 
-disp('lg(dc):');disp(log10(max(abs(delta_additional))));
+disp('max(lg(dc)):');disp(log10(max(abs(delta_additional))));
+
+disp('----------------');
+disp(log10(max(abs(delta_additional)))-log10(min(abs(delta_additional))));
 
 grid on, hold on
 xlabel('y'); %ylabel('d*10^1^0');

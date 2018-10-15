@@ -1,5 +1,10 @@
 #include "BasicService.h"
 
+class Newton {
+
+};
+
+
 namespace fdsf {
     using Function = std::function<BmpReal(BmpReal x, BmpReal a, BmpReal k)>;
 

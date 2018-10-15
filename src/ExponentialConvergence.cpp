@@ -53,7 +53,7 @@ namespace epc {
             // std::cout << "N = " << N << ": I = " << I << std::endl;
             //std::cout << "N = " << N << ": d = " << abs(stop_criteria) << std::endl;
             fout << abs(stop_criteria) << std::endl;
-        } while (abs(stop_criteria) > fdsf::epsilon);
+        } while (abs(stop_criteria) > 1e-11);
 
         fout.close();
         return I;

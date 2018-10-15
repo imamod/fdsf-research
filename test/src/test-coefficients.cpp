@@ -2,6 +2,7 @@
 #include "SeriesLogNDivSqrN.h"
 #include "Gamma.h"
 #include "AsymptoticSeries.h"
+#include "Logger.h"
 
 /**
  * всюду сходящийся ряд, расчет b_n_k
@@ -35,6 +36,7 @@ namespace {
             P0 *= 2;
             stopCriteria = abs(I2n - In);
         } while (stopCriteria > 1e-14);
+        std::cout << P0 << std::endl;
         return I2n / factorial(k);
     }
 
@@ -680,6 +682,7 @@ TEST_CASE("k4") {
     BmpVector bk4 = calculateBk(BK3);
     filesys::writeFile("bk4.txt", bk4);
 }
+
 /**
  * Интегральная ФФД
  */
@@ -737,18 +740,23 @@ namespace {
 
     // Вычисление Ck x-> +inf
     BmpVector calculateCRight(int N) {
+        Logger log("calculateCRight");
+        log.info(std::to_string(-pi()*pi() / 24));
         BmpReal k(-_1 / 2);
-        BmpReal kPairsProd = (k + 1)*k;
-        BmpVector result, A = { 1, -pi()*pi() / 24 };
-        for (int q = 2; q < N; ++q) {
+        BmpReal prod = 1, kPairsProd = (k + 1);
+        BmpVector result = { 1 }, A = { 1 };//, -pi()*pi() / 24 };
+        for (int q = 1; q <= N; ++q) {
             BmpReal mul = 2 * (_1 - pow(2, _1 - 2 * q));
-            kPairsProd *= (k - q)*(k - q - 1);
-            A.push_back(mul*dzetaFunction(2*q)*kPairsProd);
+            prod *= kPairsProd*(kPairsProd - 1);
+            kPairsProd -= 2;
+            A.push_back(mul*dzetaFunction(2*q)*prod);
         }
         print::vector(A);
-        BmpReal sum = 0;
-        for (int q = 0; q < N; ++q) {
-            sum += A.at(q)*A.at(N - q - 1);
+        for (int n = 1; n <= N; ++n) {
+            BmpReal sum = 0;
+            for (int q = 0; q <= n; ++q) {
+                sum += A.at(q)*A.at(n - q);
+            }
             result.push_back(sum);
         }
         return result;
@@ -790,7 +798,5 @@ TEST_CASE("iffd") {
         BmpVector coeff = calculateCRight(12);
         setPreciseOutput();
         filesys::writeFile("iffdRight.txt", coeff);
-        std::cout << -pi()*pi() / 12 << std::endl;
-        std::cout << -pi()*pi() / 24 << std::endl;
     }
 }

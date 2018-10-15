@@ -1,4 +1,5 @@
 #include "Constants.h"
+#include "Logger.h"
 
 // Нечетное число
 bool isOdd(int n) {
@@ -7,11 +8,13 @@ bool isOdd(int n) {
 
 // Числа Бернулли
 BmpReal bernulli(int n) {
+    Logger log("bernulli");
     if (isOdd(n)) {
         return 0;
     }
     if (n > 24) {
-        throw std::domain_error("Too large");
+        log.error(std::domain_error("n is too large").what());
+        throw std::domain_error("n is too large");
     }
     const std::array<BmpReal, 12> BERNULLI = {
         _1 / 6,
@@ -30,13 +33,16 @@ BmpReal bernulli(int n) {
     return BERNULLI.at(n / 2 - 1);
 }
 
-// Дзета-функция / pi^2n
+// Дзета-функция 
 BmpReal dzetaFunction(int n) {
+    Logger log("dzetaFunction: n = " + std::to_string(n));
     if (isOdd(n)) {
+        log.info("n is odd");
         return 0;
     }
     if (n > 24) {
-        throw std::domain_error("Too large");
+        log.error(std::domain_error("n is too large").what());
+        throw std::domain_error("n is too large");
     }
     const std::array<BmpReal, 12> DZETA = {
         _1 / 6,
