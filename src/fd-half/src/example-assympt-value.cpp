@@ -1,104 +1,97 @@
 #include "Common.h"
 #include "Gamma.h"
-#include "AsymptoticSeries.h"
-#include "FileSys.h"
+#include "Constants.h"
 #include <iostream>
 
 namespace {
 
-    BmpReal get_assympt_value(BmpReal x, BmpReal k) {
-        BmpVector I_minus, I, X = { x };
-        AsymptoticSeries series(k, x);
-        std::cout << "new " << series.get() << std::endl;
-        I_minus.push_back(fdsf::richardson_method(-x, k));
-        I.push_back(I_minus[0] + series.get());
-        //return I[0];
-        return series.get();
-    }
+    // Cтруктура хранения x_min и N_max (см. препринт2, табл 4)
+    struct Limits {
+        BmpReal x_min;
+        int N_max;
+    };
 
-    BmpReal get_series_value(BmpReal x, BmpReal k) {
-        BmpReal series_value = 0;
-        auto N = log(fdsf::epsilon) / (x);
-
-        for (size_t n = 1; n < N; ++n) {
-            series_value += pow(-1.0, n - 1) * exp(n*x) / pow(n, k + 1);
-            //std::cout << series_value << std::endl;
+    // Получение x_min и N_max для конкретного индекса
+    Limits limits(BmpReal k) {
+        if (k == -1.5) {
+            return { 44, 11 };
+        } else if (k == -0.5) {
+            return { 39, 10 };
+        } else if (k == 0.5) {
+            return { 35, 10 };
+        } else if (k == 1.5) {
+            return{ 33, 10 };
+        } else if (k == 2.5) {
+            return { 30, 10 };
+        } else if (k == 3.5) {
+            return { 29, 10 };
         }
-
-        return factorial(k)*series_value;
+        throw std::invalid_argument("Unsuppported index");
     }
-}
 
-TEST_CASE("calculate_asimpt_value") {
-    BmpVector X, Y;
-    const BmpReal k = BmpReal(1.0 / 2.0);
-    BmpReal h = 0.1;
-    BmpVector I, I_minus;
-
-    //проверка на идиота при х = 30
-    X.push_back(30.0);
-    //X.push_back(log(exp(Y[0]) - 1));
-    AsymptoticSeries series(k, X.front());
-    I_minus.push_back(fdsf::richardson_method(-X[0], k));
-    I.push_back(I_minus[0] + series.get());
-    I.push_back(series.get());
-#if 0
-    Y.push_back(3.0);
-    X.push_back(log(exp(Y[0]) - 1));
-    size_t i = 1;
-    while (true)
-    {
-        Y.push_back(Y[0] + i*h);
-        X.push_back(log(exp(Y[i]) - 1));
-
-        if (Y[i] > 30.0) {
-            break;
+    // TODO сделать тест по вычислению коэффициентов в отдельном test-файле
+    // Перенести этот кодв AsymptoticSeries класс удалить
+    // Получает коэффициенты асимптотического ряда для конкретного k
+    BmpVector coefficents(BmpReal k) {
+        BmpVector A;
+        // TODO: сделать гибко, через limits
+        constexpr int N = 10;
+        for (int n = 1; n <= N; ++n) {
+            const BmpReal constMember = 2.0 - pow(2, 2 - 2*n);
+            BmpReal prod = 1;
+            for (int p = 1; p <= 2 * n; ++p) {
+                prod *= k + 2 - p;
+            }
+            BmpReal result = constMember*dzetaFunction(2 * n)*prod;
+            A.push_back(result);
         }
-
-        i++;
+        return A;
     }
 
-    for (size_t i = 0; i < X.size(); i++) {
-        AsymptoticSeries series(k, X.at(i));
-        I_minus.push_back(fdsf::richardson_method(-X[i], k));
-        I.push_back(I_minus[i] + series.get(i));
+    // Вычислить значение ФД для x >= x_min
+    // Схема Горнера для асимптотического ряда (см. формулу (32) препринт 2)
+    BmpReal calculate(BmpReal k, BmpReal x) {
+        // Получаем коэффициенты для конкретного k
+        BmpVector A = coefficents(k);
+        // Получаем предельные значения для каждого k
+        Limits data = limits(k);
+        BmpReal x_2_m1 = 1.0 / (x*x);
+        BmpReal sum = A.back() * x_2_m1;
+        for (int n = data.N_max - 2; n > -1; --n) {
+            sum = (A.at(n) + sum) * x_2_m1;
+        }
+        // Главный член асимптотики
+        BmpReal mainPart = pow(x, k + 1) / (k + 1);
+        return mainPart * (sum + 1);
     }
-#endif
-    //printResultToFile(I, k, "Asimpt_check");
 }
 
-TEST_CASE("check_negative_quadrature_values") {
-    // TODO: setPreciseOutput();
-    const BmpReal k = BmpReal(1.0 / 2.0);
-    BmpReal x = BmpReal(-0.1), I, I_precise;
-    I = fdsf::richardson_method(x, k);
-    I_precise = get_series_value(x, k);
-    filesys::writeFile("../../test/test.txt", { I, I_precise });
-    // TODO: добавить точность отдельно для double и mp
-    REQUIRE(abs(I - I_precise) < 1e-17);
+TEST_CASE("calculate") {
+    setPreciseOutput();
+    SECTION("m12") {
+        INFO("Вычисление значения функции ФД индекса k = -1/2 при x >= x_min");
+        BmpReal I_x_min = calculate(-0.5, 39);
+        std::cout << "k = -0.5 I(39) = " << I_x_min << std::endl;
+    }
+    SECTION("12") {
+        INFO("Вычисление значения функции ФД индекса k = 1/2 при x >= x_min");
+        BmpReal I_x_min = calculate(0.5, 35);
+        std::cout << "k = 0.5 I(35) = " << I_x_min << std::endl;
+    }
+    SECTION("32") {
+        INFO("Вычисление значения функции ФД индекса k = 3/2 при x >= x_min");
+        BmpReal I_x_min = calculate(1.5, 33);
+        std::cout << "k = 1.5 I(33) = " << I_x_min << std::endl;
+    }
+    SECTION("52") {
+        INFO("Вычисление значения функции ФД индекса k = 5/2 при x >= x_min");
+        BmpReal I_x_min = calculate(2.5, 30);
+        std::cout << "k = 2.5 I(30) = " << I_x_min << std::endl;
+    }
+    SECTION("72") {
+        INFO("Вычисление значения функции ФД индекса k = 7/2 при x >= x_min");
+        BmpReal I_x_min = calculate(3.5, 29);
+        std::cout << "k = 3.5 I(29) = " << I_x_min << std::endl;
+    }
 }
 
-TEST_CASE("comp_kostya_and_precise") {
-        const BmpReal k = BmpReal(1.0 / 2.0);
-        BmpReal x = BmpReal(-0.1), I, I_kostya, I_precise;
-#if 0
-        I = fdsf::richardson_method(x, k);
-        I_kostya = fdsf::fd_half(x);
-        I_precise = get_series_value(x, k);
-        std::cout << "x = -0.1" << std::endl;
-        std::cout << "I_quadrature: " << I << std::endl;
-        std::cout << "I_kostya: " << I_kostya << std::endl;
-        std::cout << "I_precise: " << I_precise << std::endl;
-        std::cout << "delta = " << I / I_precise - 1 << std::endl;
-#endif
-
-        x = 30.0;// +10E-8;
-        std::cout << "x = " << x << std::endl;
-        I = fdsf::richardson_method(x, k);
-        //I_kostya = fdsf::fd_half(x);
-        I_precise = get_assympt_value(x, k);
-        std::cout << "I_quadrature: " << I << std::endl;
-        //std::cout << "I_kostya: " << I_kostya << std::endl;
-        std::cout << "I_precise: " << I_precise << std::endl;
-        std::cout << "delta = " << I / I_precise - 1 << std::endl;
-}
