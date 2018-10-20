@@ -1,40 +1,73 @@
 #include "AsymptoticSeries.h"
+#include "Constants.h"
+
 #include <iostream>
 
-AsymptoticSeries::AsymptoticSeries(BmpReal k, BmpReal x)
-    : m_seriesSum(sum(k, x)) {
-}
+namespace asympt_series {
 
-// ПОлучить вычисленное значение суммы для конкретного х
-BmpReal AsymptoticSeries::get() const {
-    return m_seriesSum;
-}
+    // Cтруктура хранения x_min и N_max (см. препринт2, табл 4)
+    struct Limits {
+        BmpReal x_min;
+        int N_max;
+    };
 
-/*******************************************************************************
- *                                  PRIVATE
- ******************************************************************************/
-
-// Рассчитать коэффициенты С
-BmpVector AsymptoticSeries::getC(BmpReal k, BmpReal x) {
-    BmpVector coefficients;
-    BmpReal prod = 1;
-    BmpReal kPairsProd = k + 1;
-    for (size_t j = 0; j < m_A.size(); ++j) {
-        // По асимптотической формуле парное добавление множителей, поэтому далее отнимаем 2
-        prod *= kPairsProd*(kPairsProd - 1);
-        kPairsProd -= 2;
-        coefficients.push_back(2 * (1.0 - pow(2, 1.0 - 2 * (j + 1))) * m_A.at(j) * prod);
+    // Получение x_min и N_max для конкретного индекса
+    Limits limits(BmpReal k) {
+        if (k == -1.5) {
+            return{ 44, 11 };
+        } else if (k == -0.5) {
+            return{ 39, 10 };
+        } else if (k == 0.5) {
+            return{ 35, 10 };
+        } else if (k == 1.5) {
+            return{ 33, 10 };
+        } else if (k == 2.5) {
+            return{ 30, 10 };
+        } else if (k == 3.5) {
+            return{ 29, 10 };
+        }
+        throw std::invalid_argument("Unsuppported index");
     }
-    return coefficients;
-}
 
-// Вычислить сумму асимптотического ряда
-BmpReal AsymptoticSeries::sum(BmpReal k, BmpReal x) {
-    BmpVector C = getC(k, x);
-    BmpReal seriesSum(1);
-    for (size_t j = 0; j < m_A.size(); ++j) {
-        seriesSum += pow(x, -2.0*(j + 1))*C.at(j);
+    // TODO сделать тест по вычислению коэффициентов в отдельном test-файле
+    // Перенести этот кодв AsymptoticSeries класс удалить
+    // Получает коэффициенты асимптотического ряда для конкретного k
+    BmpVector coefficents(BmpReal k) {
+        BmpVector A;
+        // TODO: сделать гибко, через limits
+        //constexpr int N = 10;
+        constexpr int N = 12;
+
+        for (int n = 1; n <= N; ++n) {
+            const BmpReal constMember = 2.0 - pow(2, 2 - 2 * n);
+            BmpReal prod = 1;
+            for (int p = 1; p <= 2 * n; ++p) {
+                prod *= k + 2 - p;
+            }
+            BmpReal result = constMember*dzetaFunction(2 * n)*prod;
+            A.push_back(result);
+        }
+        return A;
     }
-    seriesSum *= pow(x, k + 1) / (k + 1);
-    return seriesSum;
+
+    // Вычислить значение ФД для x >= x_min
+    // Схема Горнера для асимптотического ряда (см. формулу (32) препринт 2)
+    BmpReal calculate(BmpReal k, BmpReal x) {
+        // Получаем коэффициенты для конкретного k
+        BmpVector A = coefficents(k);
+        // Получаем предельные значения для каждого k
+        Limits data = limits(k);
+        BmpReal x_2_m1 = 1.0 / (x*x);
+        BmpReal sum = A.back() * x_2_m1;
+        // TODO: когда поймем, какое N_max, использовать его
+        for (int n = A.size() - 2; n > -1; --n) {
+            sum = (A.at(n) + sum) * x_2_m1;
+            if (n > 3) {
+                std::cout << "A(" << n + 2 << ")/A(" << n + 1 << ") = " << (A.at(n + 1) / A.at(n))*x_2_m1 << std::endl;
+            }
+        }
+        // Главный член асимптотики
+        BmpReal mainPart = pow(x, k + 1) / (k + 1);
+        return mainPart * (sum + 1);
+    }
 }
