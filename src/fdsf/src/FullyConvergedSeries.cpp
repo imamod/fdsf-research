@@ -151,15 +151,17 @@ namespace fcs {
     }
 
     // Вычислить значение ФД для x <= 0
+    // Схема Горнера для всюду сходящегося ряда (см. формулу (7) препринт)
     BmpReal calculate(BmpReal k, BmpReal x) {
         BmpVector b = coefficientsByIndex(k);
-        BmpReal denom = 1 + 2 * exp(-x);
-        BmpReal sum = 0;
+        BmpReal g = pow(1 + 2 * exp(-x), -1);
         // Для double-точности достаточно 36 коэффициентов (см препринт 1)
-        constexpr size_t N = 36;
-        for (size_t n = 0; n < N; ++n) {
-            sum += b.at(n) / pow(denom, n + 1);
+        constexpr int N = 36;
+        BmpReal sum = g*b.at(N - 1);
+        for (int n = N - 2; n > -1; --n) {
+            sum = g*(b.at(n) + sum);
         }
         return 2 * factorial(k) * sum;
     }
+
 }

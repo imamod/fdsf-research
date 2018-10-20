@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "json.hpp"
+#include "FileSys.h"
 
 #include <fstream>
 #include <iostream>
@@ -102,7 +103,7 @@ namespace {
         return object;
     }
 
-    void calculte(json& result, double k, double x_star) {
+    void calculate(json& result, double k, double x_star) {
         std::ofstream f(std::to_string(k));
         json values = json::array();
         for (double x = 0.0; x < x_star + 1; ++x) {
@@ -117,35 +118,36 @@ namespace {
 
 TEST_CASE("half") {
     json result = json::object();
+   // TODO: переработать функцию filesys::createDirectory("quadratures");
     // TODO: setPreciseOutput();
     SECTION("m12") {
         double k = -0.5;
         double x_star = 39;
-        calculte(result, k, x_star);
+        calculate(result, k, x_star);
         writeFile("values_m12.json", result);
     }
     SECTION("12") {
         double k = 0.5;
         double x_star = 35;
-        calculte(result, k, x_star);
+        calculate(result, k, x_star);
         writeFile("values_12.json", result);
     }
     SECTION("32") {
         double k = 1.5;
         double x_star = 33;
-        calculte(result, k, x_star);
+        calculate(result, k, x_star);
         writeFile("values_32.json", result);
     }
     SECTION("52") {
         double k = 2.5;
         double x_star = 30;
-        calculte(result, k, x_star);
+        calculate(result, k, x_star);
         writeFile("values_52.json", result);
     }
     SECTION("72") {
         double k = 3.5;
         double x_star = 29;
-        calculte(result, k, x_star);
+        calculate(result, k, x_star);
         writeFile("values_72.json", result);
     }
 }
