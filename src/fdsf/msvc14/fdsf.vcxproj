@@ -362,6 +362,7 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\FDSFInteger.cpp" />
+    <ClCompile Include="..\src\FullyConvergedSeries.cpp" />
     <ClCompile Include="..\src\Gamma.cpp" />
     <ClCompile Include="..\src\Grid.cpp" />
     <ClCompile Include="..\src\IntegralFDSF.cpp" />
@@ -376,6 +377,7 @@
     <ClInclude Include="..\src\include\BasicTypes.h" />
     <ClInclude Include="..\src\include\Constants.h" />
     <ClInclude Include="..\src\include\Fdsf.h" />
+    <ClInclude Include="..\src\include\FullyConvergedSeries.h" />
     <ClInclude Include="..\src\include\Gamma.h" />
     <ClInclude Include="..\src\include\Grid.h" />
     <ClInclude Include="..\src\include\IntegralFDSF.h" />

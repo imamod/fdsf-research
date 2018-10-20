@@ -48,6 +48,9 @@
     <ClCompile Include="..\src\Utils.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\FullyConvergedSeries.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\MatrixUtils.h">
@@ -84,6 +87,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\include\Logger.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\FullyConvergedSeries.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
