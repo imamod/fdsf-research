@@ -138,14 +138,24 @@ namespace fcs {
     BmpVector coefficientsByIndex(BmpReal k) {
         if (k == -0.5) {
             return b_mhalf;
+        } else if (k == 0) {
+            return b_k0;
         } else if (k == 0.5) {
             return b_half;
+        } else if (k == 1) {
+            return b_k1;
         } else if (k == 1.5) {
             return b_3half;
+        } else if (k == 2) {
+            return b_k2;
         } else if (k == 2.5) {
             return b_5half;
+        } else if (k == 3) {
+            return b_k3;
         } else if (k == 3.5) {
             return b_7half;
+        } else if (k == 4) {
+            return b_k4;
         }
         throw std::invalid_argument("Unsuppported index");
     }
