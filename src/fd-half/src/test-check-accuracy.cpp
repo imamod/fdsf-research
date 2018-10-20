@@ -65,7 +65,8 @@ TEST_CASE("check_fcs_and_quad") {
 TEST_CASE("check_asym_and_quad") {
     SECTION("m12") {
         BmpReal I_quad = 12.486609377850819;
-        BmpReal I_asym = 12.486609377850813;
+        BmpReal I_asym = 12.486609377850817; // N = 9
+        //BmpReal I_asym = 12.486609377850813; // N = 10
         checkAccuracy(-0.5, 39, I_asym, I_quad);
     }
     SECTION("12") {
@@ -76,7 +77,8 @@ TEST_CASE("check_asym_and_quad") {
     }
     SECTION("32") {
         BmpReal I_quad = 2516.501868640833;
-        BmpReal I_asym = 2516.5018686408321;
+        BmpReal I_asym = 2516.501868640833; // N = 9
+        //BmpReal I_asym = 2516.5018686408321; // N = 10
         BmpReal k = 1.5;
         checkAccuracy(k, 33, I_asym, I_quad);
     }

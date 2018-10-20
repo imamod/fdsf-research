@@ -12,6 +12,7 @@ const BmpReal _691 = BmpReal(691);
 const BmpReal _3617 = BmpReal(3617);
 const BmpReal _43867 = BmpReal(43867);
 const BmpReal _77683 = BmpReal(77683);
+const BmpReal _155366 = BmpReal(155366);
 const BmpReal _174611 = BmpReal(174611);
 const BmpReal _854513 = BmpReal(854513);
 const BmpReal _236364091 = BmpReal(236364091);

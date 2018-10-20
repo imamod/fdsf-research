@@ -35,7 +35,9 @@ namespace {
     BmpVector coefficents(BmpReal k) {
         BmpVector A;
         // TODO: сделать гибко, через limits
-        constexpr int N = 10;
+        //constexpr int N = 10;
+        constexpr int N = 12;
+
         for (int n = 1; n <= N; ++n) {
             const BmpReal constMember = 2.0 - pow(2, 2 - 2*n);
             BmpReal prod = 1;
@@ -57,8 +59,12 @@ namespace {
         Limits data = limits(k);
         BmpReal x_2_m1 = 1.0 / (x*x);
         BmpReal sum = A.back() * x_2_m1;
-        for (int n = data.N_max - 2; n > -1; --n) {
+        // TODO: когда поймем, какое N_max, использовать его
+        for (int n = A.size() - 2; n > -1; --n) {
             sum = (A.at(n) + sum) * x_2_m1;
+            if (n > 3) {
+                std::cout << "A(" << n+2 << ")/A(" << n+1 << ") = " << (A.at(n + 1)/A.at(n))*x_2_m1 << std::endl;
+            }
         }
         // Главный член асимптотики
         BmpReal mainPart = pow(x, k + 1) / (k + 1);
@@ -95,3 +101,8 @@ TEST_CASE("calculate") {
     }
 }
 
+TEST_CASE("dzeta") {
+    for (size_t n = 2; n <= 24; n += 2) {
+        std::cout << n / 2 << " "<< dzetaFunction(n) << std::endl;
+    }
+}
