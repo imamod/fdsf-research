@@ -1,12 +1,9 @@
 #include "Common.h"
-#include "json.hpp"
 #include "FileSys.h"
 
 #include <fstream>
 #include <iostream>
 #include <functional>
-
-using json = nlohmann::json;
 
 namespace fd {
     const std::string X = "x";
@@ -22,23 +19,6 @@ namespace {
         std::cout.precision(std::numeric_limits<double>::max_digits10);
         std::cout << "x = " << x << " N = " << N  << " I = "<< I << std::endl;
     }
-
-        // Считать значения из файла
-        json readFile(const std::string& filename) {
-            std::ifstream file(filename);
-            json jsonData;
-            file >> jsonData;
-            file.close();
-            return jsonData;
-        }
-
-        // Вывод значений в файл
-        void writeFile(const std::string& filename, const json& data) {
-            std::ofstream file(filename);
-            file.precision(std::numeric_limits<double>::max_digits10);
-            file << data << std::endl;
-            file.close();
-        }
 
     using FermiFunction = std::function<double(const double& x, double k, double tau)>;
 
@@ -124,30 +104,30 @@ TEST_CASE("half") {
         double k = -0.5;
         double x_star = 39;
         calculate(result, k, x_star);
-        writeFile("values_m12.json", result);
+        filesys::writeFile("values_m12.json", result);
     }
     SECTION("12") {
         double k = 0.5;
         double x_star = 35;
         calculate(result, k, x_star);
-        writeFile("values_12.json", result);
+        filesys::writeFile("values_12.json", result);
     }
     SECTION("32") {
         double k = 1.5;
         double x_star = 33;
         calculate(result, k, x_star);
-        writeFile("values_32.json", result);
+        filesys::writeFile("values_32.json", result);
     }
     SECTION("52") {
         double k = 2.5;
         double x_star = 30;
         calculate(result, k, x_star);
-        writeFile("values_52.json", result);
+        filesys::writeFile("values_52.json", result);
     }
     SECTION("72") {
         double k = 3.5;
         double x_star = 29;
         calculate(result, k, x_star);
-        writeFile("values_72.json", result);
+        filesys::writeFile("values_72.json", result);
     }
 }

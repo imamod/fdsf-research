@@ -1,4 +1,5 @@
 #include "BasicService.h"
+#include "FileSys.h"
 
 #include <iostream>
 #include <fstream>
@@ -6,22 +7,6 @@
 
 
 namespace filesys {
-    // Считать вектор данных из файла
-    BmpVector readFile(const std::string& filename) {
-        std::ifstream file(filename, std::ios::binary);
-        file.precision(std::numeric_limits<BmpReal>::max_digits10);
-        BmpVector data;
-        while (true) {
-            if (file.eof()) {
-                break;
-            }
-            BmpReal value;
-            file >> value;
-            data.push_back(value);
-        }
-        file.close();
-        return data;
-    }
 
     // Вывод значений в файл
     void writeFile(const std::string& filename, const BmpVector& data) {
@@ -51,6 +36,23 @@ namespace filesys {
             fs::create_directory(path);
         }
         return path + "/";
+    }
+
+    // Считать значения из файла
+    json readFile(const std::string& filename) {
+        std::ifstream file(filename);
+        json jsonData;
+        file >> jsonData;
+        file.close();
+        return jsonData;
+    }
+
+    // Вывод значений в файл
+    void writeFile(const std::string& filename, const json& data) {
+        std::ofstream file(filename);
+        file.precision(std::numeric_limits<double>::max_digits10);
+        file << data << std::endl;
+        file.close();
     }
 
 }
