@@ -3,6 +3,7 @@
  */
 #include "FullyConvergedSeries.h"
 #include "Gamma.h"
+#include "Constants.h"
 
 namespace fcs {
 
@@ -136,7 +137,7 @@ namespace fcs {
 
     /* Получить коэффициенты по индексу */
     BmpVector coefficientsByIndex(BmpReal k) {
-        if (k == -0.5) {
+        if (k == -0.5 || k == -1.5) {
             return b_mhalf;
         } else if (k == 0) {
             return b_k0;
@@ -160,18 +161,36 @@ namespace fcs {
         throw std::invalid_argument("Unsuppported index");
     }
 
-    // Вычислить значение ФД для x <= 0
-    // Схема Горнера для всюду сходящегося ряда (см. формулу (7) препринт)
-    BmpReal calculate(BmpReal k, BmpReal x) {
-        BmpVector b = coefficientsByIndex(k);
-        BmpReal g = pow(1 + 2 * exp(-x), -1);
+    // Схема Горнера всюду сходящегося ряда для индекса k = -3/2 (см. формулу (24) препринт 2)
+    BmpReal gornerM3half(BmpReal g, const BmpVector& b) {
+        // Для double-точности достаточно 36 коэффициентов (см препринт 1)
+        constexpr int N = 36;
+        BmpReal sum = g*N*b.at(N - 1);
+        for (int n = N - 2; n > -1; --n) {
+            sum = g*((n + 1)*b.at(n) + sum);
+        }
+        return g*sum;
+    }
+
+    // Схема Горнера всюду сходящегося ряда для индексов k >= -1/2 (см. формулу (7) препринт)
+    BmpReal gorner(BmpReal g, const BmpVector& b) {
         // Для double-точности достаточно 36 коэффициентов (см препринт 1)
         constexpr int N = 36;
         BmpReal sum = g*b.at(N - 1);
         for (int n = N - 2; n > -1; --n) {
             sum = g*(b.at(n) + sum);
         }
-        return 2 * factorial(k) * sum;
+        return sum;
+    }
+
+    // Вычислить значение ФД для x <= 0
+    BmpReal calculate(BmpReal k, BmpReal x) {
+        BmpVector b = coefficientsByIndex(k);
+        BmpReal exp_mx = exp(-x);
+        BmpReal g = pow(1 + 2 * exp_mx, -1);
+        BmpReal sum = k == -1.5 ? gornerM3half(g, b) : gorner(g, b);
+        BmpReal multiplier = k == -1.5 ? -8*sqrt(pi())*exp_mx : 2 * factorial(k);
+        return multiplier * sum;
     }
 
 }
