@@ -132,12 +132,14 @@
     <ClCompile Include="..\src\Common.cpp" />
     <ClCompile Include="..\src\Enter.cpp" />
     <ClCompile Include="..\src\FileSystem.cpp" />
+    <ClCompile Include="..\src\MatrixUtils.cpp" />
     <ClCompile Include="..\src\Print.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Common.h" />
     <ClInclude Include="..\src\Enter.h" />
     <ClInclude Include="..\src\FileSys.h" />
+    <ClInclude Include="..\src\MatrixUtils.h" />
     <ClInclude Include="..\src\Print.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

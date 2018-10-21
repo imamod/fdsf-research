@@ -366,7 +366,6 @@
     <ClCompile Include="..\src\Gamma.cpp" />
     <ClCompile Include="..\src\Grid.cpp" />
     <ClCompile Include="..\src\IntegralFDSF.cpp" />
-    <ClCompile Include="..\src\MatrixUtils.cpp" />
     <ClCompile Include="..\src\Newton.cpp" />
     <ClCompile Include="..\src\SeriesLogNDivSqrN.cpp" />
     <ClCompile Include="..\src\ZetaFunction.cpp" />
