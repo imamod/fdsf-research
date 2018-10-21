@@ -3,6 +3,6 @@
 #include "BasicTypes.h"
 
 namespace fcs {
-    // Вычислить значение ФД для x <= 0
+    // Р’С‹С‡РёСЃР»РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ Р¤Р” РґР»СЏ x <= 0
     BmpReal calculate(BmpReal k, BmpReal x);
 }

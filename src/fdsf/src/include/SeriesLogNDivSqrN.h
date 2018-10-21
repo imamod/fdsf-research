@@ -15,7 +15,7 @@ class SeriesLogNDivSqrN {
         BmpReal get() const;
         // Число членов, по которому обрезают сумму
         size_t upperBound() const;
-        // Рассчет суммы 2<=n<=N-1
+        // Расчет суммы 2<=n<=N-1
         BmpReal limitedSum() const;
 
     private:
