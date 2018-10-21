@@ -1,5 +1,5 @@
 #include "Common.h"
-#include "Constants.h"
+#include "ZetaFunction.h"
 #include "FileSys.h"
 
 #include <iostream>
@@ -18,7 +18,7 @@ namespace {
             for (int p = 1; p <= 2 * n; ++p) {
                 prod *= k + 2 - p;
             }
-            BmpReal result = constMember*dzetaFunction(2 * n)*prod;
+            BmpReal result = constMember*zetaFunction(2 * n)*prod;
             A.push_back(result);
         }
         return A;

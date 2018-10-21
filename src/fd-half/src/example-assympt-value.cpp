@@ -1,6 +1,6 @@
 #include "Common.h"
 #include "AsymptoticSeries.h"
-#include "Constants.h"
+#include "ZetaFunction.h"
 #include <iostream>
 
 TEST_CASE("calculate") {
@@ -32,8 +32,8 @@ TEST_CASE("calculate") {
     }
 }
 
-TEST_CASE("dzeta") {
+TEST_CASE("zeta") {
     for (size_t n = 2; n <= 24; n += 2) {
-        std::cout << n / 2 << " "<< dzetaFunction(n) << std::endl;
+        std::cout << n / 2 << " "<< zetaFunction(n) << std::endl;
     }
 }

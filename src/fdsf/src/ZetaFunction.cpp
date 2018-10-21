@@ -34,8 +34,8 @@ BmpReal bernulli(int n) {
 }
 
 // Дзета-функция 
-BmpReal dzetaFunction(int n) {
-    Logger log("dzetaFunction: n = " + std::to_string(n));
+BmpReal zetaFunction(int n) {
+    Logger log("zetaFunction: n = " + std::to_string(n));
     if (isOdd(n)) {
         log.info("n is odd");
         return 0;

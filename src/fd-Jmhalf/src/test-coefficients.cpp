@@ -1,6 +1,7 @@
 #include "Common.h"
 #include "SeriesLogNDivSqrN.h"
 #include "FileSys.h"
+#include "ZetaFunction.h"
 #include "Logger.h"
 
 namespace {
@@ -66,7 +67,7 @@ namespace {
             BmpReal mul = 2 * (_1 - pow(2, _1 - 2 * q));
             prod *= kPairsProd*(kPairsProd - 1);
             kPairsProd -= 2;
-            A.push_back(mul*dzetaFunction(2*q)*prod);
+            A.push_back(mul*zetaFunction(2*q)*prod);
         }
        // print::vector(A);
         for (int n = 1; n <= N; ++n) {

@@ -369,7 +369,7 @@
     <ClCompile Include="..\src\MatrixUtils.cpp" />
     <ClCompile Include="..\src\Newton.cpp" />
     <ClCompile Include="..\src\SeriesLogNDivSqrN.cpp" />
-    <ClCompile Include="..\src\Utils.cpp" />
+    <ClCompile Include="..\src\ZetaFunction.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\AsymptoticSeries.h" />
@@ -385,6 +385,7 @@
     <ClInclude Include="..\src\include\MatrixUtils.h" />
     <ClInclude Include="..\src\include\SeriesLogNDivSqrN.h" />
     <ClInclude Include="..\src\include\Tables.h" />
+    <ClInclude Include="..\src\include\ZetaFunction.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

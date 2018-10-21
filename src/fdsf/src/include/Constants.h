@@ -1,7 +1,6 @@
 #pragma once
 
-#include "BasicService.h"
-#include <array>
+#include "BasicTypes.h"
 
 // Некоторые числовые константы
 const BmpReal _1 = BmpReal(1);
@@ -36,9 +35,3 @@ inline const BmpReal j() {
 inline const BmpReal jFromKuzmina() {
     return 0.95024075;
 }
-
-// Числа Бернулли
-BmpReal bernulli(int n);
-
-// Дзета-функция
-BmpReal dzetaFunction(int n);
