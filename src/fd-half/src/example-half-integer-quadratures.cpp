@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "FileSys.h"
+#include "Logger.h"
 
 #include <fstream>
 #include <iostream>
@@ -22,24 +23,20 @@ namespace {
 
     using FermiFunction = std::function<double(const double& x, double k, double tau)>;
 
+    // Подынтегральная функция для индекса k = -3/2
+    double fd_m3half(double tau, double x, double k) {
+        Logger log("fd_m3half");
+        double ch_x = cosh((tau * tau - x) / 2);
+        log.info("tau = " + std::to_string(tau) + " x = " + std::to_string(x) + " ch(x) = " + std::to_string(ch_x));
+        return -pow(ch_x, -2);
+    }
+
     // Подынтегральная функция для индекса k > -3/2
     double fd_m12(double tau, double x, double k) {
         double denom = 1 + exp(tau * tau - x);
         return pow(tau, 2*k + 1) / denom;
     }
 
-    /*
-    // Подынтегральная функция для индекса k = -3/2
-    double fermi_dirak_m3half( double x,
-        double k) {
-        double exp_ksi = exp(-a * ksi * ksi / (1 - ksi * ksi));
-        double sum_exp = exp_ksi + exp(-x);
-        double exp_diff = exp(-a * ksi * ksi / (1 - ksi * ksi) - x);
-
-        return (-4 * exp_diff * sqrt(abs(a)) * exp_ksi) /
-            (pow(1 - ksi * ksi, double(3.0 / 2)) * sum_exp * sum_exp);
-    }
-    */
     // Euler-Macloren Formulas
     double trapz(FermiFunction f, double x, const double k, size_t N) {
         double h = 12.0 / N;
@@ -58,9 +55,8 @@ namespace {
     }
 
     double euler_maclaurin(double x, double k, int N) {
-        /*FermiFunction f = (k == -3.0 / 2) ? fermi_dirak_m3half :
-            fermi_dirak_half_integer; */
-        return trapz(fd_m12, x, k, N);
+        FermiFunction f = k == -1.5 ? fd_m3half : fd_m12;
+        return trapz(f, x, k, N);
     }
 
     json calculate(double k, double x) {
@@ -96,35 +92,41 @@ namespace {
     }
 }
 
-TEST_CASE("half") {
+TEST_CASE("calculate") {
     json result = json::object();
    // TODO: переработать функцию filesys::createDirectory("quadratures");
     // TODO: setPreciseOutput();
-    SECTION("m12") {
+    SECTION("m3half") {
+        double k = -1.5;
+        double x_star = 44;
+        calculate(result, k, x_star);
+        filesys::writeFile("values_m32.json", result);
+    }
+    SECTION("mHalf") {
         double k = -0.5;
         double x_star = 39;
         calculate(result, k, x_star);
         filesys::writeFile("values_m12.json", result);
     }
-    SECTION("12") {
+    SECTION("half") {
         double k = 0.5;
         double x_star = 35;
         calculate(result, k, x_star);
         filesys::writeFile("values_12.json", result);
     }
-    SECTION("32") {
+    SECTION("3half") {
         double k = 1.5;
         double x_star = 33;
         calculate(result, k, x_star);
         filesys::writeFile("values_32.json", result);
     }
-    SECTION("52") {
+    SECTION("5half") {
         double k = 2.5;
         double x_star = 30;
         calculate(result, k, x_star);
         filesys::writeFile("values_52.json", result);
     }
-    SECTION("72") {
+    SECTION("7half") {
         double k = 3.5;
         double x_star = 29;
         calculate(result, k, x_star);
