@@ -26,7 +26,11 @@ namespace {
 }
 
 TEST_CASE("coefficients") {
-    // TODO: добавить k=-3/2
+    SECTION("m_3half") {
+        BmpVector a = calculate(-1.5);
+        json coeff = a;
+        filesys::writeFile("assympt_m3half.json", coeff);
+    }
     SECTION("m_half") {
         BmpVector a = calculate(-0.5);
         json coeff = a;
