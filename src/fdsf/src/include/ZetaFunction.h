@@ -2,8 +2,8 @@
 
 #include "BasicTypes.h"
 
-// Числа Бернулли
+// Р§РёСЃР»Р° Р‘РµСЂРЅСѓР»Р»Рё
 BmpReal bernulli(int n);
 
-// Дзета-функция
+// Р”Р·РµС‚Р°-С„СѓРЅРєС†РёСЏ
 BmpReal zetaFunction(int n);
