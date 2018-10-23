@@ -28,19 +28,17 @@ namespace fdsf {
     }
 
     // Euler-Macloren Formulas
-    static BmpReal trapz(FermiFunction f, BmpReal x, const BmpReal k, size_t N, BmpReal a) {
+    BmpReal trapz(FermiFunction f, BmpReal x, const BmpReal k, size_t N, BmpReal a) {
         BmpReal h = BmpReal(1.0 / N);
         integration_segment_values isv = {0, N};
         BmpReal u0 = f(0, x, k, a, isv);
         // uN принудительно задаем нулем, чтобы не было переполнения
         BmpReal I = u0 / 2; 
-//#if 0
         // true work
         for (size_t i = 1; i < N; i++) {
             isv.n = i;
             I += f(i * h, x, k, a, isv);
         }
-//#endif
 #if 0
         // TODO: расчет на 2 узлах одновременно??? проверить
         for (size_t i = 1; i < N / 2; i = i + 2) {
@@ -52,28 +50,6 @@ namespace fdsf {
         }
 #endif
         return h*I;
-    }
-
-    static BmpReal quad(FermiFunction f, BmpReal x, const BmpReal k,
-                         size_t N, BmpReal a) {
-        BmpReal I = 0;
-        BmpReal h = BmpReal(1.0 / N);
-        for (size_t i = 0; i < N; i++) {
-            //I += f((i + 1.0/2)*h, x, k, a);
-        }
-        I *= h;
-        return I;
-    }
-
-    static BmpReal simpson(FermiFunction f, const BmpReal& x, const BmpReal& k, size_t N, BmpReal a) {
-        BmpReal I = 0;
-        BmpReal h = BmpReal(1.0 / N);
-        for (size_t i = 0; i < N; i++) {
-            //I += f((i + 1.0 / 2)*h, x, k, a);
-        }
-        I *= h;
-
-        return I;
     }
 
     BmpReal euler_maclaurin_method(BmpReal x, const BmpReal k, int N) {

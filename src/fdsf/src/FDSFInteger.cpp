@@ -50,13 +50,6 @@ namespace fdsf {
     BmpReal fermi_dirak_integer(BmpReal t, BmpReal x, BmpReal k) {
         return pow(t, k) / (boost::math::tgamma(BmpReal(k)) * (exp(x) + exp(t)));
     }
-#if 0
-    BmpReal fermi_dirak_half_integer(BmpReal t, BmpReal x, BmpReal k)
-    {
-        // для полуцелых
-        return 2 * pow(t, 2 * k + 1) / (1 + exp(t*t - x));
-    }
-#endif
 
     // Получение необходимого числа членов для схемы Горнера произвольной 
     // заданной точности
@@ -123,14 +116,6 @@ namespace fdsf {
         bool isHalfInteger = hasFractionalPart(k);
         I_n = isHalfInteger ? euler_maclaurin_method(x, k, N) :
                               gauss_christoffel_method(&fermi_dirak_integer, x, t, k, N);
-        //std::ofstream fout;
-        //fout.open("check_a_x.txt");
-        //fout << (I_n) << std::fixed <<
-        //    std::setprecision(std::numeric_limits<BmpReal>::max_digits10) << std::endl;
-#ifdef LOGGING
-        std::cout << "x = " << x << std::endl;
-        //std::cout << "N = " << N << ": I = " << I_n << std::endl;
-#endif
         do {
             if (isHalfInteger) {
                 I_2n = euler_maclaurin_method(x, k, 2 * N);
@@ -138,26 +123,15 @@ namespace fdsf {
             } else {
                 I_2n = gauss_christoffel_method(&fermi_dirak_integer, x, t, k, 2 * N);
             }
-            //fout << I_2n << std::fixed <<
-            //    std::setprecision(std::numeric_limits<BmpReal>::max_digits10) << std::endl;
 
             stop_criteria = (I_n / I_2n - 1); 
-            //stop_criteria = (I_n / 0.52115038310799122 - 1); //k=-0.5
             I_n = I_2n;
             N = 2 * N;
             if (N >= 2048) {
                 std::cout << "N = " << N << ": I = " << I_2n;
             }
-            //std::cout << "N = " << N << ": d = "<< abs(stop_criteria) << std::endl; 
-            //std::cout << "N = " << N << ": I = " << I_n << std::endl;
         } while (abs(stop_criteria) > 1e-11);
         //while (abs(stop_criteria) > epsilon*100);
-#ifdef LOGGING
-        std::cout << "N = " << N << ": I = ";
-        std::cout << I_2n << std::fixed <<
-            std::setprecision(std::numeric_limits<BmpReal>::max_digits10) << std::endl;
-#endif
-        //fout.close();
         return I_n;
     }
 
