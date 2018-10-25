@@ -17,14 +17,14 @@ if(MSVC)
     # Disable warning C4309: 'static_cast': truncation of constant value
     # Disable warning C4566: character represented by universal-character-name '\uFF01' cannot be represented in the current code page (1252)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4389 /wd4309 /wd4566")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 endif()
 
 # Prepare "Catch" library for other executables
 # https://github.com/catchorg/Catch2/blob/master/docs/build-systems.md
 set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../3dparty)
 message(STATUS "CATCH_INCLUDE_DIR: " ${CATCH_INCLUDE_DIR})
-#add_library(Catch INTERFACE)
-#target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 
 # TODO: check for linux
 set(FDSF_LIB ${CMAKE_CURRENT_SOURCE_DIR}/../fdsf/build/${CMAKE_GENERATOR_PLATFORM})
@@ -68,6 +68,7 @@ foreach(project ${projects})
     target_include_directories(${testcase} PRIVATE "src")
     target_include_directories(${testcase} PRIVATE "../fdsf/src/include")
     target_include_directories(${testcase} PRIVATE "../Utils/src")
+    # TODO:fix
     target_include_directories(${testcase} PUBLIC "../../../../boost_1_60_0")
     if (MSVC)
         target_link_libraries(${testcase} fdsf.lib Utils.lib)

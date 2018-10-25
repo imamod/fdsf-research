@@ -17,6 +17,8 @@ if(MSVC)
     # Disable warning C4309: 'static_cast': truncation of constant value
     # Disable warning C4566: character represented by universal-character-name '\uFF01' cannot be represented in the current code page (1252)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4389 /wd4309 /wd4566")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 endif()
 
 # Prepare "Catch" library for other executables
