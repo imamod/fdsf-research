@@ -48,6 +48,9 @@
     <ClCompile Include="..\src\ZetaFunction.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\FdHalfQuadratures.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\MatrixUtils.h">
@@ -90,6 +93,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\include\ZetaFunction.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\FdHalfQuadratures.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
