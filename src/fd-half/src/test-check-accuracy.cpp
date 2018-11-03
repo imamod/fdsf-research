@@ -51,9 +51,15 @@ TEST_CASE("check_fcs_and_quad") {
 
 TEST_CASE("check_asym_and_quad") {
     SECTION("m_3half") {
+        // x = 44
         BmpReal I_quad = -0.30170449383410713;
-        BmpReal I_asym = -0.30170449383410813;
+        //BmpReal I_asym = -0.301704493834138; //N =10
+        BmpReal I_asym = -0.30170449383410813; // N = 11
         checkAccuracy(-1.5, 44, I_asym, I_quad);
+        // x = 52
+        I_quad = -0.27747711522431084;
+        I_asym = -0.27747711522431112;
+        checkAccuracy(-1.5, 52, I_asym, I_quad);
     }
     SECTION("m_half") {
         BmpReal I_quad = 12.486609377850819;

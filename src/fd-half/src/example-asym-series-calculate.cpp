@@ -7,8 +7,10 @@ TEST_CASE("calculate") {
     setPreciseOutput();
     SECTION("m_3half") {
         INFO("Вычисление значения функции ФД индекса k = -3/2 при x >= x_min");
-        BmpReal I_x_min = asympt_series::calculate(-1.5, 44);
-        std::cout << "k = -1.5 I(44) = " << I_x_min << std::endl;
+        BmpReal I_x_44 = asympt_series::calculate(-1.5, 44);
+        std::cout << "k = -1.5 I(44) = " << I_x_44 << std::endl;
+        BmpReal I_x_52 = asympt_series::calculate(-1.5, 52);
+        std::cout << "k = -1.5 I(52) = " << I_x_52 << std::endl;
     }
     SECTION("m_half") {
         INFO("Вычисление значения функции ФД индекса k = -1/2 при x >= x_min");

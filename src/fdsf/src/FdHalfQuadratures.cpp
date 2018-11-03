@@ -2,6 +2,7 @@
 #include "Logger.h"
 // TODO: remove
 #include <iostream>
+#include <limits>
 namespace {
     void print(double x, double I, int N) {
         std::cout.precision(std::numeric_limits<double>::max_digits10);
@@ -13,7 +14,7 @@ namespace quad {
 
     using FermiFunction = std::function<double(const double& x, double k, double tau)>;
 
-    // Подынтегральная функция для индекса k = -3/2
+    // РџРѕРґС‹РЅС‚РµРіСЂР°Р»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ РёРЅРґРµРєСЃР° k = -3/2
     double fd_m3half(double tau, double x, double k) {
         Logger log("fd_m3half");
         double ch_x = cosh((tau * tau - x) / 2);
@@ -21,7 +22,7 @@ namespace quad {
         return -pow(ch_x, -2);
     }
 
-    // Подынтегральная функция для индекса k > -3/2
+    // РџРѕРґС‹РЅС‚РµРіСЂР°Р»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ РёРЅРґРµРєСЃР° k > -3/2
     double fd_m12(double tau, double x, double k) {
         double denom = 1 + exp(tau * tau - x);
         return pow(tau, 2 * k + 1) / denom;
@@ -49,8 +50,12 @@ namespace quad {
         return trapz(f, x, k, N);
     }
 
+    // РљСЂРёС‚РµСЂРёР№ РѕСЃС‚Р°РЅРѕРІР° РґР»СЏ С„РѕСЂРјСѓР» Р­Р№Р»РµСЂР°-РњР°РєР»РѕСЂРµРЅР°
+    const double epsilon = 1e-11;
+
     nlohmann::json calculate(double k, double x) {
-        int N = 12;
+        const int N_init = 12;
+        int N = N_init;
         double stop_criteria;
         double I_n = euler_maclaurin(x, k, N);
         print(x, I_n, N);
@@ -60,10 +65,10 @@ namespace quad {
             I_n = I_2n;
             N = 2 * N;
             print(x, I_2n, N);
-        } while (abs(stop_criteria) > 1e-11);
+        } while (abs(stop_criteria) > epsilon);
         nlohmann::json object = nlohmann::json::object();
         object[fd::X] = x;
-        object[fd::I] = 2 * I_n;// Смотри формулу (37) препринт 2
+        object[fd::I] = 2 * I_n;// РЎРјРѕС‚СЂРё С„РѕСЂРјСѓР»Сѓ (37) РїСЂРµРїСЂРёРЅС‚ 2
         object[fd::N_MAX] = N / 2;
         //std::cout << object.dump() << std::endl;
         return object;
