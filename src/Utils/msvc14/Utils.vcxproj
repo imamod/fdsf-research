@@ -136,6 +136,7 @@
     <ClCompile Include="..\src\Print.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\JsonFields.h" />
     <ClInclude Include="..\src\Common.h" />
     <ClInclude Include="..\src\Enter.h" />
     <ClInclude Include="..\src\FileSys.h" />

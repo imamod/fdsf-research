@@ -1,6 +1,7 @@
 #include "Common.h"
 #include "FdHalfQuadratures.h"
 #include "FileSys.h"
+#include "JsonFields.h"
 #include <fstream>
 
 namespace {

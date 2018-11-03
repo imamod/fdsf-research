@@ -1,4 +1,5 @@
 #include "FdHalfQuadratures.h"
+#include "JsonFields.h"
 #include "Logger.h"
 // TODO: remove
 #include <iostream>

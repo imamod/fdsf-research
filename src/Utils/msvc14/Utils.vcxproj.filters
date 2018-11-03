@@ -47,5 +47,8 @@
     <ClInclude Include="..\src\MatrixUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\JsonFields.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
