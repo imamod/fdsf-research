@@ -21,8 +21,7 @@ namespace {
             return 1.0 / 8;
         }
         // Половинки на диагонали и вертикали g = 1/2
-        if ((n == m) ||
-            (!n && m)) {
+        if ((n == m) || (!n && m)) {
             return 1.0 / 2;
         }
         // Для остальных вес g = 1
@@ -45,8 +44,10 @@ namespace {
     }
 
     // Euler-Macloren Formulas
-    double trapz(FermiFunction f, double x, double T, size_t N) {
+    double trapz(FermiFunction f, double x, size_t N) {
         Logger log("trapz");
+        // Верхняя граница, пока непонятно, какая будет
+        double T = 12;
         double h = T / N;
         double I = 0.0;
         for (int n = N; n > -1; --n) {
@@ -55,7 +56,6 @@ namespace {
                 u.push_back(weights(n, m) * f(x, n * h, m * h));
                 log.info(std::to_string(u.back()));
             }
-            // weights(n , m) *
             for (auto it = u.begin(); it != u.end(); ++it) {
                 I += *it;
             }
@@ -65,9 +65,9 @@ namespace {
         return 2*h*h*I;
     }
 
-    double euler_maclaurin(double x, int N, double T) {
+    double euler_maclaurin(double x, int N) {
         FermiFunction f = fd_Jmhalf;
-        return trapz(f, x, T, N);
+        return trapz(f, x, N);
     }
 
     // Критерий останова для формул Эйлера-Маклорена
@@ -77,13 +77,10 @@ namespace {
         const int N_init = 12;
         int N = N_init;
         double stop_criteria;
-        // Верхняя граница, пока непонятно, какая будет
-        // TODO: Удалить
-        double T = 12;
-        double I_n = euler_maclaurin(x, N, T);
+        double I_n = euler_maclaurin(x, N);
         print(x, I_n, N);
         do {
-            double I_2n = euler_maclaurin(x, 2 * N, T);
+            double I_2n = euler_maclaurin(x, 2 * N);
             stop_criteria = (I_n / I_2n - 1);
             I_n = I_2n;
             N = 2 * N;
