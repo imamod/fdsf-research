@@ -15,12 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\FDSFHalf.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\FDSFInteger.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Newton.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -51,12 +45,15 @@
     <ClCompile Include="..\src\FdHalfQuadratures.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\FDSFInteger-legacy.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\FDSFHalf-legacy.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\MatrixUtils.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\include\Fdsf.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\include\BasicService.h">
@@ -96,6 +93,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\include\FdHalfQuadratures.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Fdsf-legacy.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

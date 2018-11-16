@@ -356,13 +356,13 @@
     <ClCompile Include="..\src\AsymptoticSeries.cpp" />
     <ClCompile Include="..\src\ExponentialConvergence.cpp" />
     <ClCompile Include="..\src\FdHalfQuadratures.cpp" />
-    <ClCompile Include="..\src\FDSFHalf.cpp">
+    <ClCompile Include="..\src\FDSFHalf-legacy.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_HIGH_PRECISION|Win32'">
       </ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\src\FDSFInteger.cpp" />
+    <ClCompile Include="..\src\FDSFInteger-legacy.cpp" />
     <ClCompile Include="..\src\FullyConvergedSeries.cpp" />
     <ClCompile Include="..\src\Gamma.cpp" />
     <ClCompile Include="..\src\Grid.cpp" />
@@ -377,7 +377,7 @@
     <ClInclude Include="..\src\include\BasicTypes.h" />
     <ClInclude Include="..\src\include\Constants.h" />
     <ClInclude Include="..\src\include\FdHalfQuadratures.h" />
-    <ClInclude Include="..\src\include\Fdsf.h" />
+    <ClInclude Include="..\src\include\Fdsf-legacy.h" />
     <ClInclude Include="..\src\include\FullyConvergedSeries.h" />
     <ClInclude Include="..\src\include\Gamma.h" />
     <ClInclude Include="..\src\include\Grid.h" />

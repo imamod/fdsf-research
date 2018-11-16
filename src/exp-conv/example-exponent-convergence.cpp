@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include "BasicService.h"
-#include "Fdsf.h"
+#include "Fdsf-legacy.h"
 
 #include <iostream>
 
