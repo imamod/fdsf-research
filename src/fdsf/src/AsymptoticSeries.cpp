@@ -1,5 +1,6 @@
 #include "AsymptoticSeries.h"
 #include "Constants.h"
+#include "Logger.h"
 
 #include <iostream>
 
@@ -37,16 +38,10 @@ namespace asympt_series {
         -396511857.09590584, -56999230599.54747, -11157631286680.688, -2.8535662418736415e+15, -9.238422359763464e+17
     };
 
-    // Cтруктура хранения x_min и N_max (см. препринт2, табл 4)
-    struct Limits {
-        BmpReal x_min;
-        int N_max;
-    };
-
     // Получение x_min и N_max для конкретного индекса
     Limits limits(BmpReal k) {
         if (k == -1.5) {
-            return{ 44, 11 };
+            return{ 52, 11 };
         } else if (k == -0.5) {
             return{ 39, 10 };
         } else if (k == 0.5) {
@@ -82,6 +77,7 @@ namespace asympt_series {
     // Вычислить значение ФД для x >= x_min
     // Схема Горнера для асимптотического ряда (см. формулу (32) препринт 2)
     BmpReal calculate(BmpReal k, BmpReal x) {
+        Logger log("asymp::calculate");
         // Получаем коэффициенты для конкретного k
         BmpVector A = coefficents(k);
         // Получаем предельные значения для каждого k
@@ -89,10 +85,12 @@ namespace asympt_series {
         BmpReal x_2_m1 = 1.0 / (x*x);
         BmpReal sum = A.back() * x_2_m1;
         // TODO: когда поймем, какое N_max, использовать его
-        for (int n = A.size() - 2; n > -1; --n) {
+        //A.size() - 2
+        for (int n = data.N_max; n > -1; --n) {
             sum = (A.at(n) + sum) * x_2_m1;
             if (n > 3) {
-                std::cout << "A(" << n + 2 << ")/A(" << n + 1 << ") = " << (A.at(n + 1) / A.at(n))*x_2_m1 << std::endl;
+                //std::cout << "A(" << n + 2 << ")/A(" << n + 1 << ") = "
+                   // << (A.at(n + 1) / A.at(n))*x_2_m1 << std::endl;
             }
         }
         // Главный член асимптотики

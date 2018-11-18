@@ -69,6 +69,7 @@ foreach(project ${projects})
     target_include_directories(${testcase} PRIVATE "../fdsf/src/include")
     target_include_directories(${testcase} PRIVATE "../Utils/src")
     target_include_directories(${testcase} PRIVATE "../Utils/include")
+    target_include_directories(${testcase} PUBLIC "../fdsf/include")
     # TODO:fix
     target_include_directories(${testcase} PUBLIC "../../../../boost_1_60_0")
     if (MSVC)

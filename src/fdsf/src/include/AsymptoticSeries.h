@@ -3,6 +3,16 @@
 #include "BasicTypes.h"
 
 namespace asympt_series {
+
+    // Cтруктура хранения x_min и N_max (см. препринт2, табл 4)
+    struct Limits {
+        BmpReal x_min;
+        int N_max;
+    };
+
+    // Получение x_min и N_max для конкретного индекса
+    Limits limits(BmpReal k);
+
     // Вычислить значение ФД для x >= x_min
     BmpReal calculate(BmpReal k, BmpReal x);
 }
