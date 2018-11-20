@@ -6,6 +6,7 @@
 #include "FullyConvergedSeries.h"
 #include "AsymptoticSeries.h"
 #include "FdHalfQuadratures.h"
+#include "JsonFields.h"
 
 // TODO: вынести в отдельный модуль
 namespace fdsf {
@@ -31,7 +32,8 @@ namespace {
             return asympt_series::calculate(k, x);
         }
         //  вадратуры 0 <= x <= x_min
-        return quad::calculate(k, x);
+        nlohmann::json result = quad::calculate(k, x);
+        return result[fd::I];
     }
 }
 
