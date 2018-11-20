@@ -18,7 +18,8 @@ const BmpReal _236364091 = BmpReal(236364091);
 
 // Значение pi
 inline const BmpReal pi() {
-    return boost::math::constants::pi<BmpReal>();
+    return 4 * atan(1);
+    //return boost::math::constants::pi<BmpReal>();
 }
 
 // Константа Эйлера
