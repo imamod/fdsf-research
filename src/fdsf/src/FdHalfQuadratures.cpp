@@ -20,7 +20,7 @@ namespace quad {
         Logger log("fd_m3half");
         double ch_x = cosh((tau * tau - x) / 2);
         log.info("tau = " + std::to_string(tau) + " x = " + std::to_string(x) + " ch(x) = " + std::to_string(ch_x));
-        return -pow(ch_x, -2);
+        return pow(ch_x, -2);
     }
 
     // Подынтегральная функция для индекса k > -3/2
@@ -47,7 +47,7 @@ namespace quad {
     }
 
     double euler_maclaurin(double x, double k, int N) {
-        FermiFunction f = k == -1.5 ? fd_m3half : fd_m12;
+        FermiFunction f = (k == -1.5) ? fd_m3half : fd_m12;
         return trapz(f, x, k, N);
     }
 
@@ -69,7 +69,9 @@ namespace quad {
         } while (abs(stop_criteria) > epsilon);
         nlohmann::json object = nlohmann::json::object();
         object[fd::X] = x;
-        object[fd::I] = 2 * I_n;// Смотри формулу (37) препринт 2
+        // Домножаем значение интеграла на коэффициент перед ним ( смотри формулы (30, 34) препринт 2 )
+        BmpReal coeff = (k == -1.5) ? -1 : 2;
+        object[fd::I] = coeff * I_n;
         object[fd::N_MAX] = N / 2;
         //std::cout << object.dump() << std::endl;
         return object;
