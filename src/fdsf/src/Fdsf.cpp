@@ -1,5 +1,5 @@
 /*
-* Боевая реализация вычисления функций ФД
+* Р‘РѕРµРІР°СЏ СЂРµР°Р»РёР·Р°С†РёСЏ РІС‹С‡РёСЃР»РµРЅРёСЏ С„СѓРЅРєС†РёР№ Р¤Р”
 */
 #include "Fdsf.h"
 
@@ -9,9 +9,9 @@
 #include "Constants.h"
 #include "JsonFields.h"
 
-// TODO: вынести в отдельный модуль
+// TODO: РІС‹РЅРµСЃС‚Рё РІ РѕС‚РґРµР»СЊРЅС‹Р№ РјРѕРґСѓР»СЊ
 namespace fdsf {
-    /* Поддерживаемые индексы функций ФД */
+    /* РџРѕРґРґРµСЂР¶РёРІР°РµРјС‹Рµ РёРЅРґРµРєСЃС‹ С„СѓРЅРєС†РёР№ Р¤Р” */
     namespace index {
         const BmpReal M3_HALF = -3.0 / 2;
         const BmpReal M1_HALF = -1.0 / 2;
@@ -28,21 +28,21 @@ namespace fdsf {
 }
 
 namespace {
-    // Вычисление ФД полуцелых индексов
+    // Р’С‹С‡РёСЃР»РµРЅРёРµ Р¤Р” РїРѕР»СѓС†РµР»С‹С… РёРЅРґРµРєСЃРѕРІ
     BmpReal calculateHalf(BmpReal x, BmpReal k) {
         if (x <= 0) {
-            // Всюду сходящийся ряд для x <=0
+            // Р’СЃСЋРґСѓ СЃС…РѕРґСЏС‰РёР№СЃСЏ СЂСЏРґ РґР»СЏ x <=0
             return fcs::calculate(k, x);
         } else if (x >= asympt_series::limits(k).x_min) {
-            // Асимптотический ряд для x >= x_min
+            // РђСЃРёРјРїС‚РѕС‚РёС‡РµСЃРєРёР№ СЂСЏРґ РґР»СЏ x >= x_min
             return asympt_series::calculate(k, x);
         }
-        // Квадратуры 0 <= x <= x_min
+        // РљРІР°РґСЂР°С‚СѓСЂС‹ 0 <= x <= x_min
         nlohmann::json result = quad::calculate(k, x);
         return result[fd::I];
     }
 
-    // Вычисление положительного значени ФД целого индекса (cм. препринт 2, формула 10)
+    // Р’С‹С‡РёСЃР»РµРЅРёРµ РїРѕР»РѕР¶РёС‚РµР»СЊРЅРѕРіРѕ Р·РЅР°С‡РµРЅРё Р¤Р” С†РµР»РѕРіРѕ РёРЅРґРµРєСЃР° (cРј. РїСЂРµРїСЂРёРЅС‚ 2, С„РѕСЂРјСѓР»Р° 10)
     BmpReal positiveFdInteger(BmpReal k, BmpReal x) {
         BmpReal fd_m = fcs::calculate(k, -x);
         const BmpReal PI = pi();
@@ -64,10 +64,10 @@ namespace {
         throw std::invalid_argument("Unsupported k");
     }
 
-    // Вычисление ФД целых индексов
+    // Р’С‹С‡РёСЃР»РµРЅРёРµ Р¤Р” С†РµР»С‹С… РёРЅРґРµРєСЃРѕРІ
     BmpReal calculateInteger(BmpReal k, BmpReal x) {
         if (x <= 0) {
-            // Всюду сходящийся ряд для x <=0
+            // Р’СЃСЋРґСѓ СЃС…РѕРґСЏС‰РёР№СЃСЏ СЂСЏРґ РґР»СЏ x <=0
             return fcs::calculate(k, x);
         }
         return positiveFdInteger(k, x);
@@ -76,7 +76,7 @@ namespace {
 
 namespace fdsf {
 
-    /* Функции ФД целого индекса */
+    /* Р¤СѓРЅРєС†РёРё Р¤Р” С†РµР»РѕРіРѕ РёРЅРґРµРєСЃР° */
     BmpReal fd_0(BmpReal x) {
         return calculateInteger(index::ZERO, x);
     }
@@ -97,7 +97,7 @@ namespace fdsf {
         return calculateInteger(index::P4, x);
     }
 
-    /* Функции ФД полуцелого индекса */
+    /* Р¤СѓРЅРєС†РёРё Р¤Р” РїРѕР»СѓС†РµР»РѕРіРѕ РёРЅРґРµРєСЃР° */
     BmpReal fd_m3half(BmpReal x) {
         return calculateHalf(x, index::M3_HALF);
     }

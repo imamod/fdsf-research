@@ -21,11 +21,21 @@
 ## Пояснение модулей
 
 * fdsf
-    * AsymptoticSeries.cpp - вычисление асимптотическим рядом
-    * FullyConvergedSeries.cpp - вычисление всюду сходящимся рядом
+    * AsymptoticSeries.cpp - модуль вычисления асимптотическим рядом
+    * FdHalfQuadratures.cpp - модуль вычисления экспоненциально сходящимися квадратурами
+    * Fdsf.cpp - модуль вычисления функций ФД целых и полуцелых индексов (-3/2 <= k <= 4)
+    * FullyConvergedSeries.cpp - модуль вычисления всюду сходящимся рядом
+    * Gamma.cpp - необходимые значения Г-функции
     * ZetaFunction.cpp - значения дзета-функции Римана
 
 * fd-half
-    * example-asym-series-calculate.cpp - вычисление ФД асимптотическим рядом на границе x_min
-    * example-fcs-calculate.cpp - вычисление ФД всюду сходящимся рядом в точке x = 0
-    * example-half-integer.cpp - вычисление ФД квадратурами в промежутке 0 <= x <= x_min
+    * example-asym-series-calculate.cpp - пример вычисления ФД асимптотическим рядом на границе x_min
+    * example-fcs-calculate.cpp - пример вычисления ФД всюду сходящимся рядом в точке x = 0
+    * example-half-integer-quadratures.cpp - пример вычисления ФД квадратурами в промежутке 0 <= x <= x_min
+    * example-calculate-fd-half.cpp - пример вычисления ФД в произвольном диапазоне
+
+* fd-integer
+    * example-fcs-calculate.cpp - пример вычисления ФД всюду сходящимся рядом в точке x = 0
+    * example-fd-calculate.cpp - пример вычисления ФД в произвольном диапазоне
+
+* fd-Jmhalf
