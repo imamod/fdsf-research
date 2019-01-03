@@ -369,6 +369,7 @@
     <ClCompile Include="..\src\Grid.cpp" />
     <ClCompile Include="..\src\IntegralFDSF.cpp" />
     <ClCompile Include="..\src\Newton.cpp" />
+    <ClCompile Include="..\src\Richardson.cpp" />
     <ClCompile Include="..\src\SeriesLogNDivSqrN.cpp" />
     <ClCompile Include="..\src\ZetaFunction.cpp" />
   </ItemGroup>
@@ -386,6 +387,7 @@
     <ClInclude Include="..\src\include\IntegralFDSF.h" />
     <ClInclude Include="..\src\include\Logger.h" />
     <ClInclude Include="..\src\include\MatrixUtils.h" />
+    <ClInclude Include="..\src\include\Richardson.h" />
     <ClInclude Include="..\src\include\SeriesLogNDivSqrN.h" />
     <ClInclude Include="..\src\include\Tables.h" />
     <ClInclude Include="..\src\include\ZetaFunction.h" />
