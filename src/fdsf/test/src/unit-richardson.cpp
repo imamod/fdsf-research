@@ -1,4 +1,5 @@
 #include "Common.h"
+#include "Fdsf.h"
 #include "Gamma.h"
 #include "Richardson.h"
 #include "Print.h"
@@ -36,11 +37,6 @@ namespace {
         return h*I;
     }
 
-    double euler_maclaurin(double x, double k, int N) {
-        FermiFunction f = (k == -1.5) ? fd_m3half : fd_m12;
-        return trapz(f, x, k, N);
-    }
-
     void check(double expected, std::function<double(double, size_t)> f, size_t initialGrid) {
         Richardson r(0, f, initialGrid);
         CHECK_NOTHROW(r.calculate());
@@ -48,23 +44,23 @@ namespace {
     }
 
     double f_km12(double x, size_t N) {
-        return euler_maclaurin(x, -0.5, N);
+        return trapz(fd_m12, x, fdsf::index::M1_HALF, N);
     }
 
     double f_k12(double x, size_t N) {
-        return euler_maclaurin(x, 0.5, N);
+        return trapz(fd_m12, x, fdsf::index::P1_HALF, N);
     }
 
     double f_k32(double x, size_t N) {
-        return euler_maclaurin(x, 1.5, N);
+        return trapz(fd_m12, x, fdsf::index::P3_HALF, N);
     }
 
     double f_k52(double x, size_t N) {
-        return euler_maclaurin(x, 2.5, N);
+        return trapz(fd_m12, x, fdsf::index::P5_HALF, N);
     }
 
     double f_k72(double x, size_t N) {
-        return euler_maclaurin(x, 3.5, N);
+        return trapz(fd_m12, x, fdsf::index::P7_HALF, N);
     }
 }
 
