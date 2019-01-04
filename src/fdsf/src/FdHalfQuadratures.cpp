@@ -1,4 +1,5 @@
 #include "FdHalfQuadratures.h"
+#include "Fdsf.h"
 #include "JsonFields.h"
 #include "Logger.h"
 // TODO: remove
@@ -13,7 +14,7 @@ namespace {
 
 namespace quad {
 
-    using FermiFunction = std::function<double(const double& x, double k, double tau)>;
+    using FermiFunction = std::function<double(double x, double k, double tau)>;
 
     // Подынтегральная функция для индекса k = -3/2
     double fd_m3half(double tau, double x, double k) {
@@ -46,11 +47,6 @@ namespace quad {
         return h*I;
     }
 
-    double euler_maclaurin(double x, double k, int N) {
-        FermiFunction f = (k == -1.5) ? fd_m3half : fd_m12;
-        return trapz(f, x, k, N);
-    }
-
     // Критерий останова для формул Эйлера-Маклорена
     const double epsilon = 1e-11;
 
@@ -58,10 +54,12 @@ namespace quad {
         const int N_init = 12;
         int N = N_init;
         double stop_criteria;
-        double I_n = euler_maclaurin(x, k, N);
+        // Для индекса k =-3/2 отличный от других индексов вид подынтегральной функции
+        FermiFunction f = (k == fdsf::index::M3_HALF) ? fd_m3half : fd_m12;
+        double I_n = trapz(f, x, k, N);
         print(x, I_n, N);
         do {
-            double I_2n = euler_maclaurin(x, k, 2 * N);
+            double I_2n = trapz(f, x, k, 2 * N);
             stop_criteria = (I_n / I_2n - 1);
             I_n = I_2n;
             N = 2 * N;
@@ -70,7 +68,7 @@ namespace quad {
         nlohmann::json object = nlohmann::json::object();
         object[fd::X] = x;
         // Домножаем значение интеграла на коэффициент перед ним ( смотри формулы (30, 34) препринт 2 )
-        BmpReal coeff = (k == -1.5) ? -1 : 2;
+        const BmpReal coeff = (k == fdsf::index::M3_HALF) ? -1 : 2;
         object[fd::I] = coeff * I_n;
         object[fd::N_MAX] = N / 2;
         //std::cout << object.dump() << std::endl;
