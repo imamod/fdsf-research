@@ -371,6 +371,7 @@
     <ClCompile Include="..\src\Newton.cpp" />
     <ClCompile Include="..\src\Richardson.cpp" />
     <ClCompile Include="..\src\SeriesLogNDivSqrN.cpp" />
+    <ClCompile Include="..\src\Trapz.cpp" />
     <ClCompile Include="..\src\ZetaFunction.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -390,6 +391,7 @@
     <ClInclude Include="..\src\include\Richardson.h" />
     <ClInclude Include="..\src\include\SeriesLogNDivSqrN.h" />
     <ClInclude Include="..\src\include\Tables.h" />
+    <ClInclude Include="..\src\include\Trapz.h" />
     <ClInclude Include="..\src\include\ZetaFunction.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

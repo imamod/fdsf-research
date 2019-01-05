@@ -57,6 +57,9 @@
     <ClCompile Include="..\src\Richardson.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Trapz.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\MatrixUtils.h">
@@ -108,6 +111,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\include\Richardson.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Trapz.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
