@@ -32,23 +32,23 @@ namespace {
 TEST_CASE("check") {
     {
         INFO("Вычисление методом трапеций индекса k = -1/2 в точке x = 0");
-        check(fdsf::index::M1_HALF, 0.604898643421630);
+        check(fdsf::index::M1_HALF, etalon_fd_at_zero::M1_HALF);
     }
     {
         INFO("Вычисление методом трапеций индекса k = 1/2 в точке x = 0");
-        check(fdsf::index::P1_HALF, 0.765147024625408);
+        check(fdsf::index::P1_HALF, etalon_fd_at_zero::P1_HALF);
     }
     {
         INFO("Вычисление методом трапеций индекса k = 3/2 в точке x = 0");
-        check(fdsf::index::P3_HALF, 0.867199889012184);
+        check(fdsf::index::P3_HALF, etalon_fd_at_zero::P3_HALF);
     }
     {
         INFO("Вычисление методом трапеций индекса k = 5/2 в точке x = 0");
-        check(fdsf::index::P5_HALF, 0.927553577773948);
+        check(fdsf::index::P5_HALF, etalon_fd_at_zero::P5_HALF);
     }
     {
         INFO("Вычисление методом трапеций индекса k = 7/2 в точке x = 0");
-        check(fdsf::index::P7_HALF, 0.961483656632978);
+        check(fdsf::index::P7_HALF, etalon_fd_at_zero::P7_HALF);
     }
 }
 

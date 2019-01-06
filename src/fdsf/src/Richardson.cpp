@@ -1,19 +1,21 @@
 #include "Richardson.h"
+#include "Logger.h"
 
-Richardson::Richardson(double x, std::function<double(double, size_t)> f, size_t initialGrid)
-    : m_x(x)
-    , m_I(0)
-    , m_f(f)
+Richardson::Richardson(std::shared_ptr<FermiDirakFunction>& f, size_t initialGrid)
+    : m_I(0)
+    , m_fd(f)
     , m_N(initialGrid) {
+    Logger logger("Richardson::Richardson()");
 }
 
 /* Вычислить значение на сгущающихся сетках */
 void Richardson::calculate() {
+    Logger logger("Richardson::calculate()");
     const double epsilon = 1e-11;
-    m_I = m_f(m_x, m_N);
+    m_I = TrapzFD(*m_fd.get(), m_N).trapz(0);
     double stop_criteria = 0;
     do {
-        double I_2n = m_f(m_x, 2 * m_N);
+        double I_2n = TrapzFD(*m_fd.get(), 2 * m_N).trapz(m_I);
         stop_criteria = abs(m_I / I_2n - 1);
         m_I = I_2n;
         m_N = 2 * m_N;
