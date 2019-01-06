@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "FdHalfQuadratures.h"
+#include "Fdsf.h"
 #include "FileSys.h"
 #include "JsonFields.h"
 #include <fstream>
@@ -19,7 +20,7 @@ namespace {
     }
 
     const double epsilon = 1e-11;
-
+/*
     // TODO: possibly remove
     nlohmann::json calculateWithRichardson(double k, double x) {
         const int N_init = 12;
@@ -53,7 +54,7 @@ namespace {
         //std::cout << object.dump() << std::endl;
         return object;
     }
-
+    */
 
 }
 
@@ -62,39 +63,33 @@ TEST_CASE("calculate") {
    // TODO: переработать функцию filesys::createDirectory("quadratures");
     // TODO: setPreciseOutput();
     SECTION("m3half") {
-        double k = -1.5;
         double x_star = 52;
-        calculate(result, k, x_star);
+        calculate(result, fdsf::index::M3_HALF, x_star);
         filesys::writeFile("values_m32.json", result);
     }
     SECTION("mhalf") {
-        double k = -0.5;
         double x_star = 39;
-        calculate(result, k, x_star);
+        calculate(result, fdsf::index::M1_HALF, x_star);
         filesys::writeFile("values_m12.json", result);
     }
     SECTION("half") {
-        double k = 0.5;
         double x_star = 35;
-        calculate(result, k, x_star);
+        calculate(result, fdsf::index::P1_HALF, x_star);
         filesys::writeFile("values_12.json", result);
     }
     SECTION("3half") {
-        double k = 1.5;
         double x_star = 33;
-        calculate(result, k, x_star);
+        calculate(result, fdsf::index::P3_HALF, x_star);
         filesys::writeFile("values_32.json", result);
     }
     SECTION("5half") {
-        double k = 2.5;
         double x_star = 30;
-        calculate(result, k, x_star);
+        calculate(result, fdsf::index::P5_HALF, x_star);
         filesys::writeFile("values_52.json", result);
     }
     SECTION("7half") {
-        double k = 3.5;
         double x_star = 29;
-        calculate(result, k, x_star);
+        calculate(result, fdsf::index::P7_HALF, x_star);
         filesys::writeFile("values_72.json", result);
     }
 }
@@ -104,6 +99,6 @@ TEST_CASE("richardson_check") {
     SECTION("m3half") {
         double k = -1.5;
         double x_star = 52;
-        result = calculateWithRichardson(k, x_star);
+      //  result = calculateWithRichardson(k, x_star);
     }
 }

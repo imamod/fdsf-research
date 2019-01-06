@@ -1,20 +1,10 @@
 #include "FdHalfQuadratures.h"
 #include "Fdsf.h"
 #include "JsonFields.h"
+#include "Richardson.h"
 #include "Logger.h"
-// TODO: remove
-#include <iostream>
-#include <limits>
-namespace {
-    void print(double x, double I, int N) {
-        std::cout.precision(std::numeric_limits<double>::max_digits10);
-        std::cout << "x = " << x << " N = " << N << " I = " << I << std::endl;
-    }
-}
 
 namespace quad {
-
-    using FermiFunction = std::function<double(double x, double k, double tau)>;
 
     // Подынтегральная функция для индекса k = -3/2
     double fd_m3half(double tau, double x, double k) {
@@ -30,47 +20,20 @@ namespace quad {
         return pow(tau, 2 * k + 1) / denom;
     }
 
-    // Euler-Macloren Formulas
-    double trapz(FermiFunction f, double x, const double k, size_t N) {
-        double h = 12.0 / N;
-        std::vector<double> u;
-        for (size_t i = 0; i < N + 1; ++i) {
-            u.push_back(f(i * h, x, k));
-        }
-        u.at(0) /= 2.0;
-        u.at(N) /= 2.0;
-        double I = 0.0;
-        for (auto it = u.rbegin(); it != u.rend(); ++it) {
-            I += *it;
-        }
-        //double I = std::accumulate(u.rbegin(), u.rend(), 0.0);
-        return h*I;
-    }
-
-    // Критерий останова для формул Эйлера-Маклорена
-    const double epsilon = 1e-11;
-
     nlohmann::json calculate(double k, double x) {
-        const int N_init = 12;
-        int N = N_init;
-        double stop_criteria;
+        const int initialGrid = 12;
         // Для индекса k =-3/2 отличный от других индексов вид подынтегральной функции
         FermiFunction f = (k == fdsf::index::M3_HALF) ? fd_m3half : fd_m12;
-        double I_n = trapz(f, x, k, N);
-        print(x, I_n, N);
-        do {
-            double I_2n = trapz(f, x, k, 2 * N);
-            stop_criteria = (I_n / I_2n - 1);
-            I_n = I_2n;
-            N = 2 * N;
-            print(x, I_2n, N);
-        } while (abs(stop_criteria) > epsilon);
+        FermiDirakFunction fd = {k, x, f};
+        Richardson r(std::make_shared<FermiDirakFunction>(fd), initialGrid);
+        r.calculate();
         nlohmann::json object = nlohmann::json::object();
         object[fd::X] = x;
         // Домножаем значение интеграла на коэффициент перед ним ( смотри формулы (30, 34) препринт 2 )
         const BmpReal coeff = (k == fdsf::index::M3_HALF) ? -1 : 2;
-        object[fd::I] = coeff * I_n;
-        object[fd::N_MAX] = N / 2;
+        object[fd::I] = coeff * r.get();
+        // TODO: fix
+        //object[fd::N_MAX] = N / 2;
         //std::cout << object.dump() << std::endl;
         return object;
     }
