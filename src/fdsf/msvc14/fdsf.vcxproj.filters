@@ -116,5 +116,8 @@
     <ClInclude Include="..\src\include\Trapz.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\FdIndex.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

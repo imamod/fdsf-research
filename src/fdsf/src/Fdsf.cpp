@@ -2,7 +2,7 @@
 * Боевая реализация вычисления функций ФД
 */
 #include "Fdsf.h"
-
+#include "FdIndex.h"
 #include "FullyConvergedSeries.h"
 #include "AsymptoticSeries.h"
 #include "FdHalfQuadratures.h"

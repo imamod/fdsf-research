@@ -2,6 +2,7 @@
  * Реализация всюду сходящегося ряда
  */
 #include "FullyConvergedSeries.h"
+#include "FdIndex.h"
 #include "Gamma.h"
 #include "Constants.h"
 
@@ -156,25 +157,26 @@ namespace fcs {
     /* Получить коэффициенты по индексу */
     BmpVector coefficientsByIndex(BmpReal k) {
         // Для индекса k = -3/2 интеграл вычисляется через коэффициенты для k = -1/2
-        if (k == -0.5 || k == -1.5) {
+        if (fdsf::index::M1_HALF == k ||
+            fdsf::index::M3_HALF == k) {
             return b_mhalf;
-        } else if (k == 0) {
+        } else if (fdsf::index::ZERO == k) {
             return b_k0;
-        } else if (k == 0.5) {
+        } else if (fdsf::index::P1_HALF == k) {
             return b_half;
-        } else if (k == 1) {
+        } else if (fdsf::index::P1 == k) {
             return b_k1;
-        } else if (k == 1.5) {
+        } else if (fdsf::index::P3_HALF == k) {
             return b_3half;
-        } else if (k == 2) {
+        } else if (fdsf::index::P2 == k) {
             return b_k2;
-        } else if (k == 2.5) {
+        } else if (fdsf::index::P5_HALF == k) {
             return b_5half;
-        } else if (k == 3) {
+        } else if (fdsf::index::P3 == k) {
             return b_k3;
-        } else if (k == 3.5) {
+        } else if (fdsf::index::P7_HALF == k) {
             return b_7half;
-        } else if (k == 4) {
+        } else if (fdsf::index::P4 == k) {
             return b_k4;
         }
         throw std::invalid_argument("Unsuppported index");
@@ -207,8 +209,8 @@ namespace fcs {
         BmpVector b = coefficientsByIndex(k);
         BmpReal exp_mx = exp(-x);
         BmpReal g = pow(1 + 2 * exp_mx, -1);
-        BmpReal sum = k == -1.5 ? gornerM3half(g, b) : gorner(g, b);
-        BmpReal multiplier = k == -1.5 ? -8*sqrt(pi())*exp_mx : 2 * factorial(k);
+        BmpReal sum = (fdsf::index::M3_HALF == k) ? gornerM3half(g, b) : gorner(g, b);
+        BmpReal multiplier = (fdsf::index::M3_HALF == k) ? -8*sqrt(pi())*exp_mx : 2 * factorial(k);
         return multiplier * sum;
     }
 

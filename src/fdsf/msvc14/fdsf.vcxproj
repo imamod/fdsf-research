@@ -375,6 +375,7 @@
     <ClCompile Include="..\src\ZetaFunction.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\FdIndex.h" />
     <ClInclude Include="..\include\Fdsf.h" />
     <ClInclude Include="..\src\include\AsymptoticSeries.h" />
     <ClInclude Include="..\src\include\BasicService.h" />
