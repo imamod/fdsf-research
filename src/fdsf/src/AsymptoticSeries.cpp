@@ -1,5 +1,6 @@
 #include "AsymptoticSeries.h"
 #include "Constants.h"
+#include "FdIndex.h"
 #include "Logger.h"
 
 #include <iostream>
@@ -40,17 +41,17 @@ namespace asympt_series {
 
     // Получение x_min и N_max для конкретного индекса
     Limits limits(BmpReal k) {
-        if (k == -1.5) {
+        if (fdsf::index::M3_HALF == k) {
             return{ 52, 11 };
-        } else if (k == -0.5) {
+        } else if (fdsf::index::M1_HALF == k) {
             return{ 39, 10 };
-        } else if (k == 0.5) {
+        } else if (fdsf::index::P1_HALF == k) {
             return{ 35, 10 };
-        } else if (k == 1.5) {
+        } else if (fdsf::index::P3_HALF == k) {
             return{ 33, 10 };
-        } else if (k == 2.5) {
+        } else if (fdsf::index::P5_HALF == k) {
             return{ 30, 10 };
-        } else if (k == 3.5) {
+        } else if (fdsf::index::P7_HALF == k) {
             return{ 29, 10 };
         }
         throw std::invalid_argument("Unsuppported k-index value");
@@ -58,17 +59,17 @@ namespace asympt_series {
 
     // Получает коэффициенты асимптотического ряда для конкретного k
     BmpVector coefficents(BmpReal k) {
-        if (k == -1.5) {
+        if (fdsf::index::M3_HALF == k) {
             return A_m3half;
-        } else if (k == -0.5) {
+        } else if (fdsf::index::M1_HALF == k) {
             return A_mhalf;
-        } else if (k == 0.5) {
+        } else if (fdsf::index::P1_HALF == k) {
             return A_half;
-        } else if (k == 1.5) {
+        } else if (fdsf::index::P3_HALF == k) {
             return A_3half;
-        } else if (k == 2.5) {
+        } else if (fdsf::index::P5_HALF == k) {
             return A_5half;
-        } else if (k == 3.5) {
+        } else if (fdsf::index::P7_HALF == k) {
             return A_7half;
         }
         throw std::invalid_argument("Unsupported k-index value");
