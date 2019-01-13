@@ -24,9 +24,6 @@
     <ClCompile Include="..\src\Grid.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\IntegralFDSF.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\SeriesLogNDivSqrN.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -62,9 +59,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\include\MatrixUtils.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\include\BasicService.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -87,9 +81,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\include\AsymptoticSeries.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\include\IntegralFDSF.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\include\Logger.h">
