@@ -1,5 +1,5 @@
 #include "Common.h"
-#include "Fdsf.h"
+#include "FdIndex.h"
 #include "Gamma.h"
 #include "Richardson.h"
 #include "Print.h"
@@ -20,10 +20,9 @@ namespace {
 
     void check(double expected, double index) {
         const size_t initialGrid = 12;
-        FermiDirakFunction fd = { index, 0, fd_m12};
-        Richardson r(std::make_shared<FermiDirakFunction>(fd), initialGrid);
-        CHECK_NOTHROW(r.calculate());
-        CHECK(abs(expected - 2*r.get()) < 1e-15);
+        FermiDirakFunction fd(0, index);
+        Richardson r(initialGrid, fd);
+        CHECK(abs(expected - r.calculate().I) < 1e-15);
     }
 }
 

@@ -2,32 +2,34 @@
 
 #include "BasicTypes.h"
 
-using FermiFunction = std::function<double(double, double, double)>;
+namespace fdsf {
+    using SubIntegralFunc = std::function<double(double, double, double)>;
 
-struct FermiDirakFunction {
-    // Индекс функции ФД
-    double index;
-    // Точка x в которой вычисляется значение x
-    double x;
-    // Представление подынтегральной функции
-    std::function<double(double, double, double)> func;
-};
+    struct Params {
+        // Индекс функции ФД
+        double index;
+        // Точка x в которой вычисляется значение x
+        double x;
+    };
+}
 
-/* Класс описывающий метод трапеций для функций ФД */
-class TrapzFD {
+
+class Trapz {
     public:
-        explicit TrapzFD(const FermiDirakFunction& fd, double grid);
+        explicit Trapz(fdsf::SubIntegralFunc func) 
+            : m_func(func) {}
+        virtual ~Trapz() {}
 
-        // Вычислить методом трапеций значение интеграла на сетке
-        double trapz(double previousGridValue);
+        // Вычисление на первой сетке
+        virtual double firstGrid(BmpReal initialGrid, const fdsf::Params& params) = 0;
+        // Экономичное вычисление при следующих сгущениях
+        virtual double economicGrid(BmpReal initialGrid, double previousValue, const fdsf::Params& params) = 0;
+
+        inline fdsf::SubIntegralFunc Trapz::subIntegralFunction() const {
+            return m_func;
+        }
 
     private:
-        // Число узлов сетки
-        double m_N;
-        // Функция ФД
-        FermiDirakFunction m_fd;
-        // Вычисление на первой сетке
-        double firstGrid();
-        // Экономичное вычисление при следующих сгущениях
-        double economicGrid(double previousValue);
+        // Колбек подынтегральной функции
+        fdsf::SubIntegralFunc m_func;
 };

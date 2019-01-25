@@ -15,6 +15,9 @@ namespace asympt_series {
 
     // Вычислить значение ФД для x >= x_min
     BmpReal calculate(BmpReal k, BmpReal x);
+
+    // TODO: Вычислить значение интегральной ФД для x >= x_min
+    BmpReal calculateJmhalf(BmpReal x);
 }
 
         // Значение коэффициентов А асимптотического ряда

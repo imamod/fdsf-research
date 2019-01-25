@@ -1,5 +1,6 @@
 #include "Common.h"
-#include "Trapz.h"
+#include "FdIndex.h"
+#include "FermiDirakFunction.h"
 #include "Gamma.h"
 
 namespace {
@@ -13,16 +14,15 @@ namespace {
     }
 
     void check(double fdIndex, double expected) {
-        const int N_init = 12;
-        int N = N_init;
+        int N = 12;
         double stop_criteria;
-        FermiDirakFunction fd = { fdIndex, 0, fd_m12 };
-        double I_n = TrapzFD(fd, N_init).trapz(0);
+        FermiDirakFunction fd(0, fdIndex);
+        double I_n = fd.calculate(N);
         do {
-            double I_2n = TrapzFD(fd, 2*N).trapz(I_n);
+            N = 2 * N;
+            double I_2n = fd.calculate(N, I_n);
             stop_criteria = abs(I_n / I_2n - 1);
             I_n = I_2n;
-            N = 2 * N;
         } while (stop_criteria > epsilon);
         const double normalizedValue = 2 * I_n / factorial(fdIndex);
         CHECK(abs(expected - normalizedValue) < 1e-15);

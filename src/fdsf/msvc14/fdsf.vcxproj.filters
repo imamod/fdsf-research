@@ -54,7 +54,13 @@
     <ClCompile Include="..\src\Richardson.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Trapz.cpp">
+    <ClCompile Include="..\src\TrapzFD.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TrapzJm2Half.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\FermiDirakFunction.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -104,10 +110,19 @@
     <ClInclude Include="..\src\include\Richardson.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\include\Trapz.h">
+    <ClInclude Include="..\include\FdIndex.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\FdIndex.h">
+    <ClInclude Include="..\src\include\TrapzFD.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\TrapzJm2Half.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\FermiDirakFunction.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Trapz.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

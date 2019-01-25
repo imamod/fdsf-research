@@ -364,13 +364,17 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\FDSFInteger-legacy.cpp" />
+    <ClCompile Include="..\src\FermiDirakFunction.cpp" />
     <ClCompile Include="..\src\FullyConvergedSeries.cpp" />
     <ClCompile Include="..\src\Gamma.cpp" />
     <ClCompile Include="..\src\Grid.cpp" />
     <ClCompile Include="..\src\Newton.cpp" />
     <ClCompile Include="..\src\Richardson.cpp" />
     <ClCompile Include="..\src\SeriesLogNDivSqrN.cpp" />
-    <ClCompile Include="..\src\Trapz.cpp" />
+    <ClCompile Include="..\src\TrapzFD.cpp" />
+    <ClCompile Include="..\src\TrapzJm2Half.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\src\ZetaFunction.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -382,6 +386,7 @@
     <ClInclude Include="..\src\include\Constants.h" />
     <ClInclude Include="..\src\include\FdHalfQuadratures.h" />
     <ClInclude Include="..\src\include\Fdsf-legacy.h" />
+    <ClInclude Include="..\src\include\FermiDirakFunction.h" />
     <ClInclude Include="..\src\include\FullyConvergedSeries.h" />
     <ClInclude Include="..\src\include\Gamma.h" />
     <ClInclude Include="..\src\include\Grid.h" />
@@ -389,7 +394,9 @@
     <ClInclude Include="..\src\include\Richardson.h" />
     <ClInclude Include="..\src\include\SeriesLogNDivSqrN.h" />
     <ClInclude Include="..\src\include\Tables.h" />
+    <ClInclude Include="..\src\include\TrapzFD.h" />
     <ClInclude Include="..\src\include\Trapz.h" />
+    <ClInclude Include="..\src\include\TrapzJm2Half.h" />
     <ClInclude Include="..\src\include\ZetaFunction.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

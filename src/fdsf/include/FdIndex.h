@@ -3,7 +3,7 @@
 #include "BasicTypes.h"
 
 namespace fdsf {
-    /* �������������� ������� ������� �� */
+    /* Поддерживаемые индексы функций ФД */
     namespace index {
         const BmpReal M3_HALF = -3.0 / 2;
         const BmpReal M1_HALF = -1.0 / 2;
@@ -16,5 +16,7 @@ namespace fdsf {
         const BmpReal P3 = 3;
         const BmpReal P7_HALF = 7.0 / 2;
         const BmpReal P4 = 4;
+        // Интегральная функция, обозначим таким значением
+        const BmpReal JM2_HALF = -1000;
     }
 }
