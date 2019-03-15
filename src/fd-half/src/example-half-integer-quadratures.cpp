@@ -10,9 +10,15 @@ namespace {
     void calculate(nlohmann::json& result, double k, double x_star) {
         std::ofstream f(std::to_string(k));
         nlohmann::json values = nlohmann::json::array();
-        for (double x = 0.0; x < x_star + 1; ++x) {
+        // Расчет реперной точки x = -2
+        values.push_back(quad::calculate(k, -2));
+        f << values[0][fd::I] << std::endl;
+        // Расчет реперной точки x = -1
+        values.push_back(quad::calculate(k, -1));
+        f << values[1][fd::I] << std::endl;
+        for (double x = 30.0; x < x_star + 1; x = x + 5) {
             values.push_back(quad::calculate(k, x));
-            f << values[x][fd::I] << std::endl;
+            f << values[x + 2][fd::I] << std::endl;
         }
         f.close();
         result[fd::K] = k;
@@ -62,33 +68,34 @@ TEST_CASE("calculate") {
     nlohmann::json result = nlohmann::json::object();
    // TODO: переработать функцию filesys::createDirectory("quadratures");
     // TODO: setPreciseOutput();
+    double x_star = 60;
     SECTION("m3half") {
-        double x_star = 52;
+        //double x_star = 52;
         calculate(result, fdsf::index::M3_HALF, x_star);
         filesys::writeFile("values_m32.json", result);
     }
     SECTION("mhalf") {
-        double x_star = 39;
+        //double x_star = 39;
         calculate(result, fdsf::index::M1_HALF, x_star);
         filesys::writeFile("values_m12.json", result);
     }
     SECTION("half") {
-        double x_star = 35;
+        //double x_star = 35;
         calculate(result, fdsf::index::P1_HALF, x_star);
         filesys::writeFile("values_12.json", result);
     }
     SECTION("3half") {
-        double x_star = 33;
+        //double x_star = 33;
         calculate(result, fdsf::index::P3_HALF, x_star);
         filesys::writeFile("values_32.json", result);
     }
     SECTION("5half") {
-        double x_star = 30;
+        //double x_star = 30;
         calculate(result, fdsf::index::P5_HALF, x_star);
         filesys::writeFile("values_52.json", result);
     }
     SECTION("7half") {
-        double x_star = 29;
+        //double x_star = 29;
         calculate(result, fdsf::index::P7_HALF, x_star);
         filesys::writeFile("values_72.json", result);
     }
