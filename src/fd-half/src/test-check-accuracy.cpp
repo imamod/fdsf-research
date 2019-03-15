@@ -1,4 +1,5 @@
 #include "Common.h"
+#include "FileSys.h"
 
 namespace {
 
@@ -92,4 +93,57 @@ TEST_CASE("check_asym_and_quad") {
         BmpReal k = 3.5;
         checkAccuracy(k, 29, I_asym, I_quad);
     }
+}
+
+/**
+ * Обоснование замены вычисления экспоненты вычислением корня 4 степени
+ */
+namespace {
+
+    /* Вычиление прямых экспонент */
+    std::vector<BmpReal> direct_exponents(size_t N, BmpReal x, BmpReal k) {
+        BmpReal T_left = 0, T_right = 12.0;
+        BmpReal step = T_right / N;
+        BmpVector exponents;
+        for (BmpReal t = T_left; t <= T_right; t += step) {
+            exponents.push_back(exp(t*t));
+        }
+        return exponents;
+    }
+
+    /* Замена вычисления экспонент квадратным корнем */
+    std::vector<BmpReal> sqrtRefinement(size_t N_max, BmpReal x, BmpReal k) {
+        size_t N = 1;
+        BmpReal T_left = 0, T_right = 12.0;
+        // Поправка c = exp(-144) ^ (1/4)
+        BmpReal correction = exp( -144.0 / 4);
+        std::vector<BmpReal> exponents = { exp(T_left*T_left), exp(T_right*T_right) };
+        while (N < N_max) {
+            std::vector<BmpReal> values;
+            for (int n = 0; n < N; ++n) {
+                BmpReal newElement = sqrt(exponents[n] * exponents[n + 1]) * correction;
+                values.push_back(newElement);
+            }
+            exponents.insert(exponents.begin() + exponents.size(), values.begin(), values.end());
+            std::sort(exponents.begin(), exponents.end());
+            N *= 2;
+            correction = pow(correction, 1.0 / 4);
+        }
+        return exponents;
+    }
+}
+
+TEST_CASE("accuracyExpVsSqrt") {
+    size_t N_max = 1024;
+    BmpReal k = 1.0 / 2;
+    BmpReal x = 0;
+    nlohmann::json directExp = direct_exponents(N_max, x, k);
+    filesys::writeFile("accuracy_direct_exp.json", directExp);
+    nlohmann::json directExpSqrt = sqrtRefinement(N_max, x, k);
+    filesys::writeFile("accuracy_sqrt_exp.json", directExpSqrt);
+    nlohmann::json delta;
+    for (int i = 0; i < N_max; ++i) {
+        delta.push_back(directExp[i].get<BmpReal>() / directExpSqrt[i].get<BmpReal>() - 1);
+    }
+    filesys::writeFile("accuracy_sqrt_exp_delta.json", delta);
 }
