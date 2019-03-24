@@ -147,3 +147,196 @@ TEST_CASE("accuracyExpVsSqrt") {
     }
     filesys::writeFile("accuracy_sqrt_exp_delta.json", delta);
 }
+
+#include <chrono>
+namespace {
+
+    inline long double sum_check(long double x) {
+        return x + x;
+    }
+
+    inline long double mul_check(long double x) {
+        return x * x;
+    }
+
+    long double div_check(long double x) {
+        return x / x;
+    }
+
+    long double log_check(long double x) {
+        return log(x);
+    }
+
+    long double exp_check(long double x) {
+        return exp(x);
+    }
+
+    long double sqrt_check(long double x) {
+        return sqrt(x);
+    }
+
+    long double sin_check(long double x) {
+        return sin(x);
+    }
+
+    long double asin_check(long double x) {
+        return asin(x);
+    }
+
+    long double pow_check(long double x) {
+        return pow(x, 0.25);
+    }
+
+    const size_t OPERATION_TIMES = 100000000;
+    const double SMALL_NUMBER = pi() * exp(1);
+    const double LARGE_NUMBER = OPERATION_TIMES * pi() * exp(1);
+
+    void check_epty_cycle() {
+        auto start = std::chrono::system_clock::now();
+        for (size_t i = 0; i < OPERATION_TIMES; ++i) {}
+        auto end = std::chrono::system_clock::now();
+        std::chrono::duration<double> diff = (end - start);
+        std::cout << std::fixed << std::setprecision(16) <<
+                    " empty cycle time: " << 1000000000 * diff.count() / OPERATION_TIMES << " ns." << std::endl;
+    }
+
+    /* Проверка трудоемкости операции возведения в целую степень */
+    void check_integer_pow(double number, size_t powNumber) {
+        auto start = std::chrono::system_clock::now();
+        double res;
+        for (size_t i = 0; i < OPERATION_TIMES; ++i) {
+            res = pow(number, powNumber);
+        }
+        std::cout << res << std::endl;
+        auto end = std::chrono::system_clock::now();
+        std::chrono::duration<double> diff = (end - start);
+        std::cout << std::fixed << std::setprecision(16) <<
+            " pow " << powNumber << " time: " << 1000000000 * diff.count() / OPERATION_TIMES << " ns." << std::endl;
+    }
+
+    /* Проверка трудоемкости операций */
+    void checkOperation(double number, const std::string& operationName, std::function<long double(long double)> operation) {
+        auto start = std::chrono::system_clock::now();
+        for (size_t i = 0; i < OPERATION_TIMES; ++i) {
+            operation(number);
+        }
+        auto end = std::chrono::system_clock::now();
+        std::chrono::duration<double> diff = (end - start);
+        std::cout << std::fixed << std::setprecision(16) << operationName
+                  << " time: " << 1000000000 * diff.count() / OPERATION_TIMES << " ns." << std::endl;
+    }
+}
+
+/**
+small number sum time: 179.46 ns.
+large number sum time: 179.59 ns.
+small number mul time: 179.40 ns.
+large number mul time: 180.15 ns.
+small number div time: 179.24 ns.
+large number div time: 180.50 ns.
+small number log time: 232.68 ns.
+large number log time: 234.74 ns.
+small number exp time: 233.36 ns.
+large number exp time: 606.00 ns.
+small number sqrt time: 228.72 ns.
+large number sqrt time: 227.99 ns.
+small number sin time: 237.08 ns.
+large number sin time: 271.40 ns.
+small number arcsin time: 570.73 ns.
+large number arcsin time: 569.29 ns.
+
+pow
+empty cycle time: 3.83 ns.
+pow 2 time: 147.43 ns.
+pow 2 time: 145.54 ns.
+pow 3 time: 144.99 ns.
+pow 3 time: 145.32ns.
+pow 4 time: 145.62 ns.
+pow 4 time: 145.28 ns.
+pow 5 time: 145.81 ns.
+pow 5 time: 145.16 ns.
+pow 11 time: 145.35 ns.
+pow 11 time: 145.26 ns.
+pow 8 time: 145.63 ns.
+pow 853973422 time: 403.12 ns.
+*/
+
+TEST_CASE("checkAdditional") {
+    {
+        INFO("Проверка пустого цикла");
+        check_epty_cycle();
+    }
+    {
+        INFO("Проверка возведения во 2 степень");
+        check_integer_pow(SMALL_NUMBER, 2);
+        check_integer_pow(LARGE_NUMBER, 2);
+    }
+    {
+        INFO("Проверка возведения в 3 степень");
+        check_integer_pow(SMALL_NUMBER, 3);
+        check_integer_pow(LARGE_NUMBER, 3);
+    }
+    {
+        INFO("Проверка возведения в 4 степень");
+        check_integer_pow(SMALL_NUMBER, 4);
+        check_integer_pow(LARGE_NUMBER, 4);
+    }
+    {
+        INFO("Проверка возведения в 5 степень");
+        check_integer_pow(SMALL_NUMBER, 5);
+        check_integer_pow(LARGE_NUMBER, 5);
+    }
+    {
+        INFO("Проверка возведения в 11 степень");
+        check_integer_pow(SMALL_NUMBER, 11);
+        check_integer_pow(LARGE_NUMBER, 11);
+    }
+    {
+        INFO("Проверка возведения в степень");
+        check_integer_pow(SMALL_NUMBER, SMALL_NUMBER);
+        check_integer_pow(LARGE_NUMBER, LARGE_NUMBER);
+    }
+}
+
+TEST_CASE("checkOperationTime") {
+    {
+        INFO("Проверка единичного сложения");
+        checkOperation(SMALL_NUMBER, "small number sum", sum_check);
+        checkOperation(LARGE_NUMBER, "large number sum", sum_check);
+    }
+    {
+        INFO("Проверка единичного умножения");
+        checkOperation(SMALL_NUMBER, "small number mul", mul_check);
+        checkOperation(LARGE_NUMBER, "large number mul", mul_check);
+    }
+    {
+        INFO("Проверка единичного деления");
+        checkOperation(SMALL_NUMBER, "small number div", div_check);
+        checkOperation(LARGE_NUMBER, "large number div", div_check);
+    }
+    {
+        INFO("Проверка log");
+        checkOperation(SMALL_NUMBER, "small number log", log_check);
+        checkOperation(LARGE_NUMBER, "large number log", log_check);
+    }
+    {
+        INFO("Проверка exp");
+        checkOperation(SMALL_NUMBER, "small number exp", exp_check);
+        checkOperation(LARGE_NUMBER, "large number exp", exp_check);
+    }
+    {
+        INFO("Проверка sqrt");
+        checkOperation(SMALL_NUMBER, "small number sqrt", sqrt_check);
+        checkOperation(LARGE_NUMBER, "large number sqrt", sqrt_check);
+    }
+    {
+        INFO("Проверка sin");
+        checkOperation(SMALL_NUMBER, "small number sin", sin_check);
+        checkOperation(LARGE_NUMBER, "large number sin", sin_check);
+    }
+    {
+        INFO("Проверка arcsin");
+        checkOperation(SMALL_NUMBER, "small number arcsin", asin_check);
+        checkOperation(LARGE_NUMBER, "large number arcsin", asin_check);
+    }
+}
