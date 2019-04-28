@@ -46,7 +46,7 @@ namespace {
         const std::vector<BmpReal> REPER_DOTS = { -2, -1, 0 };
         for (size_t i = 0; i < REPER_DOTS.size(); ++i) {
             BmpReal I_0 = fcs::calculate(k, REPER_DOTS[i]);
-            std::cout << "x = " << REPER_DOTS[i] << ": " << abs(I_0 / expected[i] - 1) << std::endl;
+            std::cout << "x = " << REPER_DOTS[i] << ": " << I_0 / expected[i] - 1 << std::endl;
         }
     }
 }

@@ -7,7 +7,7 @@ namespace {
 
     void checkAccuracy(BmpReal k, BmpReal x, BmpReal left, BmpReal right) {
         setPreciseOutput();
-        std::cout << "k = " << k << ", x = " << x << ", d = " << abs(left/right - 1) << std::endl;
+        std::cout << "k = " << k << ", x = " << x << ", d = " << left/right - 1 << std::endl;
     }
 }
 

@@ -55,7 +55,7 @@ namespace {
         const std::vector<BmpReal> REPER_DOTS = { 30, 35, 40, 45, 50 };
         for (size_t i = 0; i < REPER_DOTS.size(); ++i) {
             BmpReal I_0 = asympt_series::calculate(k, REPER_DOTS[i]);
-            std::cout << "x = " << REPER_DOTS[i] << ": " << abs(I_0 / expected[i] - 1) << std::endl;
+            std::cout << "x = " << REPER_DOTS[i] << ": " << I_0 / expected[i] - 1 << std::endl;
         }
     }
 }
