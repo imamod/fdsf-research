@@ -24,10 +24,12 @@ namespace {
         }
     }
 
-    // Вычисление Ck x-> +inf
-    BmpVector calculateCRight(int N) {
+    /**
+     * Вычисление Ck x-> +inf для [I-0.5]^2, для вычисления коэффициентов
+     * интегральной ф-ии каждый поделить на (n-1)
+     */
+    BmpVector calculateIm2Coeff(int N) {
         Logger log("calculateCRight");
-        log.info(std::to_string(-pi()*pi() / 24));
         BmpReal k(-_1 / 2);
         BmpReal prod = 1, kPairsProd = (k + 1);
         BmpVector result = { 1 }, A = { 1 };//, -pi()*pi() / 24 };
@@ -37,13 +39,37 @@ namespace {
             kPairsProd -= 2;
             A.push_back(mul*zetaFunction(2*q)*prod);
         }
-       // print::vector(A);
+        //print::vector(A);
         for (int n = 1; n <= N; ++n) {
             BmpReal sum = 0;
             for (int q = 0; q <= n; ++q) {
                 sum += A.at(q)*A.at(n - q);
             }
             result.push_back(sum);
+        }
+        return result;
+    }
+
+    // Вычисляет коэффициенты интегральной ф-ии по коэффициентам Im2half
+    BmpVector Jm2Coeff() {
+        const BmpVector IM2_HALF = {
+            1.00000000000000000,
+            -0.82246703342411309,
+            -3.38226010534730559,
+            -56.74866767632004638,
+            -2076.43981697169328982,
+            -133516.62391908300924115,
+            -13363920.49546855688095093,
+            -1924202279.42978835105895996,
+            -376996608458.57202148437500000,
+            -96469021655492.73437500000000000,
+            -31243036135798104.00000000000000000,
+            -12492545181655248896.00000000000000000,
+            -6044381261816933646336.00000000000000000,
+        };
+        BmpVector result{ 1, -pi()*pi()/6 };
+        for (size_t n = 2; n < IM2_HALF.size(); ++n) {
+            result.push_back(-IM2_HALF.at(n)/(n-1));
         }
         return result;
     }
@@ -70,8 +96,52 @@ TEST_CASE("seriesCheck") {
 }
 
 TEST_CASE("calculate") {
-    INFO("Вычисление коэффициентов асимптотического ряда для интегральной ФД");
-    BmpVector coeff = calculateCRight(12);
-    // TODO: setPreciseOutput();
-    filesys::writeFile("iffdRight.txt", coeff);
+    {
+        INFO("Вычисление коэффициентов асимптотического ряда для [Im2]^2 ФД");
+        nlohmann::json coeff = calculateIm2Coeff(12);
+        // TODO: setPreciseOutput();
+        filesys::writeFile("Im2.json", coeff);
+    }
+    {
+        INFO("Вычисление коэффициентов асимптотического ряда для интегральной ФД");
+        nlohmann::json coeff = Jm2Coeff();
+        filesys::writeFile("Jm2.json", coeff);
+    }
+}
+
+TEST_CASE("asympt_borders") {
+    BmpVector coeff = {
+        1.00000000000000000,
+        - 0.82246703342411309,
+        - 3.38226010534730559,
+        - 56.74866767632004638,
+        - 2076.43981697169328982,
+        - 133516.62391908300924115,
+        - 13363920.49546855688095093,
+        - 1924202279.42978835105895996,
+        - 376996608458.57202148437500000,
+        - 96469021655492.73437500000000000,
+        - 31243036135798104.00000000000000000,
+        - 12492545181655248896.00000000000000000,
+        - 6044381261816933646336.00000000000000000,
+    };
+    setPreciseOutput();
+    BmpVector firstEq;
+    for (int i = coeff.size() - 1; i > 0; --i) {
+        BmpReal relation = coeff.at(i) / coeff.at(i - 1);
+        //std::cout << "C(" << i << ")/C(" << i-1 << ") = " << relation << std::endl;
+        BmpReal value = 2 * sqrt(relation*(i-1)/(i-2));
+        firstEq.push_back(value);
+        std::cout << " n = " << i - 1 << " : x = " << value << std::endl;
+    }
+    BmpVector secondEq;
+    for (int i = coeff.size() - 1; i > 0; --i) {
+        BmpVector precisions;
+        std::cout << " n = " << i - 1 << " : x = ";
+        for (auto eps : { 1e-8, 1e-16, 1e-19 }) {
+            BmpReal value = pow(4*(i - 1)*abs(coeff.at(i)) / (3.0 * eps), 1.0 / (2*i));
+            std::cout << value << " ";
+        }
+        std::cout << std::endl;
+    }
 }
