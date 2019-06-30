@@ -5,6 +5,14 @@
 #include "FdIndex.h"
 #include "Gamma.h"
 #include "Constants.h"
+#include "Logger.h"
+
+namespace {
+    // Критерий верхнего предела для всюду сходящегося ряда( формула (8) препринт 2)
+    uint32_t getCoefficentsCount(BmpReal g) {
+        return ceil(-40.0 / log(g));
+    }
+}
 
 namespace fcs {
 
@@ -185,7 +193,7 @@ namespace fcs {
     // Схема Горнера всюду сходящегося ряда для индекса k = -3/2 (см. формулу (24) препринт 2)
     BmpReal gornerM3half(BmpReal g, const BmpVector& b) {
         // Для double-точности достаточно 36 коэффициентов (см препринт 1)
-        constexpr int N = 36;
+        const uint32_t N = getCoefficentsCount(g);
         BmpReal sum = g*N*b.at(N - 1);
         for (int n = N - 2; n > -1; --n) {
             sum = g*((n + 1)*b.at(n) + sum);
@@ -195,8 +203,9 @@ namespace fcs {
 
     // Схема Горнера всюду сходящегося ряда для индексов k >= -1/2 (см. формулу (7) препринт)
     BmpReal gorner(BmpReal g, const BmpVector& b) {
+        Logger log("fcs::gorner");
         // Для double-точности достаточно 36 коэффициентов (см препринт 1)
-        constexpr int N = 36;
+        const uint32_t N = getCoefficentsCount(g);
         BmpReal sum = g*b.at(N - 1);
         for (int n = N - 2; n > -1; --n) {
             sum = g*(b.at(n) + sum);
@@ -216,11 +225,12 @@ namespace fcs {
 
     // Вычислить значение интегральной ФД для x <= 0
     BmpReal calculateJmhalf(BmpReal x) {
-        // Для double-точности достаточно 36 коэффициентов (см препринт 1)
-        constexpr int N = 36;
+        Logger logger("calculateJmhalf");
         BmpReal exp_mx = exp(-x);
         BmpReal g = pow(1 + 2 * exp_mx, -1);
-        BmpReal sum = g*c_n.at(N - 1)*(N - 1);
+        // Для double-точности достаточно 36 коэффициентов (см препринт 1)
+        const uint32_t N = getCoefficentsCount(g);
+        BmpReal sum = g*c_n.at(N - 1);
         for (int n = N - 2; n > -1; --n) {
             sum = g*(c_n.at(n) + sum);
         }
