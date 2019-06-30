@@ -50,6 +50,45 @@ namespace {
         return result;
     }
 
+    const BmpVector C_N = {
+        1.00000000000000000,
+        -0.82246703342411309,
+        -3.38226010534730559,
+        -56.7486676763200464,
+        -2076.43981697169329,
+        -133516.623919083009,
+        -13363920.4954685569,
+        -1924202279.42978835,
+        -376996608458.572022,
+        -96469021655492.7344,
+        -31243036135798104.0,
+        -12492545181655248896.0,
+        -6044381261816933646336.0,
+    };
+
+    // Вычисление суммы ряда в асимптотическом разложении
+    BmpReal seriesSum(BmpReal x) {
+        Logger logger("seriesSum");
+        int N = 12;
+        BmpReal value = 0;
+        for (int n = N; n > 1; --n) {
+            logger.info("n = " + std::to_string(n));
+            value += C_N.at(n) / ((n - 1) * pow(x, 2 * n));
+        }
+        return value;
+    }
+
+    const BmpReal CONST_J = 0.76740941382814898;
+
+    // Обратный ход вычисления j
+    BmpReal asymptotic(BmpReal x) {
+        BmpReal seriesValue = seriesSum(x);
+        BmpReal bracket = 1 + (CONST_J - pi()*pi()*log(x) / 6) / (x*x) - seriesValue;
+        BmpReal value = 2 * x*x* bracket;
+        return value;
+    }
+
+
     // Вычисляет коэффициенты интегральной ф-ии по коэффициентам Im2half
     BmpVector Jm2Coeff() {
         const BmpVector IM2_HALF = {
@@ -72,6 +111,11 @@ namespace {
             result.push_back(-IM2_HALF.at(n)/(n-1));
         }
         return result;
+    }
+
+    void checkAccuracy(BmpReal x, BmpReal left, BmpReal right) {
+        setPreciseOutput();
+        std::cout << " x = " << x << ", d = " << left / right - 1 << std::endl;
     }
 }
 
@@ -106,6 +150,22 @@ TEST_CASE("calculate") {
         INFO("Вычисление коэффициентов асимптотического ряда для интегральной ФД");
         nlohmann::json coeff = Jm2Coeff();
         filesys::writeFile("Jm2.json", coeff);
+    }
+}
+
+TEST_CASE("accuracy") {
+    SECTION("quad_asym") {
+        const BmpVector QUAD_30_50 = {
+            1790.3529161501417,
+            2439.8437531948134,
+            3189.4031422037642,
+            4039.0147557204718,
+            4988.6674939821187,
+        };
+        size_t i = 0;
+        for (auto x : { 30, 35, 40, 45, 50 }) {
+           checkAccuracy(x, asymptotic(x), QUAD_30_50.at(i++));
+        }
     }
 }
 
