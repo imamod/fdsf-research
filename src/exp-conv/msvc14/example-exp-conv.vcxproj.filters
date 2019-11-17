@@ -18,5 +18,8 @@
     <ClCompile Include="..\example-exponent-convergence.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\ExponentialConvergence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@
 #include "catch.hpp"
 #include "BasicService.h"
 #include "Fdsf-legacy.h"
+#include "Constants.h"
 
 #include <iostream>
 
@@ -11,7 +12,7 @@ namespace {
     }
 
     BmpReal func_demo(BmpReal x) {
-        size_t n = 2;
+        size_t n = 0;
         BmpReal a = 1.75;
         return (a*a - 1)*pow(a, n)*cos(n*x) / pow(1 - 2 * a*cos(x) + a*a, 1);
     }
@@ -37,11 +38,12 @@ TEST_CASE("GornerVsTrapz") {
 }
 
 TEST_CASE("ExpConverge") {
-    //TODO: setPreciseOutput();
+    std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
     // Для статьи о сверхстепенной сходимости
     // TODO:
-    //epc::Richardson(func_demo, 0, pi());
-    epc::Richardson(func_cos, 0, 1);
+    epc::Richardson(func_demo, 0, pi());
+    /*epc::Richardson(func_cos, 0, 1);
     epc::Richardson(func_exp_cos, 0, 1);
     epc::Richardson(func_exp_sin, 0, 1);
+    */
 }

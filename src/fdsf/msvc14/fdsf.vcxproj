@@ -354,7 +354,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\AsymptoticSeries.cpp" />
-    <ClCompile Include="..\src\ExponentialConvergence.cpp" />
     <ClCompile Include="..\src\FdHalfQuadratures.cpp" />
     <ClCompile Include="..\src\Fdsf.cpp" />
     <ClCompile Include="..\src\FDSFHalf-legacy.cpp">
@@ -373,7 +372,8 @@
     <ClCompile Include="..\src\SeriesLogNDivSqrN.cpp" />
     <ClCompile Include="..\src\TrapzFD.cpp" />
     <ClCompile Include="..\src\TrapzJm2Half.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\ZetaFunction.cpp" />
   </ItemGroup>
@@ -384,6 +384,7 @@
     <ClInclude Include="..\src\include\BasicService.h" />
     <ClInclude Include="..\src\include\BasicTypes.h" />
     <ClInclude Include="..\src\include\Constants.h" />
+    <ClInclude Include="..\src\include\expTau2.h" />
     <ClInclude Include="..\src\include\FdHalfQuadratures.h" />
     <ClInclude Include="..\src\include\Fdsf-legacy.h" />
     <ClInclude Include="..\src\include\FermiDirakFunction.h" />
@@ -393,7 +394,6 @@
     <ClInclude Include="..\src\include\Logger.h" />
     <ClInclude Include="..\src\include\Richardson.h" />
     <ClInclude Include="..\src\include\SeriesLogNDivSqrN.h" />
-    <ClInclude Include="..\src\include\Tables.h" />
     <ClInclude Include="..\src\include\TrapzFD.h" />
     <ClInclude Include="..\src\include\Trapz.h" />
     <ClInclude Include="..\src\include\TrapzJm2Half.h" />
