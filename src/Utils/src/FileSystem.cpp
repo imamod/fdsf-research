@@ -17,6 +17,16 @@ namespace filesys {
         file.close();
     }
 
+    // Вывод значений в файл
+    void writeFile(const std::string& filename, const std::map<BmpReal,BmpReal>& data) {
+        std::ofstream file(filename);
+        file.precision(std::numeric_limits<BmpReal>::max_digits10);
+        for (auto const& it : data) {
+            file << "{" << std::fixed << it.first << ", " << it.second << "}" << std::endl;
+        }
+        file.close();
+    }
+
     std::string createDirectory(BmpReal k, size_t n, const std::string& prefix) {
         namespace fs = std::experimental::filesystem;
         if (!prefix.empty() && !fs::exists(prefix)) {
