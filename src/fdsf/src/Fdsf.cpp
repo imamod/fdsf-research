@@ -103,4 +103,18 @@ namespace fdsf {
     BmpReal fd_7half(BmpReal x) {
         return calculateHalf(x, index::P7_HALF);
     }
+
+    /* Интегральная функция ФД */
+    BmpReal fd_J(BmpReal x) {
+        if (x <= 0) {
+            // Всюду сходящийся ряд для x <=0
+            return fcs::calculateJmhalf(x);
+        } else if (x >= 50) {
+            // Асимптотический ряд для x >= x_min TODO
+            throw std::invalid_argument("Not supported");
+        }
+        // Квадратуры 0 <= x <= x_min
+        nlohmann::json result = quad::calculateJmhalf(x);
+        return result[fd::I];
+    }
 }

@@ -21,4 +21,7 @@ namespace fdsf {
     BmpReal fd_3half(BmpReal x);
     BmpReal fd_5half(BmpReal x);
     BmpReal fd_7half(BmpReal x);
+
+    /* Интегральная функция ФД */
+    BmpReal fd_J(BmpReal x);
 }
