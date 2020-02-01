@@ -366,6 +366,7 @@
     <ClCompile Include="..\src\FermiDirakFunction.cpp" />
     <ClCompile Include="..\src\FullyConvergedSeries.cpp" />
     <ClCompile Include="..\src\Gamma.cpp" />
+    <ClCompile Include="..\src\GlobalApproximations.cpp" />
     <ClCompile Include="..\src\Grid.cpp" />
     <ClCompile Include="..\src\Newton.cpp" />
     <ClCompile Include="..\src\Richardson.cpp" />
@@ -390,6 +391,7 @@
     <ClInclude Include="..\src\include\FermiDirakFunction.h" />
     <ClInclude Include="..\src\include\FullyConvergedSeries.h" />
     <ClInclude Include="..\src\include\Gamma.h" />
+    <ClInclude Include="..\src\include\GlobalApproximations.h" />
     <ClInclude Include="..\src\include\Grid.h" />
     <ClInclude Include="..\src\include\Logger.h" />
     <ClInclude Include="..\src\include\Richardson.h" />

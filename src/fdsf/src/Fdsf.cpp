@@ -6,6 +6,7 @@
 #include "FullyConvergedSeries.h"
 #include "AsymptoticSeries.h"
 #include "FdHalfQuadratures.h"
+#include "GlobalApproximations.h"
 #include "Constants.h"
 #include "JsonFields.h"
 
@@ -117,4 +118,130 @@ namespace fdsf {
         nlohmann::json result = quad::calculateJmhalf(x);
         return result[fd::I];
     }
+}
+
+/* Улучшенная асимптотика */
+
+BmpReal fdsf::global_approx::improved_asympt::fd_1(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P1, GlobalFive::ONE_COEFFICIENT);
+}
+
+BmpReal fdsf::global_approx::improved_asympt::fd_2(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P2, GlobalFive::ONE_COEFFICIENT);
+}
+
+BmpReal fdsf::global_approx::improved_asympt::fd_3(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P3, GlobalFive::ONE_COEFFICIENT);
+}
+
+BmpReal fdsf::global_approx::improved_asympt::fd_4(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P4, GlobalFive::ONE_COEFFICIENT);
+}
+
+BmpReal fdsf::global_approx::improved_asympt::fd_m3half(BmpReal x) {
+    throw std::exception("Function not implemented");
+}
+
+BmpReal fdsf::global_approx::improved_asympt::fd_m1half(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::M1_HALF, GlobalFive::ONE_COEFFICIENT);
+}
+
+BmpReal fdsf::global_approx::improved_asympt::fd_1half(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P1_HALF, GlobalFive::ONE_COEFFICIENT);
+}
+
+BmpReal fdsf::global_approx::improved_asympt::fd_3half(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P3_HALF, GlobalFive::ONE_COEFFICIENT);
+}
+
+BmpReal fdsf::global_approx::improved_asympt::fd_5half(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P5_HALF, GlobalFive::ONE_COEFFICIENT);
+}
+
+BmpReal fdsf::global_approx::improved_asympt::fd_7half(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P7_HALF, GlobalFive::ONE_COEFFICIENT);
+}
+
+/* Низкотемпературная асимптотика */
+
+BmpReal fdsf::global_approx::low_temp::fd_1(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P1, GlobalFive::LOW_TEMP);
+}
+
+BmpReal fdsf::global_approx::low_temp::fd_2(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P2, GlobalFive::LOW_TEMP);
+}
+
+BmpReal fdsf::global_approx::low_temp::fd_3(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P3, GlobalFive::LOW_TEMP);
+}
+
+BmpReal fdsf::global_approx::low_temp::fd_4(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P4, GlobalFive::LOW_TEMP);
+}
+
+BmpReal fdsf::global_approx::low_temp::fd_m3half(BmpReal x) {
+    throw std::exception("Function not implemented");
+}
+
+BmpReal fdsf::global_approx::low_temp::fd_m1half(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::M1_HALF, GlobalFive::LOW_TEMP);
+}
+
+BmpReal fdsf::global_approx::low_temp::fd_1half(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P1_HALF, GlobalFive::LOW_TEMP);
+}
+
+BmpReal fdsf::global_approx::low_temp::fd_3half(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P3_HALF, GlobalFive::LOW_TEMP);
+}
+
+BmpReal fdsf::global_approx::low_temp::fd_5half(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P5_HALF, GlobalFive::LOW_TEMP);
+}
+
+BmpReal fdsf::global_approx::low_temp::fd_7half(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P7_HALF, GlobalFive::LOW_TEMP);
+}
+
+/* Наилучшая точность */
+
+BmpReal fdsf::global_approx::best_prec::fd_1(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P1, GlobalFive::BEST_PREC);
+}
+
+BmpReal fdsf::global_approx::best_prec::fd_2(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P2, GlobalFive::BEST_PREC);
+}
+
+BmpReal fdsf::global_approx::best_prec::fd_3(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P3, GlobalFive::BEST_PREC);
+}
+
+BmpReal fdsf::global_approx::best_prec::fd_4(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P4, GlobalFive::BEST_PREC);
+}
+
+BmpReal fdsf::global_approx::best_prec::fd_m3half(BmpReal x) {
+    throw std::exception("Function not implemented");
+}
+
+BmpReal fdsf::global_approx::best_prec::fd_m1half(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::M1_HALF, GlobalFive::BEST_PREC);
+}
+
+BmpReal fdsf::global_approx::best_prec::fd_1half(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P1_HALF, GlobalFive::BEST_PREC);
+}
+
+BmpReal fdsf::global_approx::best_prec::fd_3half(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P3_HALF, GlobalFive::BEST_PREC);
+}
+
+BmpReal fdsf::global_approx::best_prec::fd_5half(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P5_HALF, GlobalFive::BEST_PREC);
+}
+
+BmpReal fdsf::global_approx::best_prec::fd_7half(BmpReal x) {
+    return global_formula::calculateFive(x, fdsf::index::P7_HALF, GlobalFive::BEST_PREC);
 }
