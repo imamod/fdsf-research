@@ -31,7 +31,7 @@ class Grid {
          * дополнительных точек между каждой парой базовых узлов.
          * Актуально для для левосторонней аппроксимации целых и полуцелых индексов.
          */
-        void setLinearTrigonometricGrid();
+        virtual void setLinearTrigonometricGrid();
 
         /**
          * Задает правую линейно-тригонометрическое сетку в базовых узлах справа, плюс m_additionalNCount
@@ -55,6 +55,23 @@ class Grid {
         */
         BmpVector intervalMaximums();
 
+        // Установить сетку базовых точек
+        void setBaseGrid(const BmpVector& grid) {
+            m_base = grid;
+        }
+
+        size_t baseNCount() const {
+            return m_N_base;
+        }
+
+        size_t addCount() const {
+            return m_additionalNCount;
+        }
+
+    protected:
+        /* Заполнить сетку дополнительными точками */
+        virtual void setAdditionalDots();
+
     private:
         // Число базовых точек
         size_t m_N_base;
@@ -64,9 +81,6 @@ class Grid {
         BmpVector m_base;
         // Массив дополнительных точек
         BmpVector m_additional;
-
-        /* Заполнить сетку дополнительными точками */
-        void setAdditionalDots();
 
         /**
          * В правосторонней аппроксимации для определения распределения узлов интерполяции
