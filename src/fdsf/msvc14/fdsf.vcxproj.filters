@@ -63,6 +63,9 @@
     <ClCompile Include="..\src\GlobalApproximations.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\PrecisionApproximations.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\BasicService.h">
@@ -126,6 +129,12 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\include\GlobalApproximations.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Errors.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\PrecisionApproximations.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

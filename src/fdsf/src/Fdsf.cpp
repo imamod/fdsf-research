@@ -5,12 +5,21 @@
 #include "FdIndex.h"
 #include "FullyConvergedSeries.h"
 #include "AsymptoticSeries.h"
+#include "Errors.h"
 #include "FdHalfQuadratures.h"
 #include "GlobalApproximations.h"
+#include "PrecisionApproximations.h"
 #include "Constants.h"
 #include "JsonFields.h"
 
 namespace {
+
+    /* Способ вычисления левой части при x < x* */
+    enum NegativeCalculateType {
+        FCS = 1,
+        PREC_APPROX,
+    };
+
     // Вычисление ФД полуцелых индексов
     BmpReal calculateHalf(BmpReal x, BmpReal k) {
         if (x <= 0) {
@@ -26,8 +35,7 @@ namespace {
     }
 
     // Вычисление положительного значени ФД целого индекса (cм. препринт 2, формула 10)
-    BmpReal positiveFdInteger(BmpReal k, BmpReal x) {
-        BmpReal fd_m = fcs::calculate(k, -x);
+    BmpReal positiveFdInteger(BmpReal k, BmpReal x, BmpReal fd_m) {
         const BmpReal PI = pi();
         if (fdsf::index::ZERO == k) {
             return fd_m + x;
@@ -47,13 +55,28 @@ namespace {
         throw std::invalid_argument("Unsupported k");
     }
 
-    // Вычисление ФД целых индексов
-    BmpReal calculateInteger(BmpReal k, BmpReal x) {
-        if (x <= 0) {
-            // Всюду сходящийся ряд для x <=0
-            return fcs::calculate(k, x);
+    // Вычисление ФД целых индексов с помощью всюду сходящегося ряда
+    BmpReal calculateInteger(BmpReal k, BmpReal x, uint8_t leftCalculationType) {
+        switch (leftCalculationType) {
+            case NegativeCalculateType::FCS: {
+                if (x <= 0) {
+                    // Всюду сходящийся ряд для x <=0
+                    return fcs::calculate(k, x);
+                }
+                BmpReal fd_m = fcs::calculate(k, -x);
+                return positiveFdInteger(k, x, fd_m);
+            }
+            case NegativeCalculateType::PREC_APPROX: {
+                if (x <= 0) {
+                    // Прецизионные аппроксимации
+                    return prec_approx_formula::calculate(k, x);
+                }
+                BmpReal fd_m = prec_approx_formula::calculate(k, -x);
+                return positiveFdInteger(k, x, fd_m);
+            }
+            default:
+                throw UnknownCalculationMethod();
         }
-        return positiveFdInteger(k, x);
     }
 }
 
@@ -61,23 +84,23 @@ namespace fdsf {
 
     /* Функции ФД целого индекса */
     BmpReal fd_0(BmpReal x) {
-        return calculateInteger(index::ZERO, x);
+        return calculateInteger(index::ZERO, x, NegativeCalculateType::FCS);
     }
 
     BmpReal fd_1(BmpReal x) {
-        return calculateInteger(index::P1, x);
+        return calculateInteger(index::P1, x, NegativeCalculateType::FCS);
     }
 
     BmpReal fd_2(BmpReal x) {
-        return calculateInteger(index::P2, x);
+        return calculateInteger(index::P2, x, NegativeCalculateType::FCS);
     }
 
     BmpReal fd_3(BmpReal x) {
-        return calculateInteger(index::P3, x);
+        return calculateInteger(index::P3, x, NegativeCalculateType::FCS);
     }
 
     BmpReal fd_4(BmpReal x) {
-        return calculateInteger(index::P4, x);
+        return calculateInteger(index::P4, x, NegativeCalculateType::FCS);
     }
 
     /* Функции ФД полуцелого индекса */
@@ -112,7 +135,7 @@ namespace fdsf {
             return fcs::calculateJmhalf(x);
         } else if (x >= 50) {
             // Асимптотический ряд для x >= x_min TODO
-            throw std::invalid_argument("Not supported");
+            throw FunctionNotImplemented();
         }
         // Квадратуры 0 <= x <= x_min
         nlohmann::json result = quad::calculateJmhalf(x);
@@ -120,6 +143,54 @@ namespace fdsf {
     }
 }
 
+/* Реализация вычислений функций ФД с помощью прецизионных аппроксимаций */
+/* Функции ФД целого индекса */
+BmpReal fdsf::prec_approx::fd_0(BmpReal x) {
+    throw FunctionNotImplemented();
+}
+
+BmpReal fdsf::prec_approx::fd_1(BmpReal x) {
+    return calculateInteger(index::P1, x, NegativeCalculateType::PREC_APPROX);
+}
+
+BmpReal fdsf::prec_approx::fd_2(BmpReal x) {
+    return calculateInteger(index::P2, x, NegativeCalculateType::PREC_APPROX);
+}
+
+BmpReal fdsf::prec_approx::fd_3(BmpReal x) {
+    return calculateInteger(index::P3, x, NegativeCalculateType::PREC_APPROX);
+}
+
+BmpReal fdsf::prec_approx::fd_4(BmpReal x) {
+    return calculateInteger(index::P4, x, NegativeCalculateType::PREC_APPROX);
+}
+
+/* Функции ФД полуцелого индекса */
+BmpReal fdsf::prec_approx::fd_m3half(BmpReal x) {
+    throw FunctionNotImplemented();
+}
+
+BmpReal fdsf::prec_approx::fd_m1half(BmpReal x) {
+    throw FunctionNotImplemented();
+}
+
+BmpReal fdsf::prec_approx::fd_1half(BmpReal x) {
+    throw FunctionNotImplemented();
+}
+
+BmpReal fdsf::prec_approx::fd_3half(BmpReal x) {
+    throw FunctionNotImplemented();
+}
+
+BmpReal fdsf::prec_approx::fd_5half(BmpReal x) {
+    throw FunctionNotImplemented();
+}
+
+BmpReal fdsf::prec_approx::fd_7half(BmpReal x) {
+    throw FunctionNotImplemented();
+}
+
+/* Реализация вычислений функций ФД с помощью глобальных аппроксимаций */
 /* Улучшенная асимптотика */
 
 BmpReal fdsf::global_approx::improved_asympt::fd_1(BmpReal x) {
@@ -139,7 +210,7 @@ BmpReal fdsf::global_approx::improved_asympt::fd_4(BmpReal x) {
 }
 
 BmpReal fdsf::global_approx::improved_asympt::fd_m3half(BmpReal x) {
-    throw std::exception("Function not implemented");
+    throw FunctionNotImplemented();
 }
 
 BmpReal fdsf::global_approx::improved_asympt::fd_m1half(BmpReal x) {
@@ -181,7 +252,7 @@ BmpReal fdsf::global_approx::low_temp::fd_4(BmpReal x) {
 }
 
 BmpReal fdsf::global_approx::low_temp::fd_m3half(BmpReal x) {
-    throw std::exception("Function not implemented");
+    throw FunctionNotImplemented();
 }
 
 BmpReal fdsf::global_approx::low_temp::fd_m1half(BmpReal x) {
@@ -223,7 +294,7 @@ BmpReal fdsf::global_approx::best_prec::fd_4(BmpReal x) {
 }
 
 BmpReal fdsf::global_approx::best_prec::fd_m3half(BmpReal x) {
-    throw std::exception("Function not implemented");
+    throw FunctionNotImplemented();
 }
 
 BmpReal fdsf::global_approx::best_prec::fd_m1half(BmpReal x) {

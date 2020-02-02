@@ -369,6 +369,7 @@
     <ClCompile Include="..\src\GlobalApproximations.cpp" />
     <ClCompile Include="..\src\Grid.cpp" />
     <ClCompile Include="..\src\Newton.cpp" />
+    <ClCompile Include="..\src\PrecisionApproximations.cpp" />
     <ClCompile Include="..\src\Richardson.cpp" />
     <ClCompile Include="..\src\SeriesLogNDivSqrN.cpp" />
     <ClCompile Include="..\src\TrapzFD.cpp" />
@@ -385,6 +386,7 @@
     <ClInclude Include="..\src\include\BasicService.h" />
     <ClInclude Include="..\src\include\BasicTypes.h" />
     <ClInclude Include="..\src\include\Constants.h" />
+    <ClInclude Include="..\src\include\Errors.h" />
     <ClInclude Include="..\src\include\expTau2.h" />
     <ClInclude Include="..\src\include\FdHalfQuadratures.h" />
     <ClInclude Include="..\src\include\Fdsf-legacy.h" />
@@ -394,6 +396,7 @@
     <ClInclude Include="..\src\include\GlobalApproximations.h" />
     <ClInclude Include="..\src\include\Grid.h" />
     <ClInclude Include="..\src\include\Logger.h" />
+    <ClInclude Include="..\src\include\PrecisionApproximations.h" />
     <ClInclude Include="..\src\include\Richardson.h" />
     <ClInclude Include="..\src\include\SeriesLogNDivSqrN.h" />
     <ClInclude Include="..\src\include\TrapzFD.h" />
