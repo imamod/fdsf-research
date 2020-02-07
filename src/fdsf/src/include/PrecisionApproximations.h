@@ -4,5 +4,6 @@
 
 namespace prec_approx_formula {
 
-    BmpReal calculate(BmpReal k, BmpReal x);
+    // Вычислить левую аппроксимацию в точке для заданного k
+    BmpReal calculateLeft(BmpReal k, BmpReal x);
 }

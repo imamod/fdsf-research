@@ -20,7 +20,7 @@ namespace {
         PREC_APPROX,
     };
 
-    // Вычисление ФД полуцелых индексов
+    // Вычисление ФД полуцелых индексов по схеме FCS + QUAD + ASYMPT
     BmpReal calculateHalf(BmpReal x, BmpReal k) {
         if (x <= 0) {
             // Всюду сходящийся ряд для x <=0
@@ -32,6 +32,15 @@ namespace {
         // Квадратуры 0 <= x <= x_min
         nlohmann::json result = quad::calculate(k, x);
         return result[fd::I];
+    }
+
+    // Вычисление ФД полуцелых индексов по схеме PREC_LEFT (см. магистерский диплом)
+    BmpReal calculateHalfPrecApprox(BmpReal x, BmpReal k) {
+        if (x <= 3) {
+            // Всюду сходящийся ряд для x <=0
+            return prec_approx_formula::calculateLeft(k, x);
+        }
+        throw FunctionNotImplemented();
     }
 
     // Вычисление положительного значени ФД целого индекса (cм. препринт 2, формула 10)
@@ -57,26 +66,24 @@ namespace {
 
     // Вычисление ФД целых индексов с помощью всюду сходящегося ряда
     BmpReal calculateInteger(BmpReal k, BmpReal x, uint8_t leftCalculationType) {
+        BmpReal fd_m;
+        bool isNegativeX = x <= 0;
         switch (leftCalculationType) {
             case NegativeCalculateType::FCS: {
-                if (x <= 0) {
-                    // Всюду сходящийся ряд для x <=0
-                    return fcs::calculate(k, x);
-                }
-                BmpReal fd_m = fcs::calculate(k, -x);
-                return positiveFdInteger(k, x, fd_m);
+                // Всюду сходящийся ряд для x <=0
+                fd_m = fcs::calculate(k, isNegativeX ? x : -x);
             }
             case NegativeCalculateType::PREC_APPROX: {
-                if (x <= 0) {
-                    // Прецизионные аппроксимации
-                    return prec_approx_formula::calculate(k, x);
-                }
-                BmpReal fd_m = prec_approx_formula::calculate(k, -x);
-                return positiveFdInteger(k, x, fd_m);
+                // Прецизионные аппроксимации
+                fd_m = prec_approx_formula::calculateLeft(k, isNegativeX ? x : -x);
             }
             default:
                 throw UnknownCalculationMethod();
         }
+        if (isNegativeX) {
+            return fd_m;
+        }
+        return positiveFdInteger(k, x, fd_m);
     }
 }
 
@@ -167,27 +174,27 @@ BmpReal fdsf::prec_approx::fd_4(BmpReal x) {
 
 /* Функции ФД полуцелого индекса */
 BmpReal fdsf::prec_approx::fd_m3half(BmpReal x) {
-    throw FunctionNotImplemented();
+    return calculateHalfPrecApprox(x, fdsf::index::M3_HALF);
 }
 
 BmpReal fdsf::prec_approx::fd_m1half(BmpReal x) {
-    throw FunctionNotImplemented();
+    return calculateHalfPrecApprox(x, fdsf::index::M1_HALF);
 }
 
 BmpReal fdsf::prec_approx::fd_1half(BmpReal x) {
-    throw FunctionNotImplemented();
+    return calculateHalfPrecApprox(x, fdsf::index::P1_HALF);
 }
 
 BmpReal fdsf::prec_approx::fd_3half(BmpReal x) {
-    throw FunctionNotImplemented();
+    return calculateHalfPrecApprox(x, fdsf::index::P3_HALF);
 }
 
 BmpReal fdsf::prec_approx::fd_5half(BmpReal x) {
-    throw FunctionNotImplemented();
+    return calculateHalfPrecApprox(x, fdsf::index::P5_HALF);
 }
 
 BmpReal fdsf::prec_approx::fd_7half(BmpReal x) {
-    throw FunctionNotImplemented();
+    return calculateHalfPrecApprox(x, fdsf::index::P7_HALF);
 }
 
 /* Реализация вычислений функций ФД с помощью глобальных аппроксимаций */
