@@ -244,7 +244,7 @@ end
 
 disp('lg(dc):');disp(log10(max(abs(delta_additional))));
 disp('-------------------');
-disp('Ёкстремумы:');
+disp('Ёкстремумы I:');
 span = 11;
 disp(max(abs(delta_additional(1:span))));
 for i=1:baseSize-1 

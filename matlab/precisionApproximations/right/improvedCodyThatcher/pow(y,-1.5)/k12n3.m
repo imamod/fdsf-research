@@ -245,7 +245,7 @@ end
 
 disp('lg(dc):');disp(log10(max(abs(delta_additional))));
 disp('-------------------');
-disp('Ёкстремумы:');
+disp('Ёкстремумы Z:');
 disp(max(abs(delta_additional(1:11))));
 disp(max(abs(delta_additional(11:22))));
 disp(max(abs(delta_additional(22:33))));
@@ -265,3 +265,34 @@ plot(y0,delta_base, 'k*','linewidth',5)
 % line([0;0],[-1.25; 1.35],'linewidth', 3, 'color', 'black');
 % title({'Ћинейно-тригонометрическа€ сетка';['k = ', num2str(k), ', N = ', num2str(N), ', x_d_i_v = ', num2str(x_div)]})
 % plot(log(1+exp(x_div)),2*10^-16,'b*');
+
+app_I_base = zeros(1,length(F_base));
+delta_base_I = zeros(1,length(F_base));
+for i=1:length(F_base)
+    app_I_base(i) = (F_base(i)*(C1/(y0(i)^2)) + 1)*((y0(i)^(k + 1))/(k+1));
+    delta_base_I(i) = app_I_base(i)/I_base(i)-1;
+end
+
+app_I = zeros(1,length(Y));
+delta_additional_I = zeros(1,length(Y));
+for i=1:length(app_I)
+    app_I(i) = (F(i)*(C1/(Y(i)^2)) + 1)*((Y(i)^(k + 1))/(k+1));
+    delta_additional_I(i) = app_I(i)/I_add(i)-1;
+end
+
+disp('lg(dc):');disp(log10(max(abs(delta_additional_I))));
+disp('-------------------');
+disp('Ёкстремумы I:');
+disp(max(abs(delta_additional_I(1:11))));
+disp(max(abs(delta_additional_I(11:22))));
+disp(max(abs(delta_additional_I(22:33))));
+disp(max(abs(delta_additional_I(33:44))));
+disp(max(abs(delta_additional_I(44:55))));
+disp(max(abs(delta_additional_I(55:end))));
+disp('-------------------');
+
+figure
+grid on, hold on
+xlabel('y'); %ylabel('d*10^1^0');
+plot(Y,delta_additional_I, 'k','linewidth', 2.5);
+plot(y0,delta_base_I, 'k*','linewidth',5)
