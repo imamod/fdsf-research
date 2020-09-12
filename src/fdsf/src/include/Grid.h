@@ -38,7 +38,7 @@ class Grid {
          * дополнительных точек между каждой парой базовых узлов.
          * Актуально только для полуцелых индексов.
          */
-        void setLinearTrigonometricGridRight();
+        virtual void setLinearTrigonometricGridRight();
 
         /**
          * Замена переменных. Исследование сетки с автоматическим выравниванием экстремумов.
