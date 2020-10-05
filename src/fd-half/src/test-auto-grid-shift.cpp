@@ -126,7 +126,7 @@ namespace {
             tau.emplace_back(nextTau);
         }
         // настроечный коэффициент tau
-        const BmpReal A = 0.2;
+        const BmpReal A = 0.2; // Release
         BmpReal tauOptimal = *std::min_element(tau.begin(), tau.end()) * A;
         const size_t MAX_TAU_VALUE = 1;
         if (tauOptimal > MAX_TAU_VALUE) {
@@ -239,6 +239,7 @@ namespace {
         return result;
     }
 
+    //// Аппроксимирующая формула 1 
     BmpVector getApproximationFormByFDValue(const BmpVector& y, const BmpVector& v) {
         const BmpReal k = 0.5;
         const BmpReal C1 = (k + 1) * k * pow(pi(), 2) / 6;
@@ -255,6 +256,27 @@ namespace {
         const BmpReal C1 = (k + 1) * k * pow(pi(), 2) / 6;
         for (size_t i = 0; i < v.size(); ++i) {
             U.emplace_back((v.at(i) * C1 / pow(Y.at(i), 2) + 1) * (pow(Y.at(i), k + 1) / (k + 1)));
+        }
+        return U;
+    }
+
+    // Аппроксимирующая форма 2
+    BmpVector getApproximationFormByFDValue2(const BmpVector& y, const BmpVector& v) {
+        const BmpReal k = 0.5;
+        const BmpReal C2 = (k + 1) * pow(pi(), 2) / 3;
+        BmpVector result;
+        for (size_t i = 0; i < v.size(); ++i) {
+            result.emplace_back(((pow(v[i] * (k + 1) / y[i], BmpReal(2.0) / k) - pow(y[i], 2))) / C2);
+        }
+        return result;
+    }
+
+    BmpVector getFDValueFromApproximation2(const BmpVector& Y, const BmpVector& v) {
+        BmpVector U;
+        const BmpReal k = 0.5;
+        const BmpReal C2 = (k + 1) * pow(pi(), 2) / 3;
+        for (size_t i = 0; i < v.size(); ++i) {
+            U.emplace_back(pow(v.at(i) * C2 + pow(Y.at(i), 2), k / BmpReal(2.0)) * Y.at(i) / (k + 1));
         }
         return U;
     }
@@ -286,9 +308,13 @@ namespace {
         const size_t N = baseSize / 2;
         BmpVector y0 = getI0Values(x);
         BmpVector Y = getI0Values(X);
-        const BmpReal C1 = (k + 1) * k * pow(pi(), 2) / 6;
-        BmpVector z = getApproximationFormByFDValue(y0, U_base);
-        BmpVector I = getApproximationFormByFDValue(Y, U_additional);
+        //// Первая форма аппроксимации
+        //BmpVector z = getApproximationFormByFDValue(y0, U_base);
+        //BmpVector I = getApproximationFormByFDValue(Y, U_additional);
+        //// Вторая форма аппроксимации
+        BmpVector z = getApproximationFormByFDValue2(y0, U_base);
+        BmpVector I = getApproximationFormByFDValue2(Y, U_additional);
+
         // Правая часть
         BmpVector rightPart;
         for (auto it : z) {
@@ -323,6 +349,9 @@ namespace {
                 b.emplace_back(E.at(j));
             }
         }
+        
+        std::cout << "Аппроксимирующие коэффициенты в знаменателе:"<< std::endl;
+        print::vector(b);
 
         //
         BmpVector F_additional;
@@ -337,7 +366,10 @@ namespace {
             F_additional.emplace_back(BmpReal(1.0 + nom) / (1.0 + denom));
         }
 
-        return getFDValueFromApproximation(Y, F_additional);
+        //// Первая форма аппроксимации
+        //return getFDValueFromApproximation(Y, F_additional);
+        //// Вторая форма аппроксимации
+        return getFDValueFromApproximation2(Y, F_additional);
     }
 
     // Дополнительные узлы
@@ -487,8 +519,10 @@ namespace {
 
     // Тест на функции ФД
     void testFDFunction() {
-        const BmpReal N = 1; // 2+2 коэффициента 
-        //const BmpReal N = 3; // 4+4 коэффициента 
+       // const BmpReal N = 0; // 1+1коэффициент
+       // const BmpReal N = 1; // 2+2 коэффициента
+       // const BmpReal N = 2; // 3+3 коэффициента
+        const BmpReal N = 3; // 4+4 коэффициента 
         BmpVector x = getLinTrigDistribution(N);
         x.emplace_back(BmpReal(1) / 1e-7); // т. бесконечность
         // Значение константы отношения u_max / u_min - 1
