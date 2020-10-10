@@ -9,6 +9,8 @@ namespace print {
     void matrix(const BmpMatrix& m);
     // Распечатать мапу (удобно для пар x, f(x))
     void map(const std::map<BmpReal, BmpReal>& m);
+    // Распечатать строку
+    void string(const std::string& s);
 }
 
 /* Установить расширенный потоковый вывод на 16 знаков */

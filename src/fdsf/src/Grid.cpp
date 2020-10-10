@@ -102,8 +102,7 @@ void Grid::setLinearTrigonometricGridRight() {
     const BmpReal alpha = 2 / (2 + pi());
     const BmpReal one = BmpReal(1);
     const BmpReal num2 = BmpReal(2);
-//    const BmpReal x_star = BmpReal(3);
-    const BmpReal x_star = BmpReal(10); // Отладка автоматического выравниваия погрешности
+    const BmpReal x_star = BmpReal(3);
     const BmpReal y_star = x_star;
     //const BmpReal y_star = BmpReal(log(1 + exp(x_star))); // if half-integer
     //BmpReal baseSize = BmpReal(2 * m_N_base + 1); // if integer || half-integer & !fixed a(N+1)

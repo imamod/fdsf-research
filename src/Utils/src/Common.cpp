@@ -1,6 +1,8 @@
 #define CATCH_CONFIG_MAIN
 #include "Common.h"
 
+#include <array>
+
 namespace compute {
     /**
      * Вычислить функцию полуцелого индекса в точке

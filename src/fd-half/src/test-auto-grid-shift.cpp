@@ -2,15 +2,100 @@
 #include "Grid.h"
 #include "MatrixUtils.h"
 #include "Fdsf.h"
+#include "FdIndex.h"
+#include "Gamma.h"
 #include <algorithm>
 
+/* Множители имеют одинаковый знак */
+class MultipliersHaveTheSameSign : public std::exception {
+    public:
+        const char* what() const {
+            return "Multipliers have the same sign";
+        }
+};
+
 namespace {
+
+    // Возвращает вектор абсолютных значений
+    BmpVector abs(const BmpVector& v) {
+        BmpVector absoluteValue;
+        for (auto it : v) {
+            absoluteValue.push_back(std::abs(it));
+        }
+        return absoluteValue;
+    }
+
+    // Отладка автоматического выравниваия погрешности
+    const BmpReal one = BmpReal(1);
+    const BmpReal num2 = BmpReal(2);
+    const BmpReal x_star = BmpReal(4);
+
+    // Сетка узлов для тестирования двухкусковой формулы
+    class GridIhalf : public Grid {
+        public:
+            GridIhalf(size_t N_base, size_t addNCount)
+                : Grid(N_base, addNCount) {}
+
+            // Установить сетку базовых узлов по линейно-тригонометрическому закону
+            virtual void setLinearTrigonometricGrid() {
+                const BmpReal alpha = 2 / (2 + pi());
+                const BmpReal y_star = BmpReal(log(1 + exp(x_star)));
+                BmpReal baseSize = BmpReal(2 * baseNCount() - 1);
+                // Задаются базовые узлы интерполяции
+                BmpVector baseGrid;
+                for (size_t j = 1; j <= baseSize; j++) {
+                    baseGrid.push_back(y_star / num2 * (num2 * alpha * j / baseSize
+                        + (one - alpha) * (one - cos(pi() * j / baseSize))));
+                }
+                setBaseGrid(baseGrid);
+            }
+
+            // Задает правую линейно-тригонометрическую сетку базовых узлов справа
+            virtual void setLinearTrigonometricGridRight() {
+                const BmpReal alpha = 2 / (2 + pi());
+                const BmpReal y_star = x_star;
+                BmpReal baseSize = BmpReal(2 * baseNCount());
+
+                const BmpReal P(2);
+                const BmpReal y_star_new = BmpReal(1) / pow(y_star, P);
+                // Задаются базовые узлы интерполяции
+                BmpVector baseGrid;
+                // Задаются базовые узлы интерполяции
+                for (size_t j = 1; j <= baseSize; j++) {
+                    /* Усиленная линейная часть */
+                    BmpReal linearPart = num2 * (one - alpha) * j / baseSize;
+                    BmpReal trigonometricPart = alpha * (one - cos(pi() * j / baseSize));
+                    baseGrid.push_back(pow(y_star_new / num2 * (linearPart + trigonometricPart), 1 / P));
+                }
+
+                // Разворачиваем y
+                std::reverse(baseGrid.begin(), baseGrid.end());
+                changeGrid(baseGrid);
+                setBaseGrid(baseGrid);
+            }
+    };
 
     // Вспомогательная структура с информацией о узле интерполяции
     struct NodeInfo {
         BmpReal value;    // значение точки
         bool isBaseNode;  // является ли базовым
     };
+
+    void printBaseNodes(const std::vector<NodeInfo>& nodes) {
+        print::string("base node: ");
+        for (auto it : nodes) {
+            if (it.isBaseNode) {
+                std::cout << "    " << it.value << std::endl;
+            }
+        }
+    }
+
+    void printNodes(const std::vector<NodeInfo>& nodes) {
+        print::string("nodes: ");
+        for (auto it : nodes) {
+            std::cout << "    " << it.value << std::endl;
+        }
+    }
 
     BmpVector convNodeInfoToVec(const std::vector<NodeInfo>& v) {
         BmpVector result;
@@ -20,75 +105,9 @@ namespace {
         return result;
     }
 
-    // Начальное распределение точек
-    BmpVector initGrid(size_t N) {
-        BmpVector grid;
-        for (size_t n = 0; n < N; ++n) {
-            grid.emplace_back((2 * n - N) / N);
-        }
-        return grid;
-    }
-
-    // Получает локальный экстремум на заданном промежутке
-    template <typename It>
-    BmpReal getLocalExtremum(It first, It last, bool isPositive) {
-        return isPositive ? *std::max_element(first, last) : *std::min_element(first, last);
-    }
-
     const size_t ADDITIONAL_DOTS_COUNT = 20;
 
-    /**
-     * Возвращает массив локальных экстремумов между базовыми узлами интерполяции
-     * @param - профиль погрешности
-     * @param - число базовых узлов интерполяции
-     * @return - массив локальных экстремумов
-     */
-    BmpVector localInterpolationExtremums(const BmpVector& errorProfile, size_t N) {
-        // Рачет экстремумов
-        size_t middleDot = ADDITIONAL_DOTS_COUNT / 2;
-        BmpVector localExtremums;
-        BmpReal firstExtremum = getLocalExtremum<BmpVector::const_iterator>(errorProfile.begin(), errorProfile.begin() + ADDITIONAL_DOTS_COUNT, errorProfile[middleDot] > 0);
-        localExtremums.emplace_back(firstExtremum);
-        for (size_t i = 1; i < N; ++i) {
-            size_t span = i * ADDITIONAL_DOTS_COUNT;
-            auto startPos = errorProfile.begin() + span;
-            auto endPos = errorProfile.begin() + span + ADDITIONAL_DOTS_COUNT;
-            BmpReal currentExtremum = getLocalExtremum<BmpVector::const_iterator>(startPos, endPos, errorProfile[span + middleDot] > 0);
-            localExtremums.emplace_back(currentExtremum);
-        }
-        return localExtremums;
-    }
-
-    bool isBaseNode(const NodeInfo& x) {
-        return x.isBaseNode;
-    }
-
-    BmpVector localInterpolationExtremumsWithIndependentAddDots(const std::vector<NodeInfo>& errorProfile, size_t N) {
-        BmpVector localExtremums;
-        auto startPos = errorProfile.begin() + 1;
-        auto endPos = std::find_if(startPos, errorProfile.end(), isBaseNode);
-        auto middleDot = std::distance(errorProfile.begin(), endPos) / 2;
-        BmpVector localPart(convNodeInfoToVec(std::vector<NodeInfo>{errorProfile.begin(), endPos}));
-        BmpReal firstExtremum = getLocalExtremum<BmpVector::const_iterator>(localPart.begin(), localPart.end(), errorProfile[middleDot].value > 0);
-        localExtremums.emplace_back(firstExtremum);
-        localPart.clear();
-        for (size_t i = 1; i < N; ++i) {
-            startPos = endPos;
-            endPos = std::find_if(startPos + 1, errorProfile.end(), isBaseNode);
-            BmpVector localPart(convNodeInfoToVec(std::vector<NodeInfo>{startPos, endPos}));
-            middleDot = std::distance(errorProfile.begin(), startPos) + std::distance(startPos, endPos) / 2;
-            BmpReal currentExtremum = getLocalExtremum<BmpVector::const_iterator>(localPart.begin(), localPart.end(), errorProfile[middleDot].value > 0);
-            localExtremums.emplace_back(currentExtremum);
-        }
-        return localExtremums;
-    }
-
-    /*class MeltipliersHaveTheSameSign : public std::exception {
-        public:
-            const char* what() {
-
-            }
-    };*/
+    /* Алгоритм выравнивания экстремумов */
 
     /**
      * Возвращает массив скоростей базовых узлов
@@ -103,7 +122,7 @@ namespace {
         for (size_t i = 0; i < extremums.size() - 1; ++i) {
             // если в списке экстремумов есть соседи одного знака, срыв алгоритма
             if (extremums[i] * extremums[i + 1] > 0) {
-                throw std::invalid_argument("Multipliers have the same sign");
+                throw MultipliersHaveTheSameSign();
             }
             // добавляем скорости движения узлов
             BmpReal v_pm = (extremums.at(i + 1) + extremums.at(i)) / (extremums.at(i + 1) - extremums.at(i));
@@ -154,7 +173,38 @@ namespace {
         return shiftedBaseNodes;
     }
 
+    /****** Методический расчет*******/
+
+    // Получает локальный экстремум на заданном промежутке
+    template <typename It>
+    BmpReal getLocalExtremum(It first, It last, bool isPositive) {
+        return isPositive ? *std::max_element(first, last) : *std::min_element(first, last);
+    }
+
     /**
+     * Возвращает массив локальных экстремумов между базовыми узлами интерполяции
+     * @param - профиль погрешности
+     * @param - число базовых узлов интерполяции
+     * @return - массив локальных экстремумов
+     */
+    BmpVector localInterpolationExtremums(const BmpVector& errorProfile, size_t N) {
+        // Рачет экстремумов
+        size_t middleDot = ADDITIONAL_DOTS_COUNT / 2;
+        BmpVector localExtremums;
+        BmpReal firstExtremum = getLocalExtremum<BmpVector::const_iterator>(errorProfile.begin(), errorProfile.begin() + ADDITIONAL_DOTS_COUNT, errorProfile[middleDot] > 0);
+        localExtremums.emplace_back(firstExtremum);
+        for (size_t i = 1; i < N; ++i) {
+            size_t span = i * ADDITIONAL_DOTS_COUNT;
+            auto startPos = errorProfile.begin() + span;
+            auto endPos = errorProfile.begin() + span + ADDITIONAL_DOTS_COUNT;
+            BmpReal currentExtremum = getLocalExtremum<BmpVector::const_iterator>(startPos, endPos, errorProfile[span + middleDot] > 0);
+            localExtremums.emplace_back(currentExtremum);
+        }
+        return localExtremums;
+    }
+
+    /**
+     * Аппроксимация полиномом
      * param сетка базовых узлов
      * param сетка дополнительных узлов
      * return аппроксимированное значение функции в узлах
@@ -207,19 +257,61 @@ namespace {
         return x;
     }
 
-    // Литр справа, Т - число экстремумов
-    BmpVector getLinTrigDistribution(BmpReal N) {
-        Grid grid(N + 1, ADDITIONAL_DOTS_COUNT);
-        grid.setLinearTrigonometricGridRight();
-        return grid.base();
+    // Дополнительные узлы
+// param - вектор базовых узлов
+    BmpVector getAdditionalDots(const BmpVector& x) {
+        BmpVector additionalDots{ x.front() };
+        for (size_t i = 0; i < x.size() - 1; ++i) {
+            BmpReal delta = (x.at(i + 1) - x.at(i)) / ADDITIONAL_DOTS_COUNT;
+            for (size_t j = 1; j < ADDITIONAL_DOTS_COUNT; ++j) {
+                additionalDots.emplace_back(x.at(i) + j * delta);
+            }
+            additionalDots.emplace_back(x.at(i + 1));
+        }
+        return additionalDots;
     }
 
-    BmpVector powVector(const BmpVector& v, BmpReal p) {
-        BmpVector result;
-        for (auto it : v) {
-            result.emplace_back(pow(it, p));
+    void testZeroFunction() {
+        const BmpReal N = 3;
+        BmpVector x = getUniformDistributionDots(N);
+        // Значение константы отношения u_max / u_min - 1
+        const BmpReal U_RELATION_CONST = 0.01; // Для модельных примеров
+        size_t it = 1;
+        const size_t MAX_ITERATION_COUNT = 50;
+        while (it < MAX_ITERATION_COUNT) {
+            std::cout << std::endl << std::endl;
+            std::cout << "Current iteration:" << it << std::endl;
+            print::string("Current grid x: ");
+            print::vector(x); std::cout << std::endl << std::endl;
+            BmpVector additionalDots = getAdditionalDots(x);
+            // Аппроксимирующий многочлен (для U = 0 погрешности - сами значения аппроксимации) 
+            BmpVector U = approximatePolinom(x, additionalDots);
+            BmpVector delta = U;
+            // Получаем экстремумы
+            BmpVector localExtremums = localInterpolationExtremums(delta, N);
+            print::string("Current extremums: ");
+            print::vector(localExtremums); std::cout << std::endl;
+            BmpVector moduleLocalExtremums = abs(localExtremums);
+            // Диагностика
+            BmpReal L = *std::max_element(moduleLocalExtremums.begin(), moduleLocalExtremums.end()) / *std::min_element(moduleLocalExtremums.begin(), moduleLocalExtremums.end()) - 1;
+            std::cout << "Current L: " << L << std::endl;
+            // Критерий останова
+            if (L < U_RELATION_CONST) {
+                break;
+            }
+            x = shiftBaseNodesGrid(x, localExtremums);
+            ++it;
         }
-        return result;
+        print::vector(x, true);
+    }
+
+    /************Правая аппроксимация ФД*************/
+
+    // Литр справа, Т - число экстремумов
+    BmpVector getLinTrigDistributionRight(BmpReal N) {
+        GridIhalf grid(N + 1, ADDITIONAL_DOTS_COUNT);
+        grid.setLinearTrigonometricGridRight();
+        return grid.base();
     }
 
     BmpVector getPrecisionValue(const BmpVector& x) {
@@ -239,9 +331,9 @@ namespace {
         return result;
     }
 
+
     //// Аппроксимирующая формула 1 
-    BmpVector getApproximationFormByFDValue(const BmpVector& y, const BmpVector& v) {
-        const BmpReal k = 0.5;
+    BmpVector getApproximationFormByFDValue(BmpReal k, const BmpVector& y, const BmpVector& v) {
         const BmpReal C1 = (k + 1) * k * pow(pi(), 2) / 6;
         BmpVector result;
         for (size_t i = 0; i < v.size(); ++i) {
@@ -250,9 +342,8 @@ namespace {
         return result;
     }
 
-    BmpVector getFDValueFromApproximation(const BmpVector& Y, const BmpVector& v) {
+    BmpVector getFDValueFromApproximation(BmpReal k, const BmpVector& Y, const BmpVector& v) {
         BmpVector U;
-        const BmpReal k = 0.5;
         const BmpReal C1 = (k + 1) * k * pow(pi(), 2) / 6;
         for (size_t i = 0; i < v.size(); ++i) {
             U.emplace_back((v.at(i) * C1 / pow(Y.at(i), 2) + 1) * (pow(Y.at(i), k + 1) / (k + 1)));
@@ -261,8 +352,7 @@ namespace {
     }
 
     // Аппроксимирующая форма 2
-    BmpVector getApproximationFormByFDValue2(const BmpVector& y, const BmpVector& v) {
-        const BmpReal k = 0.5;
+    BmpVector getApproximationFormByFDValue2(BmpReal k, const BmpVector& y, const BmpVector& v) {
         const BmpReal C2 = (k + 1) * pow(pi(), 2) / 3;
         BmpVector result;
         for (size_t i = 0; i < v.size(); ++i) {
@@ -271,9 +361,8 @@ namespace {
         return result;
     }
 
-    BmpVector getFDValueFromApproximation2(const BmpVector& Y, const BmpVector& v) {
+    BmpVector getFDValueFromApproximation2(BmpReal k, const BmpVector& Y, const BmpVector& v) {
         BmpVector U;
-        const BmpReal k = 0.5;
         const BmpReal C2 = (k + 1) * pow(pi(), 2) / 3;
         for (size_t i = 0; i < v.size(); ++i) {
             U.emplace_back(pow(v.at(i) * C2 + pow(Y.at(i), 2), k / BmpReal(2.0)) * Y.at(i) / (k + 1));
@@ -300,20 +389,42 @@ namespace {
         return y;
     }
 
-    BmpVector approximateRationalFd(const BmpVector& x, const BmpVector& X, const BmpVector& U_additional) {
+    BmpVector localInterpolationExtremumsWithIndependentAddDots(const std::vector<NodeInfo>& errorProfile, size_t N) {
+        BmpVector localExtremums;
+        auto isBaseNode = [](const NodeInfo& x) {
+            return x.isBaseNode;
+        };
+        auto startPos = errorProfile.begin() + 1;
+        auto endPos = std::find_if(startPos, errorProfile.end(), isBaseNode);
+        auto middleDot = std::distance(errorProfile.begin(), endPos) / 2;
+        BmpVector localPart(convNodeInfoToVec(std::vector<NodeInfo>{errorProfile.begin(), endPos}));
+        BmpReal firstExtremum = getLocalExtremum<BmpVector::const_iterator>(localPart.begin(), localPart.end(), errorProfile[middleDot].value > 0);
+        localExtremums.emplace_back(firstExtremum);
+        localPart.clear();
+        for (size_t i = 1; i < N; ++i) {
+            startPos = endPos;
+            endPos = std::find_if(startPos + 1, errorProfile.end(), isBaseNode);
+            BmpVector localPart(convNodeInfoToVec(std::vector<NodeInfo>{startPos, endPos}));
+            middleDot = std::distance(errorProfile.begin(), startPos) + std::distance(startPos, endPos) / 2;
+            BmpReal currentExtremum = getLocalExtremum<BmpVector::const_iterator>(localPart.begin(), localPart.end(), errorProfile[middleDot].value > 0);
+            localExtremums.emplace_back(currentExtremum);
+        }
+        return localExtremums;
+    }
+
+    BmpVector approximateRationalFd(BmpReal k, const BmpVector& x, const BmpVector& X, const BmpVector& U_additional) {
 
         BmpVector U_base = getPrecisionValue(x);
-        const BmpReal k = 0.5;
         const size_t baseSize = x.size()-1; // т. БЕсконечность в аппроксимации не участвует
         const size_t N = baseSize / 2;
         BmpVector y0 = getI0Values(x);
         BmpVector Y = getI0Values(X);
         //// Первая форма аппроксимации
-        //BmpVector z = getApproximationFormByFDValue(y0, U_base);
-        //BmpVector I = getApproximationFormByFDValue(Y, U_additional);
+        //BmpVector z = getApproximationFormByFDValue(k, y0, U_base);
+        //BmpVector I = getApproximationFormByFDValue(k, Y, U_additional);
         //// Вторая форма аппроксимации
-        BmpVector z = getApproximationFormByFDValue2(y0, U_base);
-        BmpVector I = getApproximationFormByFDValue2(Y, U_additional);
+        BmpVector z = getApproximationFormByFDValue2(k, y0, U_base);
+        BmpVector I = getApproximationFormByFDValue2(k, Y, U_additional);
 
         // Правая часть
         BmpVector rightPart;
@@ -350,7 +461,7 @@ namespace {
             }
         }
         
-        std::cout << "Аппроксимирующие коэффициенты в знаменателе:"<< std::endl;
+        print::string("Аппроксимирующие коэффициенты в знаменателе:");
         print::vector(b);
 
         //
@@ -367,26 +478,12 @@ namespace {
         }
 
         //// Первая форма аппроксимации
-        //return getFDValueFromApproximation(Y, F_additional);
+        //return getFDValueFromApproximation(k, Y, F_additional);
         //// Вторая форма аппроксимации
-        return getFDValueFromApproximation2(Y, F_additional);
+        return getFDValueFromApproximation2(k, Y, F_additional);
     }
 
-    // Дополнительные узлы
-    // param - вектор базовых узлов
-    BmpVector getAdditionalDots(const BmpVector& x) {
-        BmpVector additionalDots{ x.front() };
-        for (size_t i = 0; i < x.size() - 1; ++i) {
-            BmpReal delta = (x.at(i + 1) - x.at(i)) / ADDITIONAL_DOTS_COUNT;
-            for (size_t j = 1; j < ADDITIONAL_DOTS_COUNT; ++j) {
-                additionalDots.emplace_back(x.at(i) + j * delta);
-            }
-            additionalDots.emplace_back(x.at(i + 1));
-        }
-        return additionalDots;
-    }
-
-    // Степень величины
+    // Степень величины по сетке
     const BmpReal P(2);
 
     // TODO: рефакторинг
@@ -396,7 +493,7 @@ namespace {
         for (const auto& it : x) {
             inverseValue.emplace_back(BmpReal(1) / pow( it, P));
         }
-        std::cout << "x size " << x.size() << std::endl;
+        print::string("x size " + std::to_string(x.size()));
         std::reverse(inverseValue.begin(), inverseValue.end());
         // Полубесконечный промежуток
         std::vector<NodeInfo> additionalDots{ NodeInfo{x.back(), true} }; // т. бесконечность
@@ -409,16 +506,6 @@ namespace {
         }
         std::cout << "additionalDots size " << additionalDots.size() << std::endl;
         std::reverse(additionalDots.begin(), additionalDots.end());
-        /*
-        std::vector<NodeInfo> additionalDots{ { x.front(), true } };
-        for (size_t i = 0; i < x.size() - 1; ++i) {
-            BmpReal delta = (x.at(i + 1) - x.at(i)) / ADDITIONAL_DOTS_COUNT;
-            for (size_t j = 1; j < ADDITIONAL_DOTS_COUNT; ++j) {
-                additionalDots.emplace_back(NodeInfo{ x.at(i) + j * delta, false });
-            }
-            additionalDots.emplace_back(NodeInfo{ x.at(i + 1), true });
-        }
-        */
         return additionalDots;
     }
 
@@ -428,48 +515,6 @@ namespace {
             delta.emplace_back(NodeInfo{ U[i] / U_prec[i].value - 1, U_prec[i].isBaseNode });
         }
         return delta;
-    }
-
-    BmpVector abs(const BmpVector& v) {
-        BmpVector absoluteValue;
-        for (auto it : v) {
-            absoluteValue.push_back(std::abs(it));
-        }
-        return absoluteValue;
-    }
-
-    void testZeroFunction() {
-        const BmpReal N = 3;
-        BmpVector x = getUniformDistributionDots(N);
-        // Значение константы отношения u_max / u_min - 1
-        const BmpReal U_RELATION_CONST = 0.01; // Для модельных примеров
-        size_t it = 1;
-        const size_t MAX_ITERATION_COUNT = 50;
-        while (it < MAX_ITERATION_COUNT) {
-            std::cout << std::endl << std::endl;
-            std::cout << "Current iteration:" << it << std::endl;
-            std::cout << "Current grid x: " << std::endl;
-            print::vector(x); std::cout << std::endl << std::endl;
-            BmpVector additionalDots = getAdditionalDots(x);
-            // Аппроксимирующий многочлен (для U = 0 погрешности - сами значения аппроксимации) 
-            BmpVector U = approximatePolinom(x, additionalDots);
-            BmpVector delta = U;
-            // Получаем экстремумы
-            BmpVector localExtremums = localInterpolationExtremums(delta, N);
-            std::cout << "Current extremums: " << std::endl;
-            print::vector(localExtremums); std::cout << std::endl;
-            BmpVector moduleLocalExtremums = abs(localExtremums);
-            // Диагностика
-            BmpReal L = *std::max_element(moduleLocalExtremums.begin(), moduleLocalExtremums.end()) / *std::min_element(moduleLocalExtremums.begin(), moduleLocalExtremums.end()) - 1;
-            std::cout << "Current L: " << L << std::endl;
-            // Критерий останова
-            if (L < U_RELATION_CONST) {
-                break;
-            }
-            x = shiftBaseNodesGrid(x, localExtremums);
-            ++it;
-        }
-        print::vector(x, true);
     }
 
     // Нужно ли пересчитывать сетку (1 и каждую 10 итерацию)
@@ -517,26 +562,30 @@ namespace {
         return result;
     }
 
+    // Получить значение диагностики L
+    BmpReal getLDiagnostic(const BmpVector& extremums) {
+        return *std::max_element(extremums.begin(), extremums.end()) / *std::min_element(extremums.begin(), extremums.end()) - 1;
+    }
+
     // Тест на функции ФД
-    void testFDFunction() {
+    void testFDFunction(BmpReal k) {
        // const BmpReal N = 0; // 1+1коэффициент
        // const BmpReal N = 1; // 2+2 коэффициента
        // const BmpReal N = 2; // 3+3 коэффициента
-        const BmpReal N = 3; // 4+4 коэффициента 
-        BmpVector x = getLinTrigDistribution(N);
+        const BmpReal N = 3; // 4+4 коэффициента Release
+        BmpVector x = getLinTrigDistributionRight(N);
         x.emplace_back(BmpReal(1) / 1e-7); // т. бесконечность
         // Значение константы отношения u_max / u_min - 1
         const BmpReal U_RELATION_CONST = 0.1; // Для ФФД 
         size_t it = 1;
-        // TODO: Сделать без пересчета значений функции на каждой итерации
         std::vector<NodeInfo> additionalDots = getAdditionalDotsWithInfo(x);
         std::vector<NodeInfo> U_prec = getPrecisionValueWithInfo(additionalDots);
         const size_t MAX_ITERATION_COUNT = 50;
         BmpReal L_prev = 1e10;
         while (it < MAX_ITERATION_COUNT) {
             std::cout << std::endl << std::endl;
-            std::cout << "Current iteration:" << it << std::endl;
-            std::cout << "Current grid x: " << std::endl;
+            print::string("Current iteration:" + std::to_string(it));
+            print::string("Current grid x: ");
             print::vector(x); std::cout << std::endl << std::endl;
             if (mustRecalculateGrid(it)) {
                 additionalDots = getAdditionalDotsWithInfo(x);
@@ -549,16 +598,16 @@ namespace {
             BmpVector additionalDots = getAdditionalDots(x);
             BmpVector U_prec = getPrecisionValue(additionalDots);
             */
-            BmpVector U = approximateRationalFd(x, convNodeInfoToVec(additionalDots), convNodeInfoToVec(U_prec));
+            BmpVector U = approximateRationalFd(k, x, convNodeInfoToVec(additionalDots), convNodeInfoToVec(U_prec));
             std::vector<NodeInfo> delta = getErrorProfile(U_prec, U);
             // Получаем экстремумы
             // BmpVector localExtremums = localInterpolationExtremums(delta, 2 * N + 1);
             BmpVector localExtremums = localInterpolationExtremumsWithIndependentAddDots(delta, 2 *(N + 1));
-            std::cout << "Current extremums: " << std::endl;
+            print::string("Current extremums: ");
             print::vector(localExtremums); std::cout << std::endl;
             BmpVector moduleLocalExtremums = abs(localExtremums);
-            // Диагностика
-            BmpReal L = *std::max_element(moduleLocalExtremums.begin(), moduleLocalExtremums.end()) / *std::min_element(moduleLocalExtremums.begin(), moduleLocalExtremums.end()) - 1;
+            // Диагностика L
+            BmpReal L = getLDiagnostic(moduleLocalExtremums);
             std::cout << "Current L: " << L << std::endl;
             // Критерий останова
             // Если достигли заданной точности
@@ -579,9 +628,197 @@ namespace {
         print::vector(x, true);
     }
 
+
+    /************Левая аппроксимация ФД*************/
+
+    // Возвращает линейно-тригонометрическое распределение узлов для левой аппроксимации
+    BmpVector getLinTrigDistributionLeft(BmpReal N) {
+        GridIhalf grid(N + 1, ADDITIONAL_DOTS_COUNT);
+        grid.setLinearTrigonometricGrid();
+        return grid.base();
+    }
+
+    // Для литр, доп точки нужно получать точки по обратной величине
+    std::vector<NodeInfo> getLeftAdditionalDotsWithInfo(const BmpVector& _x) {
+        std::cout << "x size " << _x.size() << std::endl;
+        // Для левой асимптотики расчет ведется на промежутке (0;x*],
+        // поэтому добавляем фиктивную границу 0
+        BmpVector x{ 0 };
+        x.insert(x.end(), _x.begin(), _x.end());
+        std::vector<NodeInfo> additionalDots;
+        for (size_t i = 0; i < x.size() - 1; ++i) {
+            BmpReal delta = (x.at(i + 1) - x.at(i)) / ADDITIONAL_DOTS_COUNT;
+            for (size_t j = 1; j < ADDITIONAL_DOTS_COUNT; ++j) {
+                additionalDots.emplace_back(NodeInfo{ x.at(i) + j * delta, false });
+            }
+            additionalDots.emplace_back(NodeInfo{ x.at(i + 1), true });
+        }
+        std::cout << "additionalDots size " << additionalDots.size() << std::endl;
+        return additionalDots;
+    }
+
+
+    //// Левая аппроксимирующая формула
+    BmpVector getApproximationFormByFDValueLeft(BmpReal k, const BmpVector& y, const BmpVector& v) {
+        const BmpReal gammaValue = factorial(k);
+        BmpVector result;
+        for (size_t i = 0; i < v.size(); ++i) {
+            result.emplace_back(pow(v.at(i) / (gammaValue * y.at(i)), BmpReal(1.0)/k));
+        }
+        return result;
+    }
+
+    BmpVector getFDValueFromApproximationLeft(BmpReal k, const BmpVector& Y, const BmpVector& v) {
+        BmpVector U;
+        const BmpReal gammaValue = factorial(k);
+        for (size_t i = 0; i < v.size(); ++i) {
+            U.emplace_back(pow(v.at(i), k) * Y.at(i) * gammaValue);
+        }
+        return U;
+    }
+
+    // Левая аппроксимирующая формула TODO:
+    BmpVector approximateRationalFdLeft(BmpReal k, const BmpVector& x, const BmpVector& X, const BmpVector& U_additional) {
+
+        BmpVector U_base = getPrecisionValue(x);
+        const size_t baseSize = x.size();
+        const size_t N = (baseSize-1) / 2;
+        BmpVector y0 = getI0Values(x);
+        BmpVector Y = getI0Values(X);
+        //// Первая форма аппроксимации
+        BmpVector z = getApproximationFormByFDValueLeft(k, y0, U_base);
+        BmpVector I = getApproximationFormByFDValueLeft(k, Y, U_additional);
+
+        // Правая часть
+        BmpVector rightPart;
+        for (auto it : z) {
+            rightPart.emplace_back(it - 1);
+        }
+        // Левая часть
+        BmpMatrix A(baseSize, BmpVector(baseSize, 0));
+        for (size_t i = 0; i < baseSize; ++i) {
+            for (size_t j = 0; j < baseSize; ++j) {
+                if (j < N + 1) {
+                    A.at(i).at(j) = pow(y0.at(i), BmpReal(j + 1));
+                } else {
+                    A.at(i).at(j) = -z.at(i) * pow(y0.at(i), BmpReal(j - N));
+                }
+            }
+        }
+        BmpMatrix A_inv = inverse(A);
+        // Решаем СЛАУ A*E = B
+        BmpVector E(baseSize, 0);
+        for (size_t i = 0; i < baseSize; ++i) {
+            for (size_t j = 0; j < baseSize; ++j) {
+                E[i] += A_inv[i][j] * rightPart[j];
+            }
+        }
+
+        // Раскидываем коэффициенты
+        BmpVector a, b;
+        for (size_t j = 0; j < E.size(); ++j) {
+            if (j < N + 1) {
+                a.emplace_back(E.at(j));
+            } else if (j <= baseSize) {
+                b.emplace_back(E.at(j));
+            }
+        }
+
+        print::string("Аппроксимирующие коэффициенты в числителе:");
+        print::vector(a);
+        print::string("Аппроксимирующие коэффициенты в знаменателе:");
+        print::vector(b);
+
+        // Вычисление аппроксимирующей величины
+        BmpVector F_additional;
+        for (auto y : Y) {
+            BmpReal nom = 0, denom = 0;
+            for (size_t n = 1; n <= N + 1; ++n) {
+                nom += a.at(n - 1) * pow(y, BmpReal(n));
+            }
+            for (size_t m = 1; m <= N; ++m) {
+                denom += b.at(m - 1) * pow(y, BmpReal(m));
+            }
+            F_additional.emplace_back(BmpReal(1.0 + nom) / (1.0 + denom));
+        }
+        // Восстановления значения функции по аппроксимации
+        return getFDValueFromApproximationLeft(k, Y, F_additional);
+    }
+
+    void testFDLeftApproximation(BmpReal k) {
+       // const BmpReal N = 1; // 2+1 коэффициент
+       // const BmpReal N = 2; // 3+2 коэффициента
+        const BmpReal N = 3; // 4+3 коэффициента Release
+       // const BmpReal N = 4; // 5+4 коэффициента
+       // const BmpReal N = 5; // 6+5 коэффициента
+       // const BmpReal N = 6; // 7+6 коэффициента
+        BmpVector x = getLinTrigDistributionLeft(N);
+        // Значение константы отношения u_max / u_min - 1
+        const BmpReal U_RELATION_CONST = 0.1; // Для ФФД 
+        size_t it = 1;
+        std::vector<NodeInfo> additionalDots = getLeftAdditionalDotsWithInfo(x);
+        std::vector<NodeInfo> U_prec = getPrecisionValueWithInfo(additionalDots);
+        const size_t MAX_ITERATION_COUNT = 50;
+        BmpReal L_prev = 1e10;
+        while (it < MAX_ITERATION_COUNT) {
+            std::cout << std::endl << std::endl;
+            print::string("Current iteration:" + std::to_string(it));
+            print::string("Current grid x: ");
+            print::vector(x); std::cout << std::endl << std::endl;
+            if (mustRecalculateGrid(it)) {
+                additionalDots = getLeftAdditionalDotsWithInfo(x);
+                U_prec = getPrecisionValueWithInfo(additionalDots);
+            } else if (it > 1) {
+                // Добавляем нулевую, фиктивную точку
+                x.insert(x.begin(), 0);
+                additionalDots = formAdditionalGrid(additionalDots, x);
+                U_prec = formPrecisionValues(x, U_prec);
+                // Удаляем нулевую, фиктивную точку
+                x.erase(x.begin());
+            }
+            BmpVector U = approximateRationalFdLeft(k, x, convNodeInfoToVec(additionalDots), convNodeInfoToVec(U_prec));
+            std::vector<NodeInfo> delta = getErrorProfile(U_prec, U);
+            printBaseNodes(delta);
+            printNodes(delta);
+            // Получаем экстремумы
+            BmpVector localExtremums = localInterpolationExtremumsWithIndependentAddDots(delta, 2 * N + 1);
+            print::string("Current extremums: ");
+            print::vector(localExtremums); std::cout << std::endl;
+            BmpVector moduleLocalExtremums = abs(localExtremums);
+            // Диагностика L
+            BmpReal L = getLDiagnostic(moduleLocalExtremums);
+            std::cout << "Current L: " << L << std::endl;
+            // Критерий останова
+            // Если достигли заданной точности
+            // Если диагностика на текущей итерации превышает значения на предыдущей, выходим 
+            if ((L < U_RELATION_CONST) || (it > 1 && L > L_prev)) {
+                break;
+            }
+            L_prev = L;
+            // Добавляем нулевую, фиктивную точку
+            x.insert(x.begin(), 0);
+            // Сдвиг узлов производится для координат y
+            x = shiftBaseNodesGrid(x, localExtremums);
+            // Удаляем нулевую, фиктивную точку
+            x.erase(x.begin());
+            ++it;
+        }
+        print::vector(x, true);
+    }
 }
 
-TEST_CASE("check") {
-   //testZeroFunction();
-   testFDFunction();
+TEST_CASE("zero") {
+    testZeroFunction();
+}
+
+TEST_CASE("fd_right") {
+    SECTION("k12") {
+        testFDFunction(fdsf::index::P1_HALF);
+    }
+}
+
+TEST_CASE("fd_left") {
+    SECTION("k12") {
+        testFDLeftApproximation(fdsf::index::P1_HALF);
+    }
 }

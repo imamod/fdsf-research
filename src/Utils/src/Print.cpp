@@ -1,5 +1,8 @@
 #include "Common.h"
 
+#include <iomanip>
+#include <iostream>
+
 namespace print {
 
     // Распечатать вектор
@@ -28,6 +31,11 @@ namespace print {
             std::cout << it.first << std::setw(4) << " : " << it.second << std::endl;
         }
         std::cout << std::endl;
+    }
+
+    // Распечатать строку
+    void string(const std::string& s) {
+        std::cout << s << std::endl;
     }
 }
 
