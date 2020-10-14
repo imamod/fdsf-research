@@ -249,7 +249,7 @@ namespace {
 
     // Равномерное распределение точек размера N + 1
     // N - число экстремумов
-    BmpVector getUniformDistributionDots(BmpReal N) {
+    BmpVector getUniformDistributionDots(size_t N) {
         BmpVector x;
         for (size_t n = 0; n <= N; ++n) {
             x.push_back(BmpReal(2 * n - N) / N);
@@ -272,7 +272,7 @@ namespace {
     }
 
     void testZeroFunction() {
-        const BmpReal N = 3;
+        const size_t N = 3;
         BmpVector x = getUniformDistributionDots(N);
         // Значение константы отношения u_max / u_min - 1
         const BmpReal U_RELATION_CONST = 0.01; // Для модельных примеров
@@ -308,26 +308,46 @@ namespace {
     /************Правая аппроксимация ФД*************/
 
     // Литр справа, Т - число экстремумов
-    BmpVector getLinTrigDistributionRight(BmpReal N) {
+    BmpVector getLinTrigDistributionRight(size_t N) {
         GridIhalf grid(N + 1, ADDITIONAL_DOTS_COUNT);
         grid.setLinearTrigonometricGridRight();
         return grid.base();
     }
 
-    BmpVector getPrecisionValue(const BmpVector& x) {
+    std::function<BmpReal(BmpReal)> fdFunc(BmpReal k) {
+        std::function<BmpReal(BmpReal)> f;
+        if (fdsf::index::M3_HALF == k) {
+            f = fdsf::fd_m3half;
+        } else if (fdsf::index::M1_HALF == k) {
+            f = fdsf::fd_m1half;
+        } else if (fdsf::index::P1_HALF == k) {
+            f = fdsf::fd_1half;
+        } else if (fdsf::index::P3_HALF == k) {
+            f = fdsf::fd_3half;
+        } else if (fdsf::index::P5_HALF == k) {
+            f = fdsf::fd_5half;
+        } else if (fdsf::index::P7_HALF == k) {
+            f = fdsf::fd_7half;
+        }
+        return f;
+    }
+
+    BmpVector getPrecisionValue(const BmpVector& x, BmpReal k) {
         BmpVector result;
+        auto f = fdFunc(k);
         for (auto it : x) {
-            result.emplace_back(fdsf::fd_1half(it));
+            result.emplace_back(f(it));
         }
         return result;
     }
 
-    std::vector<NodeInfo> getPrecisionValueWithInfo(const std::vector<NodeInfo>& x) {
+    std::vector<NodeInfo> getPrecisionValueWithInfo(BmpReal k, const std::vector<NodeInfo>& x) {
         std::vector<NodeInfo> result;
+        auto f = fdFunc(k);
         for (auto it : x) {
-            result.emplace_back(NodeInfo{ fdsf::fd_1half(it.value), it.isBaseNode });
+            result.emplace_back(NodeInfo{ f(it.value), it.isBaseNode });
         }
-        std::cout << "result size " << result.size() << std::endl;
+        print::string("result size " + std::to_string(result.size()));
         return result;
     }
 
@@ -414,7 +434,7 @@ namespace {
 
     BmpVector approximateRationalFd(BmpReal k, const BmpVector& x, const BmpVector& X, const BmpVector& U_additional) {
 
-        BmpVector U_base = getPrecisionValue(x);
+        BmpVector U_base = getPrecisionValue(x, k);
         const size_t baseSize = x.size()-1; // т. БЕсконечность в аппроксимации не участвует
         const size_t N = baseSize / 2;
         BmpVector y0 = getI0Values(x);
@@ -538,10 +558,10 @@ namespace {
     }
 
     // Сформировать сетку значений функции в дополнительных точках погрешности на основе сдвига узлов
-    std::vector<NodeInfo> formPrecisionValues(const BmpVector& x, const std::vector<NodeInfo>& U_prec) {
+    std::vector<NodeInfo> formPrecisionValues(BmpReal k, const BmpVector& x, const std::vector<NodeInfo>& U_prec) {
         std::vector<NodeInfo> result{ U_prec.front() };
         size_t count = 1;
-        BmpVector shiftedPrecFuncVales = getPrecisionValue(x);
+        BmpVector shiftedPrecFuncVales = getPrecisionValue(x, k);
         for (size_t i = 1; i < U_prec.size() - 1; ++i) {
             // Значение функции в новом базовом узле
             if (U_prec.at(i).value > shiftedPrecFuncVales.at(count)) {
@@ -567,19 +587,32 @@ namespace {
         return *std::max_element(extremums.begin(), extremums.end()) / *std::min_element(extremums.begin(), extremums.end()) - 1;
     }
 
+    BmpReal getSKO(const BmpVector& x) {
+        BmpReal result = 0;
+        for (auto it : x) {
+            result += it * it;
+        }
+        return sqrt(result / x.size());
+    }
+
+    // Получение СКО-диагностики профиля и узлов
+    BmpReal getSKODiagnostic(const BmpVector& base, const BmpVector& extr) {
+        return getSKO(base) / getSKO(extr);
+    }
+
     // Тест на функции ФД
     void testFDFunction(BmpReal k) {
-       // const BmpReal N = 0; // 1+1коэффициент
-       // const BmpReal N = 1; // 2+2 коэффициента
-       // const BmpReal N = 2; // 3+3 коэффициента
-        const BmpReal N = 3; // 4+4 коэффициента Release
+       // const size_t N = 0; // 1+1коэффициент
+       // const size_t N = 1; // 2+2 коэффициента
+       // const size_t N = 2; // 3+3 коэффициента
+        const size_t N = 3; // 4+4 коэффициента Release
         BmpVector x = getLinTrigDistributionRight(N);
         x.emplace_back(BmpReal(1) / 1e-7); // т. бесконечность
         // Значение константы отношения u_max / u_min - 1
         const BmpReal U_RELATION_CONST = 0.1; // Для ФФД 
         size_t it = 1;
         std::vector<NodeInfo> additionalDots = getAdditionalDotsWithInfo(x);
-        std::vector<NodeInfo> U_prec = getPrecisionValueWithInfo(additionalDots);
+        std::vector<NodeInfo> U_prec = getPrecisionValueWithInfo(k, additionalDots);
         const size_t MAX_ITERATION_COUNT = 50;
         BmpReal L_prev = 1e10;
         while (it < MAX_ITERATION_COUNT) {
@@ -589,10 +622,10 @@ namespace {
             print::vector(x); std::cout << std::endl << std::endl;
             if (mustRecalculateGrid(it)) {
                 additionalDots = getAdditionalDotsWithInfo(x);
-                U_prec = getPrecisionValueWithInfo(additionalDots);
+                U_prec = getPrecisionValueWithInfo(k, additionalDots);
             } else if (it > 1) {
                 additionalDots = formAdditionalGrid(additionalDots, x);
-                U_prec = formPrecisionValues(x, U_prec);
+                U_prec = formPrecisionValues(k, x, U_prec);
             }
             /*
             BmpVector additionalDots = getAdditionalDots(x);
@@ -606,6 +639,9 @@ namespace {
             print::string("Current extremums: ");
             print::vector(localExtremums); std::cout << std::endl;
             BmpVector moduleLocalExtremums = abs(localExtremums);
+            // Диагностика СКО
+            BmpReal SKO = getSKODiagnostic(x, localExtremums);
+            print::string("Current SKO: " + std::to_string(SKO));
             // Диагностика L
             BmpReal L = getLDiagnostic(moduleLocalExtremums);
             std::cout << "Current L: " << L << std::endl;
@@ -632,7 +668,7 @@ namespace {
     /************Левая аппроксимация ФД*************/
 
     // Возвращает линейно-тригонометрическое распределение узлов для левой аппроксимации
-    BmpVector getLinTrigDistributionLeft(BmpReal N) {
+    BmpVector getLinTrigDistributionLeft(size_t N) {
         GridIhalf grid(N + 1, ADDITIONAL_DOTS_COUNT);
         grid.setLinearTrigonometricGrid();
         return grid.base();
@@ -680,7 +716,7 @@ namespace {
     // Левая аппроксимирующая формула TODO:
     BmpVector approximateRationalFdLeft(BmpReal k, const BmpVector& x, const BmpVector& X, const BmpVector& U_additional) {
 
-        BmpVector U_base = getPrecisionValue(x);
+        BmpVector U_base = getPrecisionValue(x, k);
         const size_t baseSize = x.size();
         const size_t N = (baseSize-1) / 2;
         BmpVector y0 = getI0Values(x);
@@ -746,18 +782,18 @@ namespace {
     }
 
     void testFDLeftApproximation(BmpReal k) {
-       // const BmpReal N = 1; // 2+1 коэффициент
-       // const BmpReal N = 2; // 3+2 коэффициента
-        const BmpReal N = 3; // 4+3 коэффициента Release
-       // const BmpReal N = 4; // 5+4 коэффициента
-       // const BmpReal N = 5; // 6+5 коэффициента
-       // const BmpReal N = 6; // 7+6 коэффициента
+       // const size_t N = 1; // 2+1 коэффициент
+       // const size_t N = 2; // 3+2 коэффициента
+        const size_t N = 3; // 4+3 коэффициента Release
+       // const size_t N = 4; // 5+4 коэффициента
+       // const size_t N = 5; // 6+5 коэффициента
+       // const size_t N = 6; // 7+6 коэффициента
         BmpVector x = getLinTrigDistributionLeft(N);
         // Значение константы отношения u_max / u_min - 1
         const BmpReal U_RELATION_CONST = 0.1; // Для ФФД 
         size_t it = 1;
         std::vector<NodeInfo> additionalDots = getLeftAdditionalDotsWithInfo(x);
-        std::vector<NodeInfo> U_prec = getPrecisionValueWithInfo(additionalDots);
+        std::vector<NodeInfo> U_prec = getPrecisionValueWithInfo(k, additionalDots);
         const size_t MAX_ITERATION_COUNT = 50;
         BmpReal L_prev = 1e10;
         while (it < MAX_ITERATION_COUNT) {
@@ -767,12 +803,12 @@ namespace {
             print::vector(x); std::cout << std::endl << std::endl;
             if (mustRecalculateGrid(it)) {
                 additionalDots = getLeftAdditionalDotsWithInfo(x);
-                U_prec = getPrecisionValueWithInfo(additionalDots);
+                U_prec = getPrecisionValueWithInfo(k, additionalDots);
             } else if (it > 1) {
                 // Добавляем нулевую, фиктивную точку
                 x.insert(x.begin(), 0);
                 additionalDots = formAdditionalGrid(additionalDots, x);
-                U_prec = formPrecisionValues(x, U_prec);
+                U_prec = formPrecisionValues(k, x, U_prec);
                 // Удаляем нулевую, фиктивную точку
                 x.erase(x.begin());
             }
@@ -812,13 +848,51 @@ TEST_CASE("zero") {
 }
 
 TEST_CASE("fd_right") {
+    SECTION("km32") {
+        testFDFunction(fdsf::index::M3_HALF);
+    }
+    SECTION("km12") {
+        testFDFunction(fdsf::index::M1_HALF);
+    }
     SECTION("k12") {
         testFDFunction(fdsf::index::P1_HALF);
+    }
+    SECTION("k32") {
+        testFDFunction(fdsf::index::P3_HALF);
+    }
+    SECTION("k52") {
+        testFDFunction(fdsf::index::P5_HALF);
+    }
+    SECTION("k72") {
+        testFDFunction(fdsf::index::P7_HALF);
+    }
+    SECTION("k92") {
+     // TODO:
+     // testFDFunction(fdsf::index::P9_HALF);
     }
 }
 
 TEST_CASE("fd_left") {
+    SECTION("km32") {
+        testFDLeftApproximation(fdsf::index::M3_HALF);
+    }
+    SECTION("km12") {
+        testFDLeftApproximation(fdsf::index::M1_HALF);
+    }
     SECTION("k12") {
         testFDLeftApproximation(fdsf::index::P1_HALF);
+    }
+    SECTION("k32") {
+        testFDLeftApproximation(fdsf::index::P3_HALF);
+    }
+    SECTION("k52") {
+        testFDLeftApproximation(fdsf::index::P5_HALF);
+    }
+    SECTION("k72") {
+        testFDLeftApproximation(fdsf::index::P7_HALF);
+    }
+    SECTION("k92") {
+        // TODO:
+        // testFDLeftApproximation(fdsf::index::P9_HALF);
     }
 }
