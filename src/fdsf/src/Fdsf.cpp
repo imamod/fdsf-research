@@ -9,6 +9,7 @@
 #include "FdHalfQuadratures.h"
 #include "GlobalApproximations.h"
 #include "PrecisionApproximations.h"
+#include "SinglePrecisionApproximation.h"
 #include "Constants.h"
 #include "JsonFields.h"
 
@@ -32,6 +33,14 @@ namespace {
         // Квадратуры 0 <= x <= x_min
         nlohmann::json result = quad::calculate(k, x);
         return result[fd::I];
+    }
+
+    // Вычисление ФД полуцелых индексов по 2-кусковой формуле с точностью single-precision
+    BmpReal calculateSinglePrecision(BmpReal x, BmpReal k) {
+        if (x <= 4) {
+            return single_precision_formula::left(k, x);
+        }
+        return single_precision_formula::right(k, x);
     }
 
     // Вычисление ФД полуцелых индексов по схеме PREC_LEFT (см. магистерский диплом)
@@ -61,7 +70,7 @@ namespace {
             BmpReal sqr_pi = PI*PI;
             return fd_m + x*sqr_x*sqr_x / 5 + 2*sqr_pi * x*sqr_x / 3 + 7 * x * sqr_pi*sqr_pi / 15;
         }
-        throw std::invalid_argument("Unsupported k");
+        throw UnsupportedFdFunction();
     }
 
     // Вычисление ФД целых индексов с помощью всюду сходящегося ряда
@@ -150,6 +159,32 @@ namespace fdsf {
     }
 }
 
+/* Реализация аппроксимации функций ФД 2-кусковой формулой с точностью single precision */
+BmpReal fdsf::single_prec::fd_m3half(BmpReal x) {
+    return calculateSinglePrecision(x, fdsf::index::M3_HALF);
+}
+
+BmpReal fdsf::single_prec::fd_m1half(BmpReal x) {
+    return calculateSinglePrecision(x, fdsf::index::M1_HALF);
+}
+
+BmpReal fdsf::single_prec::fd_1half(BmpReal x) {
+    return calculateSinglePrecision(x, fdsf::index::P1_HALF);
+}
+
+BmpReal fdsf::single_prec::fd_3half(BmpReal x) {
+    return calculateSinglePrecision(x, fdsf::index::P3_HALF);
+}
+
+BmpReal fdsf::single_prec::fd_5half(BmpReal x) {
+    return calculateSinglePrecision(x, fdsf::index::P5_HALF);
+}
+
+BmpReal fdsf::single_prec::fd_7half(BmpReal x) {
+    return calculateSinglePrecision(x, fdsf::index::P7_HALF);
+}
+
+
 /* Реализация вычислений функций ФД с помощью прецизионных аппроксимаций */
 /* Функции ФД целого индекса */
 BmpReal fdsf::prec_approx::fd_0(BmpReal x) {
@@ -198,6 +233,8 @@ BmpReal fdsf::prec_approx::fd_7half(BmpReal x) {
 }
 
 /* Реализация вычислений функций ФД с помощью глобальных аппроксимаций */
+/* TODO: добавить 3х-членные формулы */
+
 /* Улучшенная асимптотика */
 
 BmpReal fdsf::global_approx::improved_asympt::fd_1(BmpReal x) {

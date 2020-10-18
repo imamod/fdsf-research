@@ -29,6 +29,20 @@ namespace {
     const BmpReal one = BmpReal(1);
     const BmpReal num2 = BmpReal(2);
     const BmpReal x_star = BmpReal(4);
+    // 
+    BmpReal m_alphaRight = 2 / (2 + pi());
+    BmpReal P(2);
+
+    // Установка веса линейно-тригонометрической сетки и начального приближения в зависимости от k
+    void setModuleVariables(BmpReal k) {
+        if (fdsf::index::M3_HALF == k || fdsf::index::P7_HALF == k) {
+            m_alphaRight = 0.6;
+            P = 1.5;
+        } else {
+            m_alphaRight = 2 / (2 + pi());
+            P = 2.0;
+        }
+    }
 
     // Сетка узлов для тестирования двухкусковой формулы
     class GridIhalf : public Grid {
@@ -52,19 +66,17 @@ namespace {
 
             // Задает правую линейно-тригонометрическую сетку базовых узлов справа
             virtual void setLinearTrigonometricGridRight() {
-                const BmpReal alpha = 2 / (2 + pi());
                 const BmpReal y_star = x_star;
                 BmpReal baseSize = BmpReal(2 * baseNCount());
 
-                const BmpReal P(2);
                 const BmpReal y_star_new = BmpReal(1) / pow(y_star, P);
                 // Задаются базовые узлы интерполяции
                 BmpVector baseGrid;
                 // Задаются базовые узлы интерполяции
                 for (size_t j = 1; j <= baseSize; j++) {
                     /* Усиленная линейная часть */
-                    BmpReal linearPart = num2 * (one - alpha) * j / baseSize;
-                    BmpReal trigonometricPart = alpha * (one - cos(pi() * j / baseSize));
+                    BmpReal linearPart = num2 * (one - m_alphaRight) * j / baseSize;
+                    BmpReal trigonometricPart = m_alphaRight * (one - cos(pi() * j / baseSize));
                     baseGrid.push_back(pow(y_star_new / num2 * (linearPart + trigonometricPart), 1 / P));
                 }
 
@@ -88,6 +100,16 @@ namespace {
                 std::cout << "    " << it.value << std::endl;
             }
         }
+    }
+
+    BmpVector getBaseNodesError(const std::vector<NodeInfo>& nodes) {
+        BmpVector baseNodes;
+        for (auto it : nodes) {
+            if (it.isBaseNode) {
+                baseNodes.emplace_back(it.value);
+            }
+        }
+        return baseNodes;
     }
 
     void printNodes(const std::vector<NodeInfo>& nodes) {
@@ -480,7 +502,9 @@ namespace {
                 b.emplace_back(E.at(j));
             }
         }
-        
+
+        print::string("Аппроксимирующие коэффициенты в числителе:");
+        print::vector(a);
         print::string("Аппроксимирующие коэффициенты в знаменателе:");
         print::vector(b);
 
@@ -503,10 +527,6 @@ namespace {
         return getFDValueFromApproximation2(k, Y, F_additional);
     }
 
-    // Степень величины по сетке
-    const BmpReal P(2);
-
-    // TODO: рефакторинг
     // Для литр, доп точки нужно получать точки по обратной величине
     std::vector<NodeInfo> getAdditionalDotsWithInfo(const BmpVector& x) {
         BmpVector inverseValue;
@@ -597,11 +617,16 @@ namespace {
 
     // Получение СКО-диагностики профиля и узлов
     BmpReal getSKODiagnostic(const BmpVector& base, const BmpVector& extr) {
-        return getSKO(base) / getSKO(extr);
+        BmpReal nom = getSKO(base);
+        BmpReal denom = getSKO(extr);
+        print::string("base SKO: " + std::to_string(nom));
+        print::string("extr SKO: " + std::to_string(denom));
+        return nom / denom;
     }
 
     // Тест на функции ФД
     void testFDFunction(BmpReal k) {
+        setModuleVariables(k);
        // const size_t N = 0; // 1+1коэффициент
        // const size_t N = 1; // 2+2 коэффициента
        // const size_t N = 2; // 3+3 коэффициента
@@ -633,6 +658,7 @@ namespace {
             */
             BmpVector U = approximateRationalFd(k, x, convNodeInfoToVec(additionalDots), convNodeInfoToVec(U_prec));
             std::vector<NodeInfo> delta = getErrorProfile(U_prec, U);
+            printBaseNodes(delta);
             // Получаем экстремумы
             // BmpVector localExtremums = localInterpolationExtremums(delta, 2 * N + 1);
             BmpVector localExtremums = localInterpolationExtremumsWithIndependentAddDots(delta, 2 *(N + 1));
@@ -640,7 +666,7 @@ namespace {
             print::vector(localExtremums); std::cout << std::endl;
             BmpVector moduleLocalExtremums = abs(localExtremums);
             // Диагностика СКО
-            BmpReal SKO = getSKODiagnostic(x, localExtremums);
+            BmpReal SKO = getSKODiagnostic(getBaseNodesError(delta), localExtremums);
             print::string("Current SKO: " + std::to_string(SKO));
             // Диагностика L
             BmpReal L = getLDiagnostic(moduleLocalExtremums);
@@ -648,7 +674,7 @@ namespace {
             // Критерий останова
             // Если достигли заданной точности
             // Если диагностика на текущей итерации превышает значения на предыдущей, выходим 
-            if ((L < U_RELATION_CONST) || (it > 1 && L > L_prev)) {
+            if ((L < U_RELATION_CONST)) { // (it > 1 && L > L_prev)
                 break;
             }
             L_prev = L;
@@ -827,7 +853,7 @@ namespace {
             // Критерий останова
             // Если достигли заданной точности
             // Если диагностика на текущей итерации превышает значения на предыдущей, выходим 
-            if ((L < U_RELATION_CONST) || (it > 1 && L > L_prev)) {
+            if ((L < U_RELATION_CONST)) { //|| (it > 1) && L > L_prev)) { // Временно отключили диагностику L
                 break;
             }
             L_prev = L;
@@ -866,10 +892,6 @@ TEST_CASE("fd_right") {
     SECTION("k72") {
         testFDFunction(fdsf::index::P7_HALF);
     }
-    SECTION("k92") {
-     // TODO:
-     // testFDFunction(fdsf::index::P9_HALF);
-    }
 }
 
 TEST_CASE("fd_left") {
@@ -890,9 +912,5 @@ TEST_CASE("fd_left") {
     }
     SECTION("k72") {
         testFDLeftApproximation(fdsf::index::P7_HALF);
-    }
-    SECTION("k92") {
-        // TODO:
-        // testFDLeftApproximation(fdsf::index::P9_HALF);
     }
 }

@@ -372,6 +372,7 @@
     <ClCompile Include="..\src\PrecisionApproximations.cpp" />
     <ClCompile Include="..\src\Richardson.cpp" />
     <ClCompile Include="..\src\SeriesLogNDivSqrN.cpp" />
+    <ClCompile Include="..\src\SinglePrecisionApproximation.cpp" />
     <ClCompile Include="..\src\TrapzFD.cpp" />
     <ClCompile Include="..\src\TrapzJm2Half.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -399,6 +400,7 @@
     <ClInclude Include="..\src\include\PrecisionApproximations.h" />
     <ClInclude Include="..\src\include\Richardson.h" />
     <ClInclude Include="..\src\include\SeriesLogNDivSqrN.h" />
+    <ClInclude Include="..\src\include\SinglePrecisionApproximation.h" />
     <ClInclude Include="..\src\include\TrapzFD.h" />
     <ClInclude Include="..\src\include\Trapz.h" />
     <ClInclude Include="..\src\include\TrapzJm2Half.h" />

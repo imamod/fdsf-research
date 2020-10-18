@@ -25,6 +25,17 @@ namespace fdsf {
     /* Интегральная функция ФД */
     BmpReal fd_J(BmpReal x);
 
+    /* Реализация аппроксимации функций ФД 2-кусковой формулой с точностью single precision */
+    namespace single_prec {
+        /* Функции ФД полуцелого индекса */
+        BmpReal fd_m3half(BmpReal x);
+        BmpReal fd_m1half(BmpReal x);
+        BmpReal fd_1half(BmpReal x);
+        BmpReal fd_3half(BmpReal x);
+        BmpReal fd_5half(BmpReal x);
+        BmpReal fd_7half(BmpReal x);
+    }
+
     /* Реализация вычислений функций ФД с помощью прецизионных аппроксимаций */
     namespace prec_approx {
         /* Функции ФД целого индекса */
