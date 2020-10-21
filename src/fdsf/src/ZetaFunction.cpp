@@ -1,5 +1,6 @@
 #include "Constants.h"
 #include "Logger.h"
+#include <array>
 
 // Нечетное число
 bool isOdd(int n) {

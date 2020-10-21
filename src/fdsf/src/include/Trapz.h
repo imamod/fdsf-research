@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BasicTypes.h"
+#include <functional>
 
 namespace fdsf {
     using SubIntegralFunc = std::function<double(double, double, double)>;
