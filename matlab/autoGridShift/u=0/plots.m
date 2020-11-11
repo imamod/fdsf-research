@@ -229,5 +229,5 @@ plot(grid_init, y_value, 'k.-', 'MarkerSize', 20)
 %axis([-1 1 -0.5 +0.5]);
 
 %subplot(2,1,2);
-plot(grid_final, y_value-0.001, 'k.-', 'MarkerSize', 20)
+plot(grid_final, y_value-0.001, 'ko-', 'MarkerSize', 8)
 axis([0 1 -0.0015 +0.0005]);

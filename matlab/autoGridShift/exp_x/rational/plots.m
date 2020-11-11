@@ -4,7 +4,7 @@ clear all
 close all
 
 % Число узлов
-N = 3:10;
+N = 1:8;
 
 delta_start = [
      0.00339856813527284 
@@ -31,7 +31,7 @@ delta_final = [
 log_delta_start = log10(delta_start);
 log_delta_final = log10(delta_final);
 figure, hold on
-xlabel('n'); ylabel('lg(|p_n_-_1_/_2|)');
+xlabel('N+M'); ylabel('lg(max|Q/u|))');
 plot(N, log_delta_start, 'k.-', 'MarkerSize', 20);
 plot(N, log_delta_final, 'k-o');
 axis([N(1) N(end) log_delta_final(end)-0.1 log_delta_start(1)+0.1]);
@@ -41,11 +41,11 @@ iterations = [5 4 8 6 10 8 12 11];
 
 figure, hold on
 plot(N, iterations, 'k.-', 'MarkerSize', 20);
-xlabel('n'); ylabel('it');
+xlabel('N+M');
 
 %% СРавнение полинома и многочлена
 
 relation_pol_rat = [3.02 5.95 9.85 19.67 34.43 68.78 123.78 246.88];
 figure, hold on
-plot(3:10, log10(relation_pol_rat), 'k.-', 'MarkerSize', 20);
-xlabel('n'); ylabel('lg(\delta_p/\delta_r)');
+plot(N, log10(relation_pol_rat), 'k.-', 'MarkerSize', 20);
+xlabel('N+M'); ylabel('lg(max|\delta_P|/max|\delta_Q|)');

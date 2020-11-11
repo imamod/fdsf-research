@@ -35,7 +35,7 @@ delta_final = [
 log_delta_start = log10(delta_start);
 log_delta_final = log10(delta_final);
 figure, hold on
-xlabel('n'); ylabel('lg(|p_n_-_1_/_2|)');
+xlabel('N'); ylabel('lg(max|P/u|)');
 plot(N, log_delta_start, 'k.-', 'MarkerSize', 20);
 plot(N, log_delta_final, 'k-o');
 axis([N(1) N(end) log_delta_final(end)-0.1 log_delta_start(1)+0.1]);
@@ -45,4 +45,4 @@ iterations = [6 8 10 12 14 17 19 21 23 22];
 
 figure, hold on
 plot(N, iterations, 'k.-', 'MarkerSize', 20);
-xlabel('n'); ylabel('it');
+xlabel('N');
