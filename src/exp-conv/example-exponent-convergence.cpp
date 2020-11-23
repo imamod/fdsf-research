@@ -41,7 +41,15 @@ TEST_CASE("ExpConverge") {
     std::cout.precision(std::numeric_limits<BmpReal>::max_digits10);
     // Для статьи о сверхстепенной сходимости
     // TODO:
-    epc::Richardson(func_demo, 0, pi());
+    for (BmpReal p : {0, 1, 2}) {
+        for (BmpReal c : { exp(0.3162), exp(1), exp(3.162) }) {
+            auto func_demo_check = [c, p](BmpReal x) {
+                return (c*c - 1)*pow(c, p)*cos(p*x) / pow(1 - 2 * c*cos(x) + c*c, 1);
+            };
+            epc::Richardson(func_demo_check, 0, pi(), c, p);
+        }
+    }
+    // epc::Richardson(func_demo, 0, pi());
     /*epc::Richardson(func_cos, 0, 1);
     epc::Richardson(func_exp_cos, 0, 1);
     epc::Richardson(func_exp_sin, 0, 1);

@@ -27,10 +27,10 @@ double TrapzFD::firstGrid(BmpReal initialGrid, const fdsf::Params& params) {
 double TrapzFD::economicGrid(BmpReal initialGrid, double previousValue, const fdsf::Params& params) {
     Logger logger("TrapzFD::economicGrid()");
     BmpReal N = initialGrid;
-    const double h = 12.0 / N;
+    const double h = 12.0 / N; // TODO : h = h_prev/ 2
     double gridSum = 0;
     fdsf::SubIntegralFunc fd = subIntegralFunction();
-    for (int i = 2 * N - 1; i > 0; i = i - 2) {
+    for (int i =  N - 1; i > 0; i = i - 2) {
         double value = fd(i * h, params.x, params.index);
         gridSum += value;
     }

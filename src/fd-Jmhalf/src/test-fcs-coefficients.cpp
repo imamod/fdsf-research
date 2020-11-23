@@ -1,6 +1,7 @@
 #include "Common.h"
 #include "FileSys.h"
 #include "FullyConvergedSeries.h"
+#include <chrono>
 
 namespace {
 
@@ -31,6 +32,12 @@ namespace {
         }
         return cn;
     }
+
+    void checkAccuracy(BmpReal x, BmpReal left, BmpReal right) {
+        setPreciseOutput();
+        std::cout << " x = " << x << ", d = " << left / right - 1 << std::endl;
+    }
+
 }
 
 TEST_CASE("coefficients") {
@@ -43,4 +50,64 @@ TEST_CASE("calculate") {
     INFO("Вычисление интегральной ФД в точке x = 0");
     setPreciseOutput();
     std::cout << fcs::calculateJmhalf(0) << std::endl;
+    for (auto x : {-2.0, -1.0, 0.0}) {
+        auto start = std::chrono::steady_clock::now();
+        std::cout << fcs::calculateJmhalf(x) << std::endl;
+        auto end = std::chrono::steady_clock::now();
+        auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+        std::cout << "calc x = " << x << " time: " << elapsed_ms.count() << "ms" << std::endl;
+    }
+}
+
+/**
+ * gsl
+ * x = -2, I = 0.025488904217813014
+ * x = -1, I = 0.15685317601594415
+ * x = 0, I = 0.78323866983319235
+ * x = 5, I = 46.589187519238614
+ * x = 10, I = 194.03517728526793
+ * x = 15, I = 442.65704119530864
+ * x = 20, I = 791.69654571653882
+ * x = 25, I = 1240.9561165133962
+ * x = 30, I = 1790.352916150179
+ * x = 35, I = 2439.843753194812
+ * x = 40, I = 3189.4031422038
+ * x = 45, I = 4039.014755720504
+ * x = 50, I = 4988.667493982043
+ */
+namespace {
+    const BmpVector INTEGRAL_RES = {
+        0.02548890421781356,
+        0.15685317601594093,
+        0.783238669833194,
+    };
+    const BmpVector GSL_RES = {
+        0.025488904217813014,
+        0.15685317601594415,
+        0.78323866983319235,
+    };
+}
+
+TEST_CASE("accuracy") {
+    SECTION("quad_fcs") {
+        double x = -2.0;
+        for (auto value : INTEGRAL_RES) {
+            checkAccuracy(x, fcs::calculateJmhalf(x), value);
+            ++x;
+        }
+    }
+    SECTION("gsl_fcs") {
+        double x = -2.0;
+        for (auto value : GSL_RES) {
+            checkAccuracy(x, fcs::calculateJmhalf(x), value);
+            ++x;
+        }
+    }
+    SECTION("gsl_quad") {
+        double x = -2.0;
+        for (int i = 0; i < GSL_RES.size(); ++i) {
+            checkAccuracy(x, GSL_RES[i], INTEGRAL_RES[i]);
+            ++x;
+        }
+    }
 }

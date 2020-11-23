@@ -5,7 +5,7 @@
 
 // Сверхстепенная сходимость
 namespace epc {
-    BmpReal Richardson(std::function<BmpReal(const BmpReal&)> f, BmpReal a, BmpReal b, bool countEvery = false);
+    BmpReal Richardson(std::function<BmpReal(const BmpReal&)> f, BmpReal a, BmpReal b, BmpReal _c, BmpReal _p);//bool countEvery = false);
 }
 
 namespace fdsf {

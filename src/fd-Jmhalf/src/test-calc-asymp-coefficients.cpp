@@ -155,16 +155,18 @@ TEST_CASE("calculate") {
 
 TEST_CASE("accuracy") {
     SECTION("quad_asym") {
-        const BmpVector QUAD_30_50 = {
+        const BmpVector QUAD_30_60 = {
             1790.3529161501417,
             2439.8437531948134,
             3189.4031422037642,
             4039.0147557204718,
             4988.6674939821187,
+            6038.353463537884,
+            7188.0668485663755,
         };
         size_t i = 0;
-        for (auto x : { 30, 35, 40, 45, 50 }) {
-           checkAccuracy(x, asymptotic(x), QUAD_30_50.at(i++));
+        for (auto x : { 30, 35, 40, 45, 50, 55, 60 }) {
+           checkAccuracy(x, asymptotic(x), QUAD_30_60.at(i++));
         }
     }
 }

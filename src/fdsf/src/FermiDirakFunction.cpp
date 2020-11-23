@@ -3,6 +3,7 @@
 #include "TrapzFD.h"
 #include "TrapzJm2Half.h"
 #include "Logger.h"
+#include "expTau2.h"
 
 namespace {
 
@@ -17,8 +18,10 @@ namespace {
     // Подынтегральная функция для индекса k > -3/2
     double fd_m12(double tau, double x, double k) {
         Logger logger("fd_m1half");
-        //logger.info("tau = " + std::to_string(tau) + ", x = " + std::to_string(x) + ", k = " + std::to_string(k));
-        double denom = 1 + exp(tau * tau - x);
+        logger.info("tau = " + std::to_string(tau) + ", x = " + std::to_string(x) + ", k = " + std::to_string(k));
+        //double p_tau2 = exp(tau * tau);
+        double p_tau2 = EXP_TAU2.at(tau);
+        double denom = 1 + p_tau2 * exp(-x);
         return pow(tau, 2 * k + 1) / denom;
     }
 
@@ -47,7 +50,7 @@ BmpReal FermiDirakFunction::calculate(BmpReal grid, BmpReal previousGridValue) {
         throw std::exception("not implemented");
         // Интегральная функция
         //std::shared_ptr<Trapz> trapzMethod = std::make_shared<TrapzJm2Half>(fd_Jmhalf);
-       // return trapz(trapzMethod, grid, previousGridValue);
+        // return trapz(trapzMethod, grid, previousGridValue);
     }
     // Для индекса k =-3/2 отличный от других индексов вид подынтегральной функции
     fdsf::SubIntegralFunc func = (fdsf::index::M3_HALF == m_params.index) ? fd_m3half : fd_m12;
