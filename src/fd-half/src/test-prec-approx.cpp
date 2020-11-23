@@ -86,7 +86,7 @@ TEST_CASE("left") {
 }
 
 TEST_CASE("right") {
-    GridIhalf grid(5, 11);
+    GridIhalf grid(4, 11);
     grid.setLinearTrigonometricGridRight();
     setPreciseOutput();
     filesys::writeFile("y_base_right", grid.base());

@@ -5,7 +5,31 @@
 #include "JsonFields.h"
 #include <fstream>
 
+#include "Richardson.h"
+#include "FermiDirakFunction.h"
+
 namespace {
+
+    // Вычисление констант exp(tau*tau)
+    void calculateTau2() {
+        std::map<BmpReal, BmpReal> result;
+        size_t N = 12;
+        double h = 12.0 / N;
+        for (int i = N - 1; i > 0; --i) {
+            double currentTau = i*h;
+            result[currentTau] = exp(currentTau*currentTau);
+        }
+        do {
+            N *= 2;
+            h = 12.0 / N;
+            for (int i = N - 1; i > 0; i=i-2) {
+                double currentTau = i*h;
+                result[currentTau] = exp(currentTau*currentTau);
+            }
+        } while ( N != 2*768);
+        filesys::writeFile("constTau.json", result);
+    }
+
 
     void calculate(nlohmann::json& result, double k, double x_star) {
         std::ofstream f(std::to_string(k));
@@ -16,7 +40,7 @@ namespace {
         // Расчет реперной точки x = -1
         values.push_back(quad::calculate(k, -1));
         f << values[1][fd::I] << std::endl;
-        for (double x = 30.0; x < x_star + 1; x = x + 5) {
+        for (double x = 0.0; x < x_star + 1; x = x + 5) {
             values.push_back(quad::calculate(k, x));
             f << values[x + 2][fd::I] << std::endl;
         }
@@ -26,41 +50,53 @@ namespace {
     }
 
     const double epsilon = 1e-11;
-/*
+
+    bool isOldCriteria(double prev, double cur) {
+        return abs(prev/cur - 1) < epsilon;
+    }
+
+    bool isNewCriteria(double pprev, double prev, double cur) {
+        double lhs = cur - prev;
+        double rhs = prev - pprev;
+        double res = pow(lhs, 3) / (cur * pow(rhs, 2));
+        return (res < epsilon) && (lhs*rhs) > 0;
+    }
+
     // TODO: possibly remove
     nlohmann::json calculateWithRichardson(double k, double x) {
         const int N_init = 12;
-        int N = N_init;
-        double stop_criteria;
-        double I_n = quad::euler_maclaurin(x, k, N);
-        //print(x, I_n, N);
-        // ДЛя проверки по уточнению Ричардсоном
-        double diff_prev_InmI2n = 0;
-        do {
-            double I_2n = quad::euler_maclaurin(x, k, 2 * N);
-            stop_criteria = (I_n / I_2n - 1);
-            // Сохраняем для уточнению Ричардсоном
-            if (N > N_init) {
-                double diff = I_2n - I_n;
-                double comb = diff / pow(diff_prev_InmI2n, 2);
-                std::cout << " N = " << 2 * N << ", diff = " << diff <<
-                    ", comb = " << comb << ", check = " << diff*comb / I_2n <<
-                    ", check_2 = " << diff*comb << std::endl;
-                I_2n *= 1 + comb;
+        const double epsilon = 1e-11;
+        RichardsonResult m_result{ N_init, 0 };
+        FermiDirakFunction m_func(x, k);
+        m_result.I = m_func.calculate(m_result.N);
+        std::cout << "N = " << m_result.N << ", I = " << m_result.I << std::endl;
+        double I_pprev;
+        for (int count = 0;; ++count) {
+            m_result.N *= 2;
+            double I_2n = m_func.calculate(m_result.N, m_result.I);
+            if (isOldCriteria(m_result.I, I_2n)) {
+                m_result.I = I_2n;
+                std::cout << "Old"<< std::endl;
+                break;
             }
-            diff_prev_InmI2n = I_2n - I_n;
-            I_n = I_2n;
-            N = 2 * N;
-            // print(x, I_2n, N);
-        } while (abs(stop_criteria) > epsilon);
+            if (count > 1 && isNewCriteria(I_pprev, m_result.I, I_2n)) {
+                m_result.I = I_2n + (pow((I_2n - m_result.I), 3)) / (pow((m_result.I - I_pprev), 2));
+                std::cout << "New" << std::endl;
+                break;
+            }
+            I_pprev = m_result.I;
+            m_result.I = I_2n;
+            std::cout << "N = " << m_result.N << ", I = " << m_result.I << std::endl;
+        }
+        // Домножаем значение интеграла на коэффициент перед ним ( смотри формулы (30, 34) препринт 2 )
+        const BmpReal coeff = (fdsf::index::M3_HALF == m_func.index()) ? -1 : 2;
+        m_result.I *= coeff;
+        std::cout << "final I = " << m_result.I << std::endl;
         nlohmann::json object = nlohmann::json::object();
         object[fd::X] = x;
-        object[fd::I] = 2 * I_n;// Смотри формулу (37) препринт 2
-        object[fd::N_MAX] = N / 2;
-        //std::cout << object.dump() << std::endl;
+        object[fd::I] = m_result.I;
         return object;
     }
-    */
 
 }
 
@@ -101,6 +137,25 @@ TEST_CASE("calculate") {
     }
 }
 
+TEST_CASE("new_stop_criteria") {
+    setPreciseOutput();
+    auto OLD_CRITERIA = filesys::readFile("values_12.json");
+    auto packs = OLD_CRITERIA[fd::RESULT];
+    for (auto x : {0.0, 5.0, 10.0, 15.0, 20.0, 25.0}) {
+        std::cout << "x = " << x << std::endl;
+        nlohmann::json result = calculateWithRichardson(fdsf::index::P1_HALF, x);
+        std::cout << result.dump() << std::endl;
+        for (auto pack : packs) {
+            if (pack[fd::X] == x) {
+                double oldValue = pack[fd::I];
+                double newValue = result[fd::I];
+                std::cout << "relative error = " << abs(newValue / oldValue - 1) << std::endl;
+                break;
+            }
+        }
+    }
+}
+
 TEST_CASE("richardson_check") {
     nlohmann::json result = nlohmann::json::object();
     SECTION("m3half") {
@@ -108,4 +163,8 @@ TEST_CASE("richardson_check") {
         double x_star = 52;
       //  result = calculateWithRichardson(k, x_star);
     }
+}
+
+TEST_CASE("constTau") {
+    calculateTau2();
 }

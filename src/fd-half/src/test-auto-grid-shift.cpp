@@ -168,6 +168,7 @@ namespace {
         }
         // настроечный коэффициент tau
         const BmpReal A = 0.2; // Release
+        //const BmpReal A = 0.5; // k=-3/2 left
         BmpReal tauOptimal = *std::min_element(tau.begin(), tau.end()) * A;
         const size_t MAX_TAU_VALUE = 1;
         if (tauOptimal > MAX_TAU_VALUE) {
