@@ -1,10 +1,16 @@
 #include "BasicService.h"
-#include "Fdsf-legacy.h"
+#include <functional>
 
-namespace fdsf {
+namespace {
+    
+    struct integration_segment_values {
+        size_t n; // Текущий отрезок интегрирования
+        size_t N; // Общее число отрезков интегрирования
+    };
 
     using FermiFunction = std::function<BmpReal(const BmpReal& ksi, const BmpReal& x, BmpReal k, BmpReal a, const integration_segment_values& isv)>;
 
+    // for others half-integer k
     BmpReal fermi_dirak_half_integer(BmpReal ksi, BmpReal x, 
                                       BmpReal k, BmpReal a, 
                                       integration_segment_values isv) {
@@ -16,6 +22,7 @@ namespace fdsf {
                (pow(denom, k + 2) * (exp_ksi + exp(-x)));
     }
 
+    // for k = -3/2
     BmpReal fermi_dirak_m3half(BmpReal ksi, BmpReal x,
                                 BmpReal k, BmpReal a,
                                 integration_segment_values isv) {
@@ -30,10 +37,10 @@ namespace fdsf {
     // Euler-Macloren Formulas
     BmpReal trapz(FermiFunction f, BmpReal x, const BmpReal k, size_t N, BmpReal a) {
         BmpReal h = BmpReal(1.0 / N);
-        integration_segment_values isv = {0, N};
+        integration_segment_values isv = { 0, N };
         BmpReal u0 = f(0, x, k, a, isv);
         // uN принудительно задаем нулем, чтобы не было переполнения
-        BmpReal I = u0 / 2; 
+        BmpReal I = u0 / 2;
         // true work
         for (size_t i = 1; i < N; i++) {
             isv.n = i;
@@ -42,15 +49,18 @@ namespace fdsf {
 #if 0
         // TODO: расчет на 2 узлах одновременно??? проверить
         for (size_t i = 1; i < N / 2; i = i + 2) {
-            I += f(i*h, x, k, a) + f((N - i)*h, x, k, a);
+            I += f(i * h, x, k, a) + f((N - i) * h, x, k, a);
         }
 
         if (N == 2) {
-            I += f(N*h/2, x, k, a);
+            I += f(N * h / 2, x, k, a);
         }
 #endif
-        return h*I;
+        return h * I;
     }
+}
+
+namespace fdsf {
 
     BmpReal euler_maclaurin_method(BmpReal x, const BmpReal k, int N) {
         BmpReal a = NewtonsMethod(x, k);

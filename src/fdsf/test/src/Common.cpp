@@ -1,6 +1,38 @@
 #define CATCH_CONFIG_MAIN
 #include "Common.h"
 
+#include <functional>
+
+namespace {
+
+    std::function<BmpReal(BmpReal)> fdFunc(BmpReal k) {
+        std::function<BmpReal(BmpReal)> f;
+        if (fdsf::index::M3_HALF == k) {
+            f = fdsf::fd_m3half;
+        } else if (fdsf::index::M1_HALF == k) {
+            f = fdsf::fd_m1half;
+        } else if (fdsf::index::P1_HALF == k) {
+            f = fdsf::fd_1half;
+        } else if (fdsf::index::P1 == k) {
+            f = fdsf::fd_1;
+        } else if (fdsf::index::P3_HALF == k) {
+            f = fdsf::fd_3half;
+        } else if (fdsf::index::P2 == k) {
+            f = fdsf::fd_2;
+        } else if (fdsf::index::P5_HALF == k) {
+            f = fdsf::fd_5half;
+        } else if (fdsf::index::P3 == k) {
+            f = fdsf::fd_3;
+        } else if (fdsf::index::P7_HALF == k) {
+            f = fdsf::fd_7half;
+        } else if (fdsf::index::P4 == k) {
+            f = fdsf::fd_4;
+        }
+        return f;
+    }
+}
+
+
 namespace compute {
     /**
      * Вычислить функцию полуцелого индекса в точке
@@ -16,7 +48,6 @@ namespace compute {
         BmpVector I;
         for (size_t i = 0; i < x.size(); ++i) {
             I.push_back(fdsf::richardson_method(x[i], k));
-            //std::cout << "x0: " << x[i] << " I: " << I[i] << std::endl;
         }
         return I;
     }
@@ -25,21 +56,10 @@ namespace compute {
      * Вычислить функцию целого индекса на векторе значений
      */
     BmpVector integer(const BmpVector& x, size_t k) {
-        // std::cout << "      I1(0) : " << pow(pi(), 2) / 12 << std::endl;
-        /**
-        * Соответствие значений t для каждого k, подобрано экспериментально
-        * BmpReal t = fdsf::get_T_max(X.at(i), k);
-        */
-        std::array<BmpReal, 4> T_VALUES = { 60, 75, 100, 120 };
-        // Точка, до которой считаем по схеме Горнера
-        BmpReal x_div = BmpReal(-0.1);
         BmpVector I;
-        for (int i = 0; i < x.size(); i++) {
-            auto value = x[i] > x_div ? fdsf::richardson_method(x[i], k, T_VALUES[k - 1])
-                : fdsf::Gorner(x[i], k);
-            //I.push_back(GornerSchemeForPrecesionY( x0[i], N));
-            I.push_back(value);
-            std::cout << "x0: " << x[i] << " I_base: " << I[i] << std::endl;
+        for (auto it : x) {
+            auto f = fdFunc(k);
+            I.push_back(f(it));
         }
         return I;
     }

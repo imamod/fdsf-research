@@ -3,7 +3,6 @@
 #include "catch.hpp"
 #include "BasicService.h"
 #include "Constants.h"
-#include "Fdsf-legacy.h"
 #include "Grid.h"
 #include "MatrixUtils.h"
 
@@ -27,8 +26,4 @@ namespace compute {
      */
     BmpVector halfInteger(BmpVector x, BmpReal k);
 
-    /**
-     * Вычислить функцию целого индекса на векторе значений
-     */
-    BmpVector integer(const BmpVector& x, size_t k);
 }

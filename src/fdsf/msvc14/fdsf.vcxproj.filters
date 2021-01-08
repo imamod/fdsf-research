@@ -39,12 +39,6 @@
     <ClCompile Include="..\src\FdHalfQuadratures.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\FDSFInteger-legacy.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\FDSFHalf-legacy.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Fdsf.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -102,9 +96,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\include\FdHalfQuadratures.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\include\Fdsf-legacy.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\Fdsf.h">

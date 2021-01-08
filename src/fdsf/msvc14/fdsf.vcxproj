@@ -215,7 +215,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\3dparty;$(ProjectDir)\..\src\include;$(ProjectDir)\..\..\boost_1_60_0;$(ProjectDir)\..\..\Utils\include;$(ProjectDir)\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\3dparty;$(ProjectDir)\..\src\include;$(SolutionDir)\..\..\boost_1_60_0;$(ProjectDir)\..\..\Utils\include;$(ProjectDir)\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
@@ -235,7 +235,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\3dparty;$(ProjectDir)\..\src\include;$(ProjectDir)\..\..\boost_1_60_0;$(ProjectDir)\..\..\Utils\include;$(ProjectDir)\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\3dparty;$(ProjectDir)\..\src\include;$(SolutionDir)\..\..\boost_1_60_0;$(ProjectDir)\..\..\Utils\include;$(ProjectDir)\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
@@ -311,7 +311,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\3dparty;$(ProjectDir)\..\src\include;$(ProjectDir)\..\..\boost_1_60_0;$(ProjectDir)\..\..\Utils\include;$(ProjectDir)\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\3dparty;$(ProjectDir)\..\src\include;$(SolutionDir)\..\..\boost_1_60_0;$(ProjectDir)\..\..\Utils\include;$(ProjectDir)\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
@@ -335,7 +335,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\3dparty;$(ProjectDir)\..\src\include;$(ProjectDir)\..\..\boost_1_60_0;$(ProjectDir)\..\..\Utils\include;$(ProjectDir)\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\3dparty;$(ProjectDir)\..\src\include;$(SolutionDir)\..\..\boost_1_60_0;$(ProjectDir)\..\..\Utils\include;$(ProjectDir)\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
@@ -356,13 +356,6 @@
     <ClCompile Include="..\src\AsymptoticSeries.cpp" />
     <ClCompile Include="..\src\FdHalfQuadratures.cpp" />
     <ClCompile Include="..\src\Fdsf.cpp" />
-    <ClCompile Include="..\src\FDSFHalf-legacy.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_HIGH_PRECISION|Win32'">
-      </ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\FDSFInteger-legacy.cpp" />
     <ClCompile Include="..\src\FermiDirakFunction.cpp" />
     <ClCompile Include="..\src\FullyConvergedSeries.cpp" />
     <ClCompile Include="..\src\Gamma.cpp" />
@@ -390,7 +383,6 @@
     <ClInclude Include="..\src\include\Errors.h" />
     <ClInclude Include="..\src\include\expTau2.h" />
     <ClInclude Include="..\src\include\FdHalfQuadratures.h" />
-    <ClInclude Include="..\src\include\Fdsf-legacy.h" />
     <ClInclude Include="..\src\include\FermiDirakFunction.h" />
     <ClInclude Include="..\src\include\FullyConvergedSeries.h" />
     <ClInclude Include="..\src\include\Gamma.h" />

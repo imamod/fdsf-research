@@ -1,4 +1,3 @@
-#include "Fdsf-legacy.h"
 #include "Constants.h"
 #include "Gamma.h"
 #include <iomanip>
@@ -8,6 +7,8 @@
 
 namespace fdsf {
 
+    // Алгоритм выбора T_max длякаждого x (а не фиксированные для всех)
+    // NB: для новой формы записи подынтегральной функции
     BmpReal get_T_max(BmpReal X, int k) {
         BmpReal a1;
         if (k != 0) {
@@ -47,27 +48,10 @@ namespace fdsf {
         return 2 * z*sum;
     }
 
+    // Вычисляет значение функции ФД индекса k = 1, 2, 3 в точке x при заданном
+    // значении t. Функция представлена в виде t^k /(exp(x)+exp(t))
     BmpReal fermi_dirak_integer(BmpReal t, BmpReal x, BmpReal k) {
         return pow(t, k) / (boost::math::tgamma(BmpReal(k)) * (exp(x) + exp(t)));
-    }
-
-    // Получение необходимого числа членов для схемы Горнера произвольной 
-    // заданной точности
-    static BmpReal get_N_for_Gorner(BmpReal x, BmpReal k) {
-        return log(fdsf::epsilon) / x;
-    }
-
-    BmpReal Gorner(BmpReal x, BmpReal k) {
-        //size_t N = ceil(get_N_for_Gorner(x, k));
-        size_t N = (size_t)(get_N_for_Gorner(x, k)) + 1;
-        BmpReal exp_x = exp(x);
-        BmpReal sum = 1.0 / pow(N, k + 1);
-
-        for (size_t i = N - 1; i > 0; i--) {
-            sum = 1 / pow(i, k + 1) - exp_x * sum;
-        }
-
-        return sum * factorial(k) * exp(x);
     }
 
     BmpReal gauss_christoffel_method(BmpReal(*f)(BmpReal, BmpReal, BmpReal),
@@ -106,6 +90,9 @@ namespace fdsf {
     bool hasFractionalPart(BmpReal value) {
         return value - floor(value) > 0;
     }
+
+    // Formula Euler-Maclaurin
+    BmpReal euler_maclaurin_method(BmpReal x, const BmpReal k, int N);
 
     // Сгущение по Ричардсону по сеточно-Гауссову методу
     BmpReal richardson_method(BmpReal x, BmpReal k, BmpReal t) {

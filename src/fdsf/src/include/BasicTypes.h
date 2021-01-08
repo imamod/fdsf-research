@@ -4,8 +4,9 @@
 #include <boost/multiprecision/cpp_dec_float.hpp>
 #include <boost/multiprecision/detail/default_ops.hpp>
 #include <boost/multiprecision/number.hpp>
-#include <boost/math/special_functions/gamma.hpp>
 #endif
+
+#include <boost/math/special_functions/gamma.hpp>
 
 #include <map>
 #include <string>

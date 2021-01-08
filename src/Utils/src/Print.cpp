@@ -35,6 +35,7 @@ namespace print {
 
     // Распечатать строку
     void string(const std::string& s) {
+        std::cout << std::setprecision(std::numeric_limits<BmpReal>::digits10 + 2) << std::endl;
         std::cout << s << std::endl;
     }
 }
