@@ -71,7 +71,7 @@ foreach(project ${projects})
     target_include_directories(${testcase} PRIVATE "../Utils/include")
     target_include_directories(${testcase} PUBLIC "../fdsf/include")
     # TODO:fix
-    target_include_directories(${testcase} PUBLIC "../../../../boost_1_60_0")
+    target_include_directories(${testcase} PUBLIC "../../boost_1_60_0")
     if (MSVC)
         target_link_libraries(${testcase} fdsf.lib Utils.lib)
     else()

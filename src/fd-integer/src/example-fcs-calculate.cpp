@@ -1,6 +1,8 @@
 #include "Common.h"
 #include "FullyConvergedSeries.h"
 
+#include <iostream>
+
 TEST_CASE("calculate") {
     setPreciseOutput();
     SECTION("0") {

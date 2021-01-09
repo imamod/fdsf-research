@@ -1,6 +1,8 @@
 #include "Common.h"
 #include "FileSys.h"
 
+#include <iostream>
+
 namespace {
 
     const BmpReal X_LEFT = 0;

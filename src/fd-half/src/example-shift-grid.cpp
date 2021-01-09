@@ -1,6 +1,8 @@
 #include "Common.h"
 #include "FileSys.h"
 
+#include <iostream>
+
 namespace {
     const BmpVector DELTA_K12_N3 = { 9.438492e-06, 6.092994e-06, 5.484654e-06,
         3.481478e-06, 6.460857e-07, 2.988557e-08 };

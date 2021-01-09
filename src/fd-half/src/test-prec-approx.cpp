@@ -5,6 +5,8 @@
 #include "Gamma.h"
 #include "Filesys.h"
 
+#include <iostream>
+
 namespace {
 
     class GridIhalf : public Grid {

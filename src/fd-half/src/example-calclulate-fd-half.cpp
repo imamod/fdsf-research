@@ -4,6 +4,7 @@
 #include "JsonFields.h"
 
 #include <functional>
+#include <iostream>
 
 #define RES_FILENAME(name) #name
 

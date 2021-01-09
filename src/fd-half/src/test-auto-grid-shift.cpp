@@ -6,6 +6,8 @@
 #include "Gamma.h"
 #include <algorithm>
 
+#include <iostream>
+
 /* Множители имеют одинаковый знак */
 class MultipliersHaveTheSameSign : public std::exception {
     public:

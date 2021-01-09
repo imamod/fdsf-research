@@ -4,6 +4,7 @@
 #include "FileSys.h"
 #include "JsonFields.h"
 #include <fstream>
+#include <iostream>
 
 #include "Richardson.h"
 #include "FermiDirakFunction.h"
